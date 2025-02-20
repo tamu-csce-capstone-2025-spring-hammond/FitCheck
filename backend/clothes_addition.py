@@ -1,8 +1,8 @@
 from openai import OpenAI
-from dotenv import load_dotenv
 
-load_dotenv()
-client = OpenAI()
+import environment
+
+client = OpenAI(api_key=environment.get("OPENAI_API_KEY"))
 completion = client.chat.completions.create(
     model="gpt-4o-mini",
     messages=[

@@ -1,6 +1,7 @@
-### FitCheck Backend Main - Called on startup
+"""FitCheck Backend Main - Called on startup"""
 
 import environment
+import database
 
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
@@ -22,6 +23,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Get database engine
+database.Engine()
 
 
 class TestRequest(BaseModel):

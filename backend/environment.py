@@ -1,4 +1,4 @@
-### Load environment variables from .env file and perform validation
+"""Load environment variables from .env file and perform validation"""
 
 
 from functools import cache
