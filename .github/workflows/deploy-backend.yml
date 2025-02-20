@@ -1,0 +1,19 @@
+name: Deploy Backend on Heroku
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: akhileshns/heroku-deploy@v3.13.15 # This is the action
+        with:
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: "fitcheck-backend"
+          heroku_email: "officialtamuhack@gmail.com"
+          appdir: "backend"
+
