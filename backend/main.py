@@ -7,6 +7,7 @@ from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from clothes_addition import parse_image, upload_to_chroma
 
 # Start FastAPI app
 app = FastAPI()
@@ -50,3 +51,7 @@ def post_test(request: TestRequest):
         "message": request.message
         }
 
+@app.post("/parse_image")
+def post_parse_image(request: TestRequest):
+    print(request)
+    return parse_image(request.message)
