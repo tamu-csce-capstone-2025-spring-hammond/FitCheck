@@ -15,6 +15,7 @@ Base = declarative_base()
 
 # Model definition (EXAMPLE)
 class User(Base):
+    """ The User who owns the wardrobe """
     __tablename__ = "users"
     
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -31,6 +32,7 @@ class User(Base):
         return f"<User(id={self.id}, name={self.name}, email={self.email})>"
 
 class ClothingItem(Base):
+    """ The individual clothing items in the user's wardrobe """
     __tablename__ = "clothing_items"
 
     id = Column(Integer, primary_key=True)
@@ -48,6 +50,7 @@ class ClothingItem(Base):
     wear_history = relationship("WearHistory", back_populates="clothing_item", cascade="all, delete")
 
 class Outfit(Base):
+    """ Outfit as a single unit """
     __tablename__ = "outfits"
 
     id = Column(Integer, primary_key=True)
@@ -68,6 +71,34 @@ class OutfitItem(Base):
 
     outfit = relationship("Outfit", back_populates="items")
     clothing_item = relationship("ClothingItem", back_populates="outfits")
+    
+class ResaleListing(Base):
+    """ Represents the history of all clothes sold by the user """
+    __tablename__ = "resale_listings"
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    clothing_item_id = Column(Integer, ForeignKey("clothing_items.id"), nullable=False)
+    platform = Column(String, nullable=False)  # e.g., "Depop", "eBay"
+    price = Column(Integer, nullable=False)
+    url = Column(String, nullable=False)
+    status = Column(Enum("Active", "Sold", "Removed", name="resale_status_enum"), nullable=False)
+    created_at = Column(DateTime, default=func.now())
+    sold_on = Column(DateTime, nullable=True)  # NULL if still listed
+
+    user = relationship("User", back_populates="resale_listings")
+    clothing_item = relationship("ClothingItem", back_populates="resale_listing")
+
+class WearHistory(Base):
+    """ History of all clothes worn by the user """
+    __tablename__ = "wear_history"
+
+    id = Column(Integer, primary_key=True)
+    clothing_item_id = Column(Integer, ForeignKey("clothing_items.id"), nullable=False)
+    date = Column(DateTime, nullable=False)
+    created_at = Column(DateTime, default=func.now())
+
+    clothing_item = relationship("ClothingItem", back_populates="wear_history")
 
 # Reset the database
 if __name__ == "__main__":
