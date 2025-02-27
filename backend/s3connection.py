@@ -1,6 +1,4 @@
-# $env:AWS_ACCESS_KEY_ID="AKIAQZFG45XX2Q5IPD7R"
-# $env:AWS_SECRET_ACCESS_KEY="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"
-# $env:AWS_DEFAULT_REGION="us-east-1"
+
 from dotenv import load_dotenv
 load_dotenv()
 import boto3
