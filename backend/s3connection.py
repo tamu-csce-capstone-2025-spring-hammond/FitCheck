@@ -1,15 +1,29 @@
-
-from dotenv import load_dotenv
-load_dotenv()
 import boto3
 import os
+import environment
 
-# Initialize S3 client
-s3_client = boto3.client("s3")
+
+# Get AWS credentials from environment
+aws_access_key = environment.get("AWS_ACCESS_KEY_ID")
+aws_secret_key =  environment.get("AWS_SECRET_ACCESS_KEY")
+aws_region =  environment.get("AWS_DEFAULT_REGION")
+
+print("(", aws_access_key, aws_secret_key, aws_region, ")")
+# Debug: Print keys (DO NOT do this in production!)
+if not aws_access_key or not aws_secret_key:
+    print("❌ AWS credentials not loaded. Check .env file!")
+
+# Initialize S3 client using the loaded credentials
+s3_client = boto3.client(
+    "s3",
+    aws_access_key_id=aws_access_key,
+    aws_secret_access_key=aws_secret_key,
+    region_name=aws_region,
+)
 
 # Define your bucket and file details
 bucket_name = "hack-fitcheck"
-local_file = "backend/51815.jpg"
+local_file = "51815.jpg"
 s3_file_key = "51815.jpg"  # Key inside the bucket
 
 # Check if file exists locally before uploading
