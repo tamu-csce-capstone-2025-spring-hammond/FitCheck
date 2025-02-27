@@ -22,11 +22,13 @@ class User(Base):
     name = Column(String, nullable=False)
     email = Column(String, unique=True, nullable=False)
     
-    password_hash = Column(String, nullable=False)  # Store hashed passwords
+    password_salt_and_hash = Column(String, nullable=False)  # Store unique salts followed by hashed passwords
+    login_token = Column(String, nullable=False)
     created_at = Column(DateTime, default=func.now())
 
     clothing_items = relationship("ClothingItem", back_populates="user", cascade="all, delete")
     outfits = relationship("Outfit", back_populates="user", cascade="all, delete")
+    resale_listings = relationship("ResaleListing", back_populates="user", cascade="all, delete")
 
     def __repr__(self):
         return f"<User(id={self.id}, name={self.name}, email={self.email})>"
@@ -46,8 +48,10 @@ class ClothingItem(Base):
     created_at = Column(DateTime, default=func.now())
 
     user = relationship("User", back_populates="clothing_items")
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     outfits = relationship("OutfitItem", back_populates="clothing_item", cascade="all, delete")
     wear_history = relationship("WearHistory", back_populates="clothing_item", cascade="all, delete")
+    resale_listing = relationship("ResaleListing", back_populates="clothing_item", cascade="all, delete")
 
 class Outfit(Base):
     """ Outfit as a single unit """
