@@ -1,0 +1,262 @@
+@import url("https://fonts.googleapis.com/css2?family=Platypi:ital,wght@0,300..800;1,300..800&display=swap");
+:root {
+  --background: #232323;
+  --foreground: #fff;
+  --body: #232323;
+  --heart-red: #DE3C2E;
+  --accent:#C0A5F5;
+  --accent-2: #B8ABC0;
+  --accent-3: #BFBCC6;
+}
+
+*,
+*:after,
+*:before {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  font: inherit;
+}
+
+img,
+picture,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+a,
+button {
+  cursor: pointer;
+}
+
+._site-grid {
+  --begin-end-column: 1fr;
+  display: grid;
+  grid-template-columns: [full-left-start] var(--begin-end-column) [nav-start second-start] 1fr [third-start] 1fr [fourth-start] repeat(19, 1fr) [fourth-end] 1fr [second-end third-end] 1fr [nav-end] var(--begin-end-column) [full-right-end];
+}
+@media (max-width: 700px) {
+  ._site-grid {
+    --begin-end-column: 2rem;
+  }
+}
+
+._grid-2 {
+  grid-column: second;
+}
+
+._grid-3 {
+  grid-column: third;
+}
+@media (max-width: 900px) {
+  ._grid-3 {
+    grid-column: 2/-2;
+  }
+}
+
+._grid-4 {
+  grid-column: fourth;
+}
+@media (max-width: 900px) {
+  ._grid-4 {
+    grid-column: third;
+  }
+}
+@media (max-width: 500px) {
+  ._grid-4 {
+    grid-column: second;
+  }
+}
+
+._grid-nav {
+  grid-column: nav;
+}
+
+._grid-full-right {
+  grid-column-end: full-right;
+}
+
+._grid-full-left {
+  grid-column-start: full-left;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: inherit;
+}
+
+body {
+  color: var(--body);
+  font-family: "Poppins", sans-serif;
+  font-size: 2.2rem;
+  line-height: 3.8rem;
+}
+@media (max-width: 1900px) {
+  body {
+    font-size: 2.14rem;
+    line-height: 3.68rem;
+  }
+}
+@media (max-width: 1750px) {
+  body {
+    font-size: 2.08rem;
+    line-height: 3.56rem;
+  }
+}
+@media (max-width: 1600px) {
+  body {
+    font-size: 2.02rem;
+    line-height: 3.44rem;
+  }
+}
+@media (max-width: 1450px) {
+  body {
+    font-size: 1.96rem;
+    line-height: 3.32rem;
+  }
+}
+@media (max-width: 1300px) {
+  body {
+    font-size: 1.9rem;
+    line-height: 3.2rem;
+  }
+}
+@media (max-width: 1150px) {
+  body {
+    font-size: 1.84rem;
+    line-height: 3.08rem;
+  }
+}
+@media (max-width: 1000px) {
+  body {
+    font-size: 1.78rem;
+    line-height: 2.96rem;
+  }
+}
+@media (max-width: 850px) {
+  body {
+    font-size: 1.72rem;
+    line-height: 2.84rem;
+  }
+}
+@media (max-width: 700px) {
+  body {
+    font-size: 1.66rem;
+    line-height: 2.72rem;
+  }
+}
+@media (max-width: 550px) {
+  body {
+    font-size: 1.6rem;
+    line-height: 2.6rem;
+  }
+}
+@media (max-width: 400px) {
+  body {
+    font-size: 1.6rem;
+    line-height: 2.6rem;
+  }
+}
+
+h1 {
+  color: var(--accent);
+  font-family: "Platypi", serif;
+  font-size: 10rem;
+  line-height: 10rem;
+  font-weight: 800;
+}
+@media (max-width: 1900px) {
+  h1 {
+    font-size: 9.56rem;
+    line-height: 9.64rem;
+  }
+}
+@media (max-width: 1750px) {
+  h1 {
+    font-size: 9.12rem;
+    line-height: 9.28rem;
+  }
+}
+@media (max-width: 1600px) {
+  h1 {
+    font-size: 8.68rem;
+    line-height: 8.92rem;
+  }
+}
+@media (max-width: 1450px) {
+  h1 {
+    font-size: 8.24rem;
+    line-height: 8.56rem;
+  }
+}
+@media (max-width: 1300px) {
+  h1 {
+    font-size: 7.8rem;
+    line-height: 8.2rem;
+  }
+}
+@media (max-width: 1150px) {
+  h1 {
+    font-size: 7.36rem;
+    line-height: 7.84rem;
+  }
+}
+@media (max-width: 1000px) {
+  h1 {
+    font-size: 6.92rem;
+    line-height: 7.48rem;
+  }
+}
+@media (max-width: 850px) {
+  h1 {
+    font-size: 6.48rem;
+    line-height: 7.12rem;
+  }
+}
+@media (max-width: 700px) {
+  h1 {
+    font-size: 6.04rem;
+    line-height: 6.76rem;
+  }
+}
+@media (max-width: 550px) {
+  h1 {
+    font-size: 5.6rem;
+    line-height: 6.4rem;
+  }
+}
+@media (max-width: 400px) {
+  h1 {
+    font-size: 5.6rem;
+    line-height: 6.4rem;
+  }
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+
+html {
+  font-size: 62.5%;
+}
+
+.FitCheck .__site-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: var(--p1);
+  padding: 124px 0px 0px 0px;
+}/*# sourceMappingURL=styles.css.map */

@@ -1,0 +1,22 @@
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: inherit;
+}
+
+body {
+  color: var(--body);
+  font-family: "Poppins", sans-serif;
+  @include font(2.2, 1.6, 3.8rem, 2.6rem);
+}
+
+h1 {
+  color: var(--accent);
+  font-family: "Platypi", serif;
+  @include font(10, 5.6, 10rem, 6.4rem);
+  font-weight: 800;
+}
