@@ -27,8 +27,7 @@ def __Environment() -> dict:
     Load environment variables from .env file and perform validation.
     """
     # Load environment variables from .env
-    load_dotenv()
-
+    load_dotenv(override=True)
     # Read required environment variables from .env.template and validate
     vars_in_template = []
     missing_vars = []
