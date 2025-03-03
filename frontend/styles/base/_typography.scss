@@ -7,16 +7,38 @@ h5,
 h6 {
   color: inherit;
 }
-
 body {
   color: var(--body);
   font-family: "Poppins", sans-serif;
-  @include font(2.2, 1.6, 3.8rem, 2.6rem);
+  @include font(2.0, 1.4, 3rem, 2.5rem);
+  font-weight: 400;
 }
-
+p.italic {
+  font-style: italic;
+}
+p.title {
+  @include font(2.0, 1.4, 2rem, 1.5rem);
+  font-weight: 800;
+}
+p.subtext {
+  @include font(1.6, 1.4, 3.5rem, 2.4rem);
+}
 h1 {
+  @include font(4, 3.5, 5rem, 4.5rem);
+  font-weight: 400;
+}
+h1.bold {
+  font-weight: 800;
+}
+h2 {
+  @include font(3.2, 2, 4rem, 3.5rem);
+}
+h2.bold {
+  font-weight: 800;
+}
+h1.header {
   color: var(--accent);
   font-family: "Platypi", serif;
-  @include font(10, 5.6, 10rem, 6.4rem);
+  @include font(3, 3);
   font-weight: 800;
 }

@@ -13,7 +13,16 @@ html {
   font-size: 62.5%;
 }
 
+a:active {
+  color: var(--accent);
+}
+
+a:active img {
+  fill: var(--accent);
+}
+
 .FitCheck {
+  background-color: var(--white);
   .__site-content {
     position: relative;
     display: flex;

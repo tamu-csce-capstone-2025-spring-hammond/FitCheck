@@ -1,24 +1,37 @@
 // import Image from "next/image";
+import Header from "../components/header";
+import Footer from "../components/footer";
+import Navbar from "../components/navbar";
+import DarkButton from "../components/index-components/dark-button";
+import FilterWithItems from "@/components/index-components/filter-with-items";
+import DateWeatherWidget from "../components/index-components/date-weather-widget";
 
 export default function Home() {
   return (
-    <div className="min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <h1>FitCheck</h1>
-        <p>Hello</p>
-        <h2>THIS IS A TEST</h2>
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="FitCheck">
+      <Header></Header>
+
+      <main className="_site-grid min-h-[90vh] relative mb-64">
+        <div className=" _grid-3">
+          <div className="grid grid-cols-[1fr] md:grid-cols-[1fr,1fr] my-24">
+            <div className="flex flex-col gap-6">
+              <h1 className="bold">Welcome To Your Closet, User!</h1>
+              <div className="flex flex-col md:flex-row gap-4">
+                <DarkButton text="Get Inspired" href="/profile" />
+                <DarkButton text="Add My OOTD" href="/profile" />
+              </div>
+            </div>
+            <div className="mt-12 md:mt-0 md:ml-24 flex flex-col gap-4 md:items-end justify-end">
+              <DateWeatherWidget />
+            </div>
+          </div>
+          
+          <FilterWithItems></FilterWithItems>
         </div>
+        <Navbar></Navbar>
       </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center"></footer>
+
+      <Footer></Footer>
     </div>
   );
 }
