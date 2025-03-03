@@ -15,7 +15,7 @@ export default function Home() {
         <div className=" _grid-3">
           <div className="grid grid-cols-[1fr] md:grid-cols-[1fr,1fr] my-24">
             <div className="flex flex-col gap-6">
-              <h1 className="bold">Welcome To Your Closet, User!</h1>
+              <h1 className="bold">Welcome To Your Closet, Test User!</h1>
               <div className="flex flex-col md:flex-row gap-4">
                 <DarkButton text="Get Inspired" href="/profile" />
                 <DarkButton text="Add My OOTD" href="/profile" />
