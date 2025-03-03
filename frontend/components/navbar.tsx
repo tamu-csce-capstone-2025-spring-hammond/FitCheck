@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Navbar() {
   return (
@@ -7,45 +8,59 @@ export default function Navbar() {
         <div className="px-16 py-2 flex justify-between align-middle py-6">
           <Link href="/closet" legacyBehavior>
             <a className="flex flex-col justify-center items-center active:text-accent active:fill-accent">
-              <img
+              <Image
                 src="/images/icons/closet.svg"
                 alt="Closet"
-                className="h-12"
+                width={48}
+                height={48}
+                className="h-12 w-auto"
               />
               <p className="mt-auto text-sm">Closet</p>
             </a>
           </Link>
           <Link href="/listings" legacyBehavior>
             <a className="flex flex-col justify-center items-center active:text-accent active:fill-accent">
-              <img
+              <Image
                 src="/images/icons/listings.svg"
                 alt="Listings"
-                className="h-11 mb-auto"
+                width={44}
+                height={44}
+                className="h-11 w-auto mb-auto"
               />
               <p className="mt-auto text-sm">Listings</p>
             </a>
           </Link>
           <Link href="/add" legacyBehavior>
             <a className="flex flex-col justify-center items-center active:text-accent active:fill-accent">
-              <img src="/images/icons/add.svg" alt="Add" className="h-16" />
+              <Image
+                src="/images/icons/add.svg"
+                alt="Add"
+                width={64}
+                height={64}
+                className="h-16 w-auto"
+              />
             </a>
           </Link>
           <Link href="/try-on" legacyBehavior>
             <a className="flex flex-col justify-center items-center active:text-accent active:fill-accent">
-              <img
+              <Image
                 src="/images/icons/try-on.svg"
                 alt="Try On"
-                className="h-12"
+                width={48}
+                height={48}
+                className="h-12 w-auto"
               />
               <p className="mt-auto text-sm">Try On</p>
             </a>
           </Link>
           <Link href="/calendar" legacyBehavior>
             <a className="flex flex-col justify-center items-center active:text-accent active:fill-accent">
-              <img
+              <Image
                 src="/images/icons/calendar.svg"
                 alt="Calendar"
-                className="h-12"
+                width={48}
+                height={48}
+                className="h-12 w-auto"
               />
               <p className="mt-auto text-sm">Calendar</p>
             </a>
