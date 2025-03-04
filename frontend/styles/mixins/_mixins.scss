@@ -1,0 +1,57 @@
+@mixin respond($breakpoint) {
+  $breakpointPX: ($breakpoint) * 1px;
+  @if $breakpointPX >= 2000 {
+    @media (min-width: $breakpointPX) {
+      @content;
+    }
+  } @else {
+    @media (max-width: $breakpointPX) {
+      @content;
+    }
+  }
+}
+@mixin respondHeight($breakpoint) {
+  $breakpointPX: ($breakpoint) * 1px;
+
+  @media (max-height: $breakpointPX) and (min-width: 1000px) {
+    @content;
+  }
+}
+
+@mixin font(
+  $size,
+  $minSize: 1.6,
+  $lineHeight: 0,
+  $minLineHeight: 0,
+  $rateChange: 1
+) {
+  $startScreenSize: 1900;
+  $endScreenSize: 400;
+  $steps: 10;
+  $sizeDifference: calc(($size - $minSize) / $steps);
+  $lineHeightDifference: calc(($lineHeight - $minLineHeight) / $steps);
+  $decrement: calc(($startScreenSize - $endScreenSize) / $steps);
+  $outputSize: $size;
+  $outputLineHeight: $lineHeight;
+  font-size: $outputSize * 1rem;
+  @if $lineHeight != 0 {
+    line-height: $outputLineHeight;
+  }
+  @while $startScreenSize >= $endScreenSize {
+    $outputSize: $outputSize - $sizeDifference;
+    $outputLineHeight: $outputLineHeight - $lineHeightDifference;
+    @if $outputSize < $minSize {
+      $outputSize: $minSize;
+    }
+    @if $outputLineHeight < $minLineHeight {
+      $outputLineHeight: $minLineHeight;
+    }
+    @include respond($startScreenSize) {
+      font-size: $outputSize * 1rem;
+      @if $lineHeight != 0 {
+        line-height: $outputLineHeight;
+      }
+    }
+    $startScreenSize: $startScreenSize - $decrement;
+  }
+}

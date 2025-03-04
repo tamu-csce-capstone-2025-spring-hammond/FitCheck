@@ -1,0 +1,35 @@
+@import url("https://fonts.googleapis.com/css2?family=Platypi:ital,wght@0,300..800;1,300..800&display=swap");
+@import "base/variables";
+@import "mixins/mixins";
+@import "base/reset";
+@import "base/typography";
+
+body {
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+html {
+  font-size: 62.5%;
+}
+
+a:active {
+  color: var(--accent);
+}
+
+a:active img {
+  fill: var(--accent);
+}
+
+.FitCheck {
+  background-color: var(--white);
+  .__site-content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: var(--p1);
+    padding: 124px 0px 0px 0px;
+  }
+}
