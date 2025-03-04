@@ -8,7 +8,6 @@ aws_access_key = environment.get("AWS_ACCESS_KEY_ID")
 aws_secret_key =  environment.get("AWS_SECRET_ACCESS_KEY")
 aws_region =  environment.get("AWS_DEFAULT_REGION")
 
-print("(", aws_access_key, aws_secret_key, aws_region, ")")
 # Debug: Print keys (DO NOT do this in production!)
 if not aws_access_key or not aws_secret_key:
     print("❌ AWS credentials not loaded. Check .env file!")
