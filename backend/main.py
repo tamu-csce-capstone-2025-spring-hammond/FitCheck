@@ -6,7 +6,7 @@ import environment
 import database
 from auth import verify_password
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Header
 from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -117,6 +117,8 @@ def post_login(request: LoginRequest):
 
 
 @app.get("/me")
-def get_me():
-    return {"user": "me"}
+def get_me(authorization: str = Header(...)):
+    if not authorization:
+        return {"error": "No authorization header."}
+    return {"auth_header_login_token": authorization}
 
