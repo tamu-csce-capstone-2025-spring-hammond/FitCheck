@@ -4,9 +4,10 @@ import re
 
 import environment
 import database
+import constants
 from auth import verify_password
 
-from fastapi import FastAPI, Header
+from fastapi import FastAPI, Header, HTTPException
 from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -27,6 +28,16 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+def enforce_logged_in(authorization: str):
+    token = authorization[7:]
+    if token == "":
+        raise HTTPException(status_code=401, detail="Not logged in.")
+    user = database.get_user_by_login_token(token)
+    if user is None:
+        raise HTTPException(status_code=400, detail="Bad login token.")
+    return user
 
 
 class TestRequest(BaseModel):
@@ -64,16 +75,13 @@ class SignupRequest(BaseModel):
 
 def validate_login_strings(email: str, password: str, name: str|None = None):
     # Check field lengths
-    MAX_EMAIL_LENGTH = 50
-    if len(email) < 1 or len(email) > MAX_EMAIL_LENGTH:
-        return {"error": f"Email must be between 1 and {MAX_EMAIL_LENGTH} characters."}
-    MAX_PASSWORD_LENGTH = 50
-    if len(password) < 1 or len(password) > MAX_PASSWORD_LENGTH:
-        return {"error": f"Password must be between 1 and {MAX_PASSWORD_LENGTH} characters."}
+    if len(email) < 1 or len(email) > constants.MAX_EMAIL_LENGTH:
+        return {"error": f"Email must be between 1 and {constants.MAX_EMAIL_LENGTH} characters."}
+    if len(password) < 1 or len(password) > constants.MAX_PASSWORD_LENGTH:
+        return {"error": f"Password must be between 1 and {constants.MAX_PASSWORD_LENGTH} characters."}
     if name:
-        MAX_NAME_LENGTH = 50
-        if len(name) < 1 or len(name) > MAX_NAME_LENGTH:
-            return {"error": f"Name must be between 1 and {MAX_NAME_LENGTH} characters."}
+        if len(name) < 1 or len(name) > constants.MAX_NAME_LENGTH:
+            return {"error": f"Name must be between 1 and {constants.MAX_NAME_LENGTH} characters."}
 
     # Check if email is valid
     if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
@@ -91,7 +99,7 @@ def post_signup(request: SignupRequest):
     
     # Create user
     user = database.create_user(request.name, request.email, request.password)
-    return {"user": user}
+    return {"success": True, "user": user}
 
 
 class LoginRequest(BaseModel):
@@ -105,7 +113,7 @@ def post_login(request: LoginRequest):
         return error
     
     # Get user
-    user = database.get_user_by_email(request.email)
+    user = database.get_user_by_email(request.email, True)
     if not user:
         return {"error": "User does not exist."}
     
@@ -113,12 +121,11 @@ def post_login(request: LoginRequest):
     if not verify_password(request.password, user.password_salt_and_hash):
         return {"error": "Incorrect password."}
     
-    return {"user": user}
+    return {"success": True, "user": user}
 
 
 @app.get("/me")
 def get_me(authorization: str = Header(...)):
-    if not authorization:
-        return {"error": "No authorization header."}
-    return {"auth_header_login_token": authorization}
+    current_user = enforce_logged_in(authorization)
+    return {"user" : current_user}
 
