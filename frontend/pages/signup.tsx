@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { useState } from 'react';
 
 export default function Signup()
@@ -28,7 +29,7 @@ export default function Signup()
     return (
         <div className="bg-white">
             <h1>Test Signup</h1>
-            <p><a href="/login" className="underline text-blue-500">Login</a></p>
+            <p><Link href="/login" className="underline text-blue-500">Login</Link></p>
             <input type="text" placeholder="Name" value={name} onChange={e => setName(e.target.value)} maxLength={50} />
             <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} maxLength={50} />
             <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} maxLength={50} />
