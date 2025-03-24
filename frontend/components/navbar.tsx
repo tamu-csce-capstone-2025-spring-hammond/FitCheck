@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 
-export default function Navbar() {
+export default function Navbar({ onAddClick }: { onAddClick?: () => void }) {
   return (
     <header className="bottom-12 left-0 right-0 fixed max-w-3xl mx-auto text-body-light">
       <div className="bg-black md:rounded-xl shadow-md">
@@ -30,7 +30,7 @@ export default function Navbar() {
               <p className="mt-auto text-sm">Listings</p>
             </a>
           </Link>
-          <Link href="/add" legacyBehavior>
+          <button onClick={onAddClick}>
             <a className="flex flex-col justify-center items-center active:text-accent active:fill-accent">
               <Image
                 src="/images/icons/add.svg"
@@ -40,7 +40,7 @@ export default function Navbar() {
                 className="h-16 w-auto"
               />
             </a>
-          </Link>
+          </button>
           <Link href="/try-on" legacyBehavior>
             <a className="flex flex-col justify-center items-center active:text-accent active:fill-accent">
               <Image
