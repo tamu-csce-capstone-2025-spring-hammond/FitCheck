@@ -48,7 +48,7 @@ export default function Navbar({ onAddClick }: { onAddClick?: () => void }) {
                 </g>
               </svg>
               <p className="mt-auto text-sm">Closet</p>
-            </span>
+            </a>
           </Link>
           <Link href="/listings" legacyBehavior>
             <a
@@ -86,7 +86,7 @@ export default function Navbar({ onAddClick }: { onAddClick?: () => void }) {
                 </g>
               </svg>
               <p className="mt-auto text-sm">Listings</p>
-            </span>
+            </a>
           </Link>
           <button onClick={onAddClick}>
             <a className="flex flex-col justify-center items-center">
@@ -97,7 +97,7 @@ export default function Navbar({ onAddClick }: { onAddClick?: () => void }) {
                 height={64}
                 className="h-16 w-auto"
               />
-            </span>
+            </a>
           </button>
           <Link href="/try-on" legacyBehavior>
             <a
@@ -162,7 +162,7 @@ export default function Navbar({ onAddClick }: { onAddClick?: () => void }) {
                 </g>
               </svg>
               <p className="mt-auto text-sm">Try On</p>
-            </span>
+            </a>
           </Link>
           <Link href="/calendar" legacyBehavior>
             <a
