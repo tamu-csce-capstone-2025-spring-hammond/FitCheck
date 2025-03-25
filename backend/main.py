@@ -118,9 +118,10 @@ class LoginRequest(BaseModel):
 @app.post("/login")
 def post_login(request: LoginRequest):
     error = validate_login_strings(request.email, request.password)
-    if error:
+    if error is not None:
+        print(error)
         return error
-    
+
     # Get user
     user = database.get_user_by_email(request.email, True)
     if not user:
@@ -161,8 +162,8 @@ def upload_image(file: UploadFile = File(...)):
     )
 
 
-    upload_result = add_image_obj(file.file, bucket_name, file_name)
     file_name = f"{uuid.uuid4()}_{file.filename}"
+    upload_result = add_image_obj(file.file, bucket_name, file_name)
     s3_url = f"https://{bucket_name}.s3.amazonaws.com/{file_name}"
 
     try:

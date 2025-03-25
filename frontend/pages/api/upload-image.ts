@@ -11,7 +11,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const backendUrl = process.env.BACKEND_URL || "http://localhost:8000";
 
   try {
-    const response = await fetch(`${backendUrl}/upload-image`, {
+    const response = await fetch(`${backendUrl}upload-image`, {
       method: "POST",
       headers: {
         ...req.headers, 

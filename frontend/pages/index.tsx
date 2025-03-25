@@ -32,7 +32,7 @@ export default function Home() {
 
           <FilterWithItems></FilterWithItems>
         </div>
-        <Navbar onAddClick={() => setShowCamera(true)} />
+        <Navbar onAddClick={() => {setShowCamera(true)}} />
       </main>
 
       <Footer></Footer>
