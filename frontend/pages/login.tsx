@@ -18,7 +18,7 @@ export default function Login()
         });
         const json = await response.json();
         setResult(JSON.stringify(json));
-        if (json.success)
+        if (json.success === true)
         {
             window.location.href = '/';
         }

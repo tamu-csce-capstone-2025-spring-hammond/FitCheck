@@ -118,9 +118,10 @@ class LoginRequest(BaseModel):
 @app.post("/login")
 def post_login(request: LoginRequest):
     error = validate_login_strings(request.email, request.password)
-    if error:
+    if error is not None:
+        print(error)
         return error
-    
+
     # Get user
     user = database.get_user_by_email(request.email, True)
     if not user:

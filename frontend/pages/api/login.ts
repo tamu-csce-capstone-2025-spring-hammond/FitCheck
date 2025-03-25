@@ -33,7 +33,10 @@ export default async function loginRoute(req: NextApiRequest, res: NextApiRespon
     if (response.status === 200 && json.user)
     {
         res.setHeader('Set-Cookie', `login_token=${json.user.login_token}; Path=/; HttpOnly; SameSite=Strict; Secure; Max-Age=8640000`);
+        res.status(response.status).json({"success": true});
     }
-
-    res.status(response.status).json({"success": true});
+    else
+    {
+        res.status(response.status).json(json);
+    }
 };
