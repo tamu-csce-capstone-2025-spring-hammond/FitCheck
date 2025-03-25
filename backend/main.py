@@ -13,7 +13,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from clothes_addition import parse_image, upload_to_chroma
 from s3connection import add_image, get_image, delete_image, add_image_obj
-
+from database import get_user_by_login_token
+from models import ClothingItem
+from sqlalchemy.orm import Session
+from fastapi import Depends
 from typing import Annotated
 
 import boto3
@@ -137,8 +140,12 @@ def get_me(authorization: str = Header(...)):
 
 @app.post("/upload-image")
 def upload_image(file: UploadFile = File(...)):
-    print('got here')
-    print(file.filename)
+
+    # TEMP WHILE AUTH NOT IN PLACE
+    current_user = 1
+
+
+
     # Get AWS credentials from environment
     aws_access_key = environment.get("AWS_ACCESS_KEY_ID")
     aws_secret_key = environment.get("AWS_SECRET_ACCESS_KEY")
@@ -153,13 +160,52 @@ def upload_image(file: UploadFile = File(...)):
         region_name=aws_region,
     )
 
-    file_name = f"{uuid.uuid4()}_{file.filename}"
 
-    # Upload to S3
     upload_result = add_image_obj(file.file, bucket_name, file_name)
+    file_name = f"{uuid.uuid4()}_{file.filename}"
+    s3_url = f"https://{bucket_name}.s3.amazonaws.com/{file_name}"
+
+    try:
+        parsed_items = parse_image(s3_url)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Image parsing failed: {e}")
+
+    saved_items = []
+    for item in parsed_items:
+        clothing = database.add_clothing_item(
+            user_id=current_user.id,
+            name=item["cloth_description"],
+            size=item["cloth_size"],
+            color=item["cloth_color"],
+            style=None,
+            brand=None,
+            category=item["cloth_type"].capitalize(),  
+        )
+        saved_items.append({
+            "id": clothing.id,
+            "name": clothing.name,
+            "category": clothing.category,
+        })
 
     return {
-        "message": upload_result,
-        "file_name": file_name,
-        "s3_url": f"https://{bucket_name}.s3.amazonaws.com/{file_name}"
+        "message": "Upload and parse successful",
+        "s3_url": s3_url,
+        "parsed_items": saved_items,
     }
+
+@app.get("/my-clothes")
+def get_my_clothes():
+    with database.Session() as session:
+        clothes = session.query(ClothingItem).filter(ClothingItem.user_id == 1).all()
+
+        return [
+            {
+                "id": c.id,
+                "name": c.name,
+                "size": c.size,
+                "color": c.color,
+                "category": c.category,
+                "created_at": str(c.created_at)
+            }
+            for c in clothes
+        ]

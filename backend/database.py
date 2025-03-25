@@ -66,3 +66,20 @@ def create_user(name: str, email: str, password: str):
         session.refresh(user)  # So the user variable is populated
     return user
 
+def add_clothing_item(user_id: int, name: str, size: str, color: str, style: str, brand: str, category: str):
+    from models import ClothingItem
+
+    with Session() as session:
+        item = ClothingItem(
+            user_id=user_id,
+            name=name,
+            size=size,
+            color=color,
+            style=style,
+            brand=brand,
+            category=category,
+        )
+        session.add(item)
+        session.commit()
+        session.refresh(item)
+        return item

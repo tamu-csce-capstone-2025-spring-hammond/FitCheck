@@ -55,6 +55,7 @@ export default function CameraModal({
     setUploading(true);
     setUploadResult(null);
 
+    // TEMPLATE FOR HOW TO UPLOAD AN IMAGE TO THE BACKEND
     const formData = new FormData();
     formData.append("file", file);
 
