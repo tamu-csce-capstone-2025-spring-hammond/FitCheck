@@ -6,7 +6,7 @@ export default function Navbar() {
     <header className="bottom-12 left-0 right-0 fixed max-w-3xl mx-auto text-body-light">
       <div className="bg-black md:rounded-xl shadow-md">
         <div className="px-16 py-2 flex justify-between align-middle py-6">
-          <Link href="/closet" legacyBehavior>
+          <Link href="/" legacyBehavior>
             <a className="flex flex-col justify-center items-center active:text-accent active:fill-accent">
               <Image
                 src="/images/icons/closet.svg"
@@ -30,7 +30,7 @@ export default function Navbar() {
               <p className="mt-auto text-sm">Listings</p>
             </a>
           </Link>
-          <Link href="/add" legacyBehavior>
+          <Link href="/add-item" legacyBehavior>
             <a className="flex flex-col justify-center items-center active:text-accent active:fill-accent">
               <Image
                 src="/images/icons/add.svg"

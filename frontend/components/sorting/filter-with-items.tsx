@@ -2,9 +2,15 @@
 
 import { useState } from "react";
 import { Filter, Grid3X3 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Button } from "@/components/imported-ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+} from "@/components/imported-ui/sheet";
 import ProductFilters from "./product-filters";
+// import Link from "next/link";
+import ProductCard from "./product-card";
 
 export default function FilterWithItems() {
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -51,13 +57,7 @@ export default function FilterWithItems() {
           <div className="flex-1">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {Array.from({ length: 9 }).map((_, i) => (
-                <div key={i} className="border rounded-lg overflow-hidden">
-                  <div className="aspect-square bg-muted"></div>
-                  <div className="p-4">
-                    <h3 className="font-medium">Item Name</h3>
-                    <p className="text-muted-foreground text-sm">Category</p>
-                  </div>
-                </div>
+                <ProductCard key={i} itemName="Item Name" category="category" href={`/product/${i}`} /> 
               ))}
             </div>
           </div>

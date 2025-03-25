@@ -1,28 +1,33 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Calendar, Cloud, CloudRain, Sun, Thermometer } from "lucide-react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
+import { useState, useEffect } from "react";
+import { Calendar, Cloud, CloudRain, Sun, Thermometer } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/imported-ui/card";
+import { Separator } from "@/components/imported-ui/separator";
 
 export default function DateWeatherWidget() {
-  const [currentDate, setCurrentDate] = useState<Date>(new Date())
+  const [currentDate, setCurrentDate] = useState<Date>(new Date());
 
   // Mock weather data - replace with actual API call
   const [weather] = useState({
     temperature: 72,
     condition: "sunny",
     location: "San Francisco",
-  })
+  });
 
   // Update date every minute
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentDate(new Date())
-    }, 60000)
+      setCurrentDate(new Date());
+    }, 60000);
 
-    return () => clearInterval(timer)
-  }, [])
+    return () => clearInterval(timer);
+  }, []);
 
   // Format date to display day of week, month, day
   const formattedDate = new Intl.DateTimeFormat("en-US", {
@@ -30,28 +35,28 @@ export default function DateWeatherWidget() {
     month: "long",
     day: "numeric",
     year: "numeric",
-  }).format(currentDate)
+  }).format(currentDate);
 
   // Format time to display hours and minutes
   const formattedTime = new Intl.DateTimeFormat("en-US", {
     hour: "numeric",
     minute: "numeric",
     hour12: true,
-  }).format(currentDate)
+  }).format(currentDate);
 
   // Function to render weather icon based on condition
   const renderWeatherIcon = () => {
     switch (weather.condition) {
       case "sunny":
-        return <Sun className="h-10 w-10 text-yellow-500" />
+        return <Sun className="h-10 w-10 text-yellow-500" />;
       case "cloudy":
-        return <Cloud className="h-10 w-10 text-gray-500" />
+        return <Cloud className="h-10 w-10 text-gray-500" />;
       case "rainy":
-        return <CloudRain className="h-10 w-10 text-blue-500" />
+        return <CloudRain className="h-10 w-10 text-blue-500" />;
       default:
-        return <Sun className="h-10 w-10 text-yellow-500" />
+        return <Sun className="h-10 w-10 text-yellow-500" />;
     }
-  }
+  };
 
   return (
     <Card className="w-full mx-auto md:mx-0  shadow-md">
@@ -76,18 +81,20 @@ export default function DateWeatherWidget() {
               <div>
                 <h3 className="font-medium">{weather.location}</h3>
                 <p className="text-muted-foreground">
-                  {weather.condition.charAt(0).toUpperCase() + weather.condition.slice(1)}
+                  {weather.condition.charAt(0).toUpperCase() +
+                    weather.condition.slice(1)}
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-1">
               <Thermometer className="h-5 w-5 text-red-500" />
-              <span className="text-2xl font-bold">{weather.temperature}°F</span>
+              <span className="text-2xl font-bold">
+                {weather.temperature}°F
+              </span>
             </div>
           </div>
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
-

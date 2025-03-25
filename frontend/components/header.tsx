@@ -3,7 +3,11 @@ export default function Header() {
     <header className="FitCheck _site-grid shadow-md">
       <div className="_grid-3">
         <div className="flex justify-between items-center py-4">
-          <h1 className="header">FitCheck</h1>
+          <h1 className="header">
+            <a href="/" className="text-inherit no-underline">
+              FitCheck
+            </a>
+          </h1>
           <div>
             <svg
               xmlns="http://www.w3.org/2000/svg"

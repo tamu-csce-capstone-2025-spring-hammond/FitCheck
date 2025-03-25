@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { ChevronDown, ChevronUp, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { Slider } from "@/components/ui/slider";
+import { Button } from "@/components/imported-ui/button";
+import { Checkbox } from "@/components/imported-ui/checkbox";
+import { Label } from "@/components/imported-ui/label";
+import { Badge } from "@/components/imported-ui/badge";
+import { Slider } from "@/components/imported-ui/slider";
 
 export default function ProductFilters() {
   // State for tracking which filters are open
@@ -107,7 +107,7 @@ export default function ProductFilters() {
       {activeFilterCount > 0 && (
         <div className="mb-6">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium">Active Filters:</h3>
+            <h3 className="text-md font-medium">Active Filters:</h3>
             <Button
               variant="ghost"
               size="sm"
@@ -175,7 +175,7 @@ export default function ProductFilters() {
                     />
                     <Label
                       htmlFor={`category-${category}`}
-                      className="text-sm font-normal cursor-pointer"
+                      className="text-md font-normal cursor-pointer"
                     >
                       {category}
                     </Label>
@@ -211,7 +211,7 @@ export default function ProductFilters() {
                     />
                     <Label
                       htmlFor={`brand-${brand}`}
-                      className="text-sm font-normal cursor-pointer"
+                      className="text-md font-normal cursor-pointer"
                     >
                       {brand}
                     </Label>
@@ -247,7 +247,7 @@ export default function ProductFilters() {
                     />
                     <Label
                       htmlFor={`size-${size}`}
-                      className="text-sm font-normal cursor-pointer"
+                      className="text-md font-normal cursor-pointer"
                     >
                       {size}
                     </Label>
@@ -284,7 +284,7 @@ export default function ProductFilters() {
                     <div className="flex items-center space-x-2">
                       <div
                         className="w-4 h-4 rounded-full border"
-                        style={{ blackColor: color.toLowerCase() }}
+                        style={{ backgroundColor: color.toLowerCase() }}
                       ></div>
                       <Label
                         htmlFor={`color-${color}`}
@@ -300,7 +300,7 @@ export default function ProductFilters() {
           )}
         </div>
 
-        {/* Price Filter */}
+        Price Filter
         <div className="border rounded-lg overflow-hidden">
           <button
             onClick={() => toggleFilter("price")}
@@ -327,12 +327,12 @@ export default function ProductFilters() {
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="border rounded-md px-3 py-1">
-                    <span className="text-sm">$</span>
-                    <span className="text-sm">{priceRange[0]}</span>
+                    <span className="text-md">$</span>
+                    <span className="text-md">{priceRange[0]}</span>
                   </div>
                   <div className="border rounded-md px-3 py-1">
-                    <span className="text-sm">$</span>
-                    <span className="text-sm">{priceRange[1]}</span>
+                    <span className="text-md">$</span>
+                    <span className="text-md">{priceRange[1]}</span>
                   </div>
                 </div>
               </div>
@@ -365,7 +365,7 @@ export default function ProductFilters() {
                     />
                     <Label
                       htmlFor={`tag-${tag}`}
-                      className="text-sm font-normal cursor-pointer"
+                      className="text-md font-normal cursor-pointer"
                     >
                       {tag}
                     </Label>

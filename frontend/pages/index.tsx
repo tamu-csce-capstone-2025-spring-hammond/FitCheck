@@ -2,8 +2,8 @@
 import Header from "../components/header";
 import Footer from "../components/footer";
 import Navbar from "../components/navbar";
-import DarkButton from "../components/index-components/dark-button";
-import FilterWithItems from "@/components/index-components/filter-with-items";
+import DarkButton from "../components/tags-and-buttons/dark-button";
+import FilterWithItems from "@/components/sorting/filter-with-items";
 import DateWeatherWidget from "../components/index-components/date-weather-widget";
 
 export default function Home() {
@@ -25,9 +25,11 @@ export default function Home() {
               <DateWeatherWidget />
             </div>
           </div>
-          
+
           <FilterWithItems></FilterWithItems>
         </div>
+
+        
         <Navbar></Navbar>
       </main>
 
