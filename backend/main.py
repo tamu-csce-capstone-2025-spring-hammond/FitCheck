@@ -161,8 +161,8 @@ def upload_image(file: UploadFile = File(...)):
     )
 
 
-    upload_result = add_image_obj(file.file, bucket_name, file_name)
     file_name = f"{uuid.uuid4()}_{file.filename}"
+    upload_result = add_image_obj(file.file, bucket_name, file_name)
     s3_url = f"https://{bucket_name}.s3.amazonaws.com/{file_name}"
 
     try:
