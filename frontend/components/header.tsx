@@ -1,12 +1,14 @@
+import Link from "next/link";
+
 export default function Header() {
   return (
     <header className="FitCheck _site-grid shadow-md">
       <div className="_grid-3">
         <div className="flex justify-between items-center py-4">
           <h1 className="header">
-            <a href="/" className="text-inherit no-underline">
+            <Link href="/" className="text-inherit no-underline">
               FitCheck
-            </a>
+            </Link>
           </h1>
           <div>
             <svg
