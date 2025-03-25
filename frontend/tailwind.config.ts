@@ -10,7 +10,19 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        black: "var(--black)",
+        // black: "var(--black)",
+        // white: "var(--white)",
+        // body: "var(--body)",
+        // "heart-red": "var(--heart-red)",
+        // accent: {
+        //   DEFAULT: "var(--accent)",
+        //   foreground: "var(--accent-foreground)",
+        // },
+        // "accent-2": "var(--accent-2)",
+        // "accent-3": "var(--accent-3)",
+        // "body-light": "var(--body-light)",
+
+        black: "hsl(0,0%,13.7%)",
         white: "var(--white)",
         body: "var(--body)",
         "heart-red": "var(--heart-red)",
@@ -21,6 +33,7 @@ const config: Config = {
         "accent-2": "var(--accent-2)",
         "accent-3": "var(--accent-3)",
         "body-light": "var(--body-light)",
+
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
