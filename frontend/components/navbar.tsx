@@ -7,7 +7,7 @@ export default function Navbar({ onAddClick }: { onAddClick?: () => void }) {
       <div className="bg-black md:rounded-xl shadow-md">
         <div className="px-16 py-2 flex justify-between align-middle py-6">
           <Link href="/" legacyBehavior>
-            <a className="flex flex-col justify-center items-center active:text-accent active:fill-accent">
+            <span className="flex flex-col justify-center items-center active:text-accent active:fill-accent">
               <Image
                 src="/images/icons/closet.svg"
                 alt="Closet"
@@ -16,10 +16,10 @@ export default function Navbar({ onAddClick }: { onAddClick?: () => void }) {
                 className="h-12 w-auto"
               />
               <p className="mt-auto text-sm">Closet</p>
-            </a>
+            </span>
           </Link>
           <Link href="/listings" legacyBehavior>
-            <a className="flex flex-col justify-center items-center active:text-accent active:fill-accent">
+            <span className="flex flex-col justify-center items-center active:text-accent active:fill-accent">
               <Image
                 src="/images/icons/listings.svg"
                 alt="Listings"
@@ -28,10 +28,10 @@ export default function Navbar({ onAddClick }: { onAddClick?: () => void }) {
                 className="h-11 w-auto mb-auto"
               />
               <p className="mt-auto text-sm">Listings</p>
-            </a>
+            </span>
           </Link>
           <button onClick={onAddClick}>
-            <a className="flex flex-col justify-center items-center active:text-accent active:fill-accent">
+            <span className="flex flex-col justify-center items-center active:text-accent active:fill-accent">
               <Image
                 src="/images/icons/add.svg"
                 alt="Add"
@@ -39,10 +39,10 @@ export default function Navbar({ onAddClick }: { onAddClick?: () => void }) {
                 height={64}
                 className="h-16 w-auto"
               />
-            </a>
+            </span>
           </button>
           <Link href="/try-on" legacyBehavior>
-            <a className="flex flex-col justify-center items-center active:text-accent active:fill-accent">
+            <span className="flex flex-col justify-center items-center active:text-accent active:fill-accent">
               <Image
                 src="/images/icons/try-on.svg"
                 alt="Try On"
@@ -51,10 +51,10 @@ export default function Navbar({ onAddClick }: { onAddClick?: () => void }) {
                 className="h-12 w-auto"
               />
               <p className="mt-auto text-sm">Try On</p>
-            </a>
+            </span>
           </Link>
           <Link href="/calendar" legacyBehavior>
-            <a className="flex flex-col justify-center items-center active:text-accent active:fill-accent">
+            <span className="flex flex-col justify-center items-center active:text-accent active:fill-accent">
               <Image
                 src="/images/icons/calendar.svg"
                 alt="Calendar"
@@ -63,7 +63,7 @@ export default function Navbar({ onAddClick }: { onAddClick?: () => void }) {
                 className="h-12 w-auto"
               />
               <p className="mt-auto text-sm">Calendar</p>
-            </a>
+            </span>
           </Link>
         </div>
       </div>

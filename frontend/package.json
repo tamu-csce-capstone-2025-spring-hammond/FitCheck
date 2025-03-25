@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "engines": {
-    "node": ">=22.x"
+    "node": ">=23.x"
   },
   "dependencies": {
     "@radix-ui/react-checkbox": "^1.1.4",
