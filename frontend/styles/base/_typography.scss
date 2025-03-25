@@ -10,14 +10,14 @@ h6 {
 body {
   color: var(--body);
   font-family: "Poppins", sans-serif;
-  @include font(2.0, 1.4, 3rem, 2.5rem);
+  @include font(2, 1.4, 3rem, 2.5rem);
   font-weight: 400;
 }
 p.italic {
   font-style: italic;
 }
 p.title {
-  @include font(2.0, 1.4, 2rem, 1.5rem);
+  @include font(2, 1.4, 2rem, 1.5rem);
   font-weight: 800;
 }
 p.subtext {
@@ -37,7 +37,6 @@ h2.bold {
   font-weight: 800;
 }
 h1.header {
-  color: var(--accent);
   font-family: "Platypi", serif;
   @include font(3, 3);
   font-weight: 800;

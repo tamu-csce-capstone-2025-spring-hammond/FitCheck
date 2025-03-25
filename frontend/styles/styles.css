@@ -468,7 +468,6 @@ h2.bold {
 }
 
 h1.header {
-  color: var(--accent);
   font-family: "Platypi", serif;
   font-size: 3rem;
   font-weight: 800;

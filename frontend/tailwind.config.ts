@@ -23,16 +23,16 @@ const config: Config = {
         // "body-light": "var(--body-light)",
 
         black: "hsl(0,0%,13.7%)",
-        white: "var(--white)",
-        body: "var(--body)",
-        "heart-red": "var(--heart-red)",
+        white: "hsl(0,0%,100%)",
+        body: "hsl(0,0%,13.7%)",
+        "heart-red": "hsl(0, 70.40%, 45.10%)",
         accent: {
-          DEFAULT: "var(--accent)",
-          foreground: "var(--accent-foreground)",
+          DEFAULT: "hsl(260.3, 80%, 80.4%)",
+          foreground: "hsl(260.3, 80%, 80.4%)",
         },
-        "accent-2": "var(--accent-2)",
-        "accent-3": "var(--accent-3)",
-        "body-light": "var(--body-light)",
+        "accent-2": "hsl(277.1,14.3%,71.2%)",
+        "accent-3": "hsl(258,8.1%,75.7%)",
+        "body-light": "hsl(0,0%,100%)",
 
         card: {
           DEFAULT: "hsl(var(--card))",

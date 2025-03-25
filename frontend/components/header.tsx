@@ -5,7 +5,7 @@ export default function Header() {
     <header className="FitCheck _site-grid shadow-md">
       <div className="_grid-3">
         <div className="flex justify-between items-center py-4">
-          <h1 className="header">
+          <h1 className="header text-accent">
             <Link href="/" className="text-inherit no-underline">
               FitCheck
             </Link>
