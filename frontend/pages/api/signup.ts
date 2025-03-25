@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
 // Pass-through to the backend, but set a cookie if the login succeeds
-export default async function loginRoute(req: NextApiRequest, res: NextApiResponse)
+export default async function signupRoute(req: NextApiRequest, res: NextApiResponse)
 {
     if (!process.env.BACKEND_URL)
     {
@@ -13,7 +13,7 @@ export default async function loginRoute(req: NextApiRequest, res: NextApiRespon
     }
 
     // Get the backend URL
-    const url = `${process.env.BACKEND_URL}login`;
+    const url = `${process.env.BACKEND_URL}signup`;
 
     // Pass the request
     const response = await fetch(url, {
@@ -25,11 +25,11 @@ export default async function loginRoute(req: NextApiRequest, res: NextApiRespon
     });
     if (!response.ok)
     {
-        return res.status(response.status).json({ error: 'Login failed' });
+        return res.status(response.status).json({ error: 'Signup failed' });
     }
     const json = await response.json();
 
-    // If the login was successful, set a cookie
+    // If the signup was successful, set a cookie
     if (response.status === 200 && json.user)
     {
         res.setHeader('Set-Cookie', `login_token=${json.user.login_token}; Path=/; HttpOnly; SameSite=Strict; Secure; Max-Age=8640000`);

@@ -24,19 +24,36 @@ def Session():
 
 ### User functions ###
 
-def get_user_by_email(email: str):
+def remove_sensitive_user_data(user: models.User):
+    """Remove sensitive data from a user object."""
+    user.password_salt_and_hash = None
+    user.login_token = None
+    return user
+
+
+def get_user_by_email(email: str, include_sensitive_data: bool = False):
     """Get a user by email."""
-    return Session().query(models.User).filter(models.User.email == email).first()
+    user = Session().query(models.User).filter(models.User.email == email).first()
+    if user and not include_sensitive_data:
+        user = remove_sensitive_user_data(user)
+    return user
 
 
-def get_user_by_id(user_id: int):
+def get_user_by_id(user_id: int, include_sensitive_data: bool = False):
     """Get a user by ID."""
-    return Session().query(models.User).filter(models.User.id == user_id).first()
+    user = Session().query(models.User).filter(models.User.id == user_id).first()
+    if user and not include_sensitive_data:
+        user = remove_sensitive_user_data(user)
+    return user
+    
 
 
-def get_user_by_login_token(login_token: str):
+def get_user_by_login_token(login_token: str, include_sensitive_data: bool = False):
     """Get a user by login token."""
-    return Session().query(models.User).filter(models.User.login_token == login_token).first()
+    user = Session().query(models.User).filter(models.User.login_token == login_token).first()
+    if user and not include_sensitive_data:
+        user = remove_sensitive_user_data(user)
+    return user
 
 
 def create_user(name: str, email: str, password: str):
@@ -46,5 +63,23 @@ def create_user(name: str, email: str, password: str):
     with Session() as session:
         session.add(user)
         session.commit()
+        session.refresh(user)  # So the user variable is populated
     return user
 
+def add_clothing_item(user_id: int, name: str, size: str, color: str, style: str, brand: str, category: str):
+    from models import ClothingItem
+
+    with Session() as session:
+        item = ClothingItem(
+            user_id=user_id,
+            name=name,
+            size=size,
+            color=color,
+            style=style,
+            brand=brand,
+            category=category,
+        )
+        session.add(item)
+        session.commit()
+        session.refresh(item)
+        return item

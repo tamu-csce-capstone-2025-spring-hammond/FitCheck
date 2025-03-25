@@ -1,12 +1,16 @@
 // import Image from "next/image";
+import { useState } from "react";
 import Header from "../components/header";
 import Footer from "../components/footer";
 import Navbar from "../components/navbar";
 import DarkButton from "../components/tags-and-buttons/dark-button";
 import FilterWithItems from "@/components/sorting/filter-with-items";
 import DateWeatherWidget from "../components/index-components/date-weather-widget";
+import CameraModal from "@/components/cameramodal";
 
 export default function Home() {
+  const [showCamera, setShowCamera] = useState(false);
+
   return (
     <div className="FitCheck">
       <Header></Header>
@@ -28,12 +32,11 @@ export default function Home() {
 
           <FilterWithItems></FilterWithItems>
         </div>
-
-        
-        <Navbar></Navbar>
+        <Navbar onAddClick={() => setShowCamera(true)} />
       </main>
 
       <Footer></Footer>
+      <CameraModal isVisible={showCamera} onClose={() => setShowCamera(false)} />
     </div>
   );
 }

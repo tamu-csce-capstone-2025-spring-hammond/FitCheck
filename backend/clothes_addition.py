@@ -3,8 +3,6 @@ from dotenv import load_dotenv
 import chromadb
 import json
 
-
-
 def parse_image(url : str):
     '''
     This function takes in an image url and returns a list of json objects for each clothing item in the image.
@@ -102,4 +100,7 @@ def query_chroma(chroma_db_name : str, query : str, num_items : int):
 
     return results
 
+if __name__ == '__main__':
+    for i in parse_image('https://media.gq.com/photos/5ab146e7a3a5ca214d8baf78/master/w_1600%2Cc_limit/Not-Normal-High-Fashion-Gets-Serious-About-Regular-Clothes-12.jpg'):
+        print(i)
 

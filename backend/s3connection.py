@@ -37,6 +37,14 @@ def add_image(local_file_path, s3_file_key=None):
     except Exception as e:
         return False, f"❌ Upload failed: {str(e)}"
 
+def add_image_obj(file, bucket_name, s3_file_key):
+    try:
+        s3_client.upload_fileobj(file, bucket_name, s3_file_key)
+        return True, f"✅ File successfully uploaded to 's3://{bucket_name}/{s3_file_key}'"
+    except Exception as e:
+        return False, f"❌ Upload failed: {str(e)}"
+
+    
 def get_image(s3_file_key, local_file_path=None):
     """
     Download an image from S3 bucket

@@ -1,7 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
-// Pass-through to the backend, but set a cookie if the login succeeds
-export default async function loginRoute(req: NextApiRequest, res: NextApiResponse)
+export default async function addImage(req: NextApiRequest, res: NextApiResponse)
 {
     if (!process.env.BACKEND_URL)
     {
@@ -12,7 +11,6 @@ export default async function loginRoute(req: NextApiRequest, res: NextApiRespon
         return res.status(405).json({ error: 'Method Not Allowed' });
     }
 
-    // Get the backend URL
     const url = `${process.env.BACKEND_URL}login`;
 
     // Pass the request
