@@ -12,18 +12,11 @@ export default function Navbar({ onAddClick }: { onAddClick?: () => void }) {
       <div className="bg-black md:rounded-xl shadow-md">
         <div className="px-16 py-2 flex justify-between align-middle py-6">
           <Link href="/" legacyBehavior>
-            <a
+            <span
               className={`flex flex-col justify-center items-center ${
                 isActive("/") ? "text-accent" : ""
               }`}
             >
-              {/* <Image
-                src="/images/icons/closet.svg"
-                alt="Closet"
-                width={48}
-                height={48}
-                className={`h-12 w-auto fill-current ${isActive("/") ? "fill-accent" : "fill-body-light"}`}
-              /> */}
               <svg
                 width={44}
                 height={48}
@@ -48,23 +41,14 @@ export default function Navbar({ onAddClick }: { onAddClick?: () => void }) {
                 </g>
               </svg>
               <p className="mt-auto text-sm">Closet</p>
-            </a>
+            </span>
           </Link>
           <Link href="/listings" legacyBehavior>
-            <a
+            <span
               className={`flex flex-col justify-center items-center ${
                 isActive("/listings") ? "text-accent" : ""
               }`}
             >
-              {/* <Image
-                src="/images/icons/listings.svg"
-                alt="Listings"
-                width={44}
-                height={44}
-                className={`h-11 w-auto mb-auto fill-current ${
-                  isActive("/listings") ? "color-accent" : "color-body-light"
-                }`}
-              /> */}
               <svg
                 width={44}
                 height={44}
@@ -86,10 +70,10 @@ export default function Navbar({ onAddClick }: { onAddClick?: () => void }) {
                 </g>
               </svg>
               <p className="mt-auto text-sm">Listings</p>
-            </a>
+            </span>
           </Link>
           <button onClick={onAddClick}>
-            <a className="flex flex-col justify-center items-center">
+            <span className="flex flex-col justify-center items-center">
               <Image
                 src="/images/icons/add.svg"
                 alt="Add"
@@ -97,23 +81,14 @@ export default function Navbar({ onAddClick }: { onAddClick?: () => void }) {
                 height={64}
                 className="h-16 w-auto"
               />
-            </a>
+            </span>
           </button>
-          <Link href="/try-on" legacyBehavior>
-            <a
+          <Link href="/add-item" legacyBehavior>
+            <span
               className={`flex flex-col justify-center items-center ${
                 isActive("/try-on") ? "text-accent" : ""
               }`}
             >
-              {/* <Image
-                src="/images/icons/try-on.svg"
-                alt="Try On"
-                width={48}
-                height={48}
-                className={`h-12 w-auto fill-current ${
-                  isActive("/try-on") ? "fill-accent" : "fill-body-light"
-                }`}
-              /> */}
               <svg
                 width={44}
                 height={44}
@@ -162,23 +137,14 @@ export default function Navbar({ onAddClick }: { onAddClick?: () => void }) {
                 </g>
               </svg>
               <p className="mt-auto text-sm">Try On</p>
-            </a>
+            </span>
           </Link>
           <Link href="/calendar" legacyBehavior>
-            <a
+            <span
               className={`flex flex-col justify-center items-center ${
                 isActive("/calendar") ? "text-accent" : ""
               }`}
             >
-              {/* <Image
-                src="/images/icons/calendar.svg"
-                alt="Calendar"
-                width={48}
-                height={48}
-                className={`h-12 w-auto fill-current ${
-                  isActive("/calendar") ? "fill-accent" : "fill-body-light"
-                }`}
-              /> */}
               <svg
                 width={44}
                 height={44}
@@ -204,7 +170,7 @@ export default function Navbar({ onAddClick }: { onAddClick?: () => void }) {
                 </g>
               </svg>
               <p className="mt-auto text-sm">OOTDs</p>
-            </a>
+            </span>
           </Link>
         </div>
       </div>
