@@ -8,6 +8,7 @@ body {
   margin: 0;
   padding: 0;
   position: relative;
+  color: var(--body);
 }
 html {
   font-size: 62.5%;
@@ -19,6 +20,12 @@ a:active {
 
 a:active img {
   fill: var(--accent);
+}
+button {
+  a,
+  p {
+    color: var(--body);
+  }
 }
 
 .FitCheck {
