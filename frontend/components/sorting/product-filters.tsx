@@ -76,6 +76,7 @@ export default function ProductFilters() {
     Object.values(selectedFilters).flat().length +
     (priceRange[0] > 0 || priceRange[1] < 1000 ? 1 : 0);
 
+    
   // Sample filter options (in a real app, these would come from your data)
   const filterOptions = {
     category: ["Clothing", "Shoes", "Accessories", "Sportswear", "Outerwear"],
