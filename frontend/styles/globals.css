@@ -3,11 +3,11 @@
 @tailwind utilities;
 @import url("https://fonts.googleapis.com/css2?family=Platypi:ital,wght@0,300..800;1,300..800&display=swap");
 
-@layer utilities {
+/* @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
-}
+} */
 
 @layer base {
   :root {
@@ -65,11 +65,11 @@
   } */
 }
 
-@layer base {
-  /* * {
+/* @layer base {
+  * {
     @apply border-border;
   }
   body {
     @apply bg-black text-white;
-  } */
-}
+  }
+} */
