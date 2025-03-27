@@ -21,6 +21,15 @@ def get_session():
     return Session(Engine())
 
 
+def get_db():
+    """Get a database session for use with FastAPI."""
+    db = get_session()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
 ### User functions ###
 
 def remove_sensitive_user_data(user: models.User):
