@@ -3,121 +3,92 @@
 Run this file directly to reset the database.
 """
 
-import backend.database as database
+from sqlmodel import SQLModel, Field, Relationship, create_engine
+from typing import Optional, List
+from datetime import datetime
 
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum
-from sqlalchemy.orm import declarative_base, relationship
-from sqlalchemy.sql import func
+class User(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    name: str
+    email: str = Field(unique=True)
+    password_salt_and_hash: str
+    login_token: str
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+    clothing_items: List["ClothingItem"] = Relationship(back_populates="user")
+    outfits: List["Outfit"] = Relationship(back_populates="user")
+    resale_listings: List["ResaleListing"] = Relationship(back_populates="user")
+
+class ClothingItem(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    name: str
+    size: Optional[str] = None
+    color: Optional[str] = None
+    style: Optional[str] = None
+    brand: Optional[str] = None
+    category: str  # Enum not natively supported in SQLModel, use string values
+    last_worn: Optional[datetime] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+    user_id: int = Field(foreign_key="user.id")
+    user: Optional[User] = Relationship(back_populates="clothing_items")
+    outfits: List["OutfitItem"] = Relationship(back_populates="clothing_item")
+    wear_history: List["WearHistory"] = Relationship(back_populates="clothing_item")
+    resale_listing: Optional["ResaleListing"] = Relationship(back_populates="clothing_item")
+
+class Outfit(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    user_id: int = Field(foreign_key="user.id")
+    name: str
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+    user: Optional[User] = Relationship(back_populates="outfits")
+    items: List["OutfitItem"] = Relationship(back_populates="outfit")
+
+class OutfitItem(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    outfit_id: int = Field(foreign_key="outfit.id")
+    clothing_item_id: int = Field(foreign_key="clothingitem.id")
+
+    outfit: Optional[Outfit] = Relationship(back_populates="items")
+    clothing_item: Optional[ClothingItem] = Relationship(back_populates="outfits")
+
+class ResaleListing(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    user_id: int = Field(foreign_key="user.id")
+    clothing_item_id: int = Field(foreign_key="clothingitem.id")
+    platform: str
+    price: int
+    url: str
+    status: str
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    sold_on: Optional[datetime] = None
+
+    user: Optional[User] = Relationship(back_populates="resale_listings")
+    clothing_item: Optional[ClothingItem] = Relationship(back_populates="resale_listing")
+
+class WearHistory(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    clothing_item_id: int = Field(foreign_key="clothingitem.id")
+    date: datetime
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+    clothing_item: Optional[ClothingItem] = Relationship(back_populates="wear_history")
 
 
-# Base class for ORM models
-Base = declarative_base()
-
-# Model definition (EXAMPLE)
-class User(Base):
-    """ The User who owns the wardrobe """
-    __tablename__ = "users"
-    
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String, nullable=False)
-    email = Column(String, unique=True, nullable=False)
-    
-    password_salt_and_hash = Column(String, nullable=False)  # Store unique salts followed by hashed passwords
-    login_token = Column(String, nullable=False)
-    created_at = Column(DateTime, default=func.now())
-
-    clothing_items = relationship("ClothingItem", back_populates="user", cascade="all, delete")
-    outfits = relationship("Outfit", back_populates="user", cascade="all, delete")
-    resale_listings = relationship("ResaleListing", back_populates="user", cascade="all, delete")
-
-    def __repr__(self):
-        return f"<User(id={self.id}, name={self.name}, email={self.email})>"
-
-class ClothingItem(Base):
-    """ The individual clothing items in the user's wardrobe """
-    __tablename__ = "clothing_items"
-
-    id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
-    size = Column(String, nullable=True)  # "M", "L",
-    color = Column(String, nullable=True)
-    style = Column(String, nullable=True)  # "Casual", "Formal"
-    brand = Column(String, nullable=True)
-    category = Column(Enum("Shirt", "Pants", "Shoes", "Outerwear", "Accessories", name="category_enum"), nullable=False)
-    last_worn = Column(DateTime, nullable=True)
-    created_at = Column(DateTime, default=func.now())
-
-    user = relationship("User", back_populates="clothing_items")
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    outfits = relationship("OutfitItem", back_populates="clothing_item", cascade="all, delete")
-    wear_history = relationship("WearHistory", back_populates="clothing_item", cascade="all, delete")
-    resale_listing = relationship("ResaleListing", back_populates="clothing_item", cascade="all, delete")
-
-class Outfit(Base):
-    """ Outfit as a single unit """
-    __tablename__ = "outfits"
-
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    name = Column(String, nullable=False)
-    created_at = Column(DateTime, default=func.now())
-
-    user = relationship("User", back_populates="outfits")
-    items = relationship("OutfitItem", back_populates="outfit", cascade="all, delete")
-
-class OutfitItem(Base):
-    """ Many-to-Many relationship between Outfit and ClothingItem """
-    __tablename__ = "outfit_items"
-
-    id = Column(Integer, primary_key=True)
-    outfit_id = Column(Integer, ForeignKey("outfits.id"), nullable=False)
-    clothing_item_id = Column(Integer, ForeignKey("clothing_items.id"), nullable=False)
-
-    outfit = relationship("Outfit", back_populates="items")
-    clothing_item = relationship("ClothingItem", back_populates="outfits")
-    
-class ResaleListing(Base):
-    """ Represents the history of all clothes sold by the user """
-    __tablename__ = "resale_listings"
-
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    clothing_item_id = Column(Integer, ForeignKey("clothing_items.id"), nullable=False)
-    platform = Column(String, nullable=False)  # e.g., "Depop", "eBay"
-    price = Column(Integer, nullable=False)
-    url = Column(String, nullable=False)
-    status = Column(Enum("Active", "Sold", "Removed", name="resale_status_enum"), nullable=False)
-    created_at = Column(DateTime, default=func.now())
-    sold_on = Column(DateTime, nullable=True)  # NULL if still listed
-
-    user = relationship("User", back_populates="resale_listings")
-    clothing_item = relationship("ClothingItem", back_populates="resale_listing")
-
-class WearHistory(Base):
-    """ History of all clothes worn by the user """
-    __tablename__ = "wear_history"
-
-    id = Column(Integer, primary_key=True)
-    clothing_item_id = Column(Integer, ForeignKey("clothing_items.id"), nullable=False)
-    date = Column(DateTime, nullable=False)
-    created_at = Column(DateTime, default=func.now())
-
-    clothing_item = relationship("ClothingItem", back_populates="wear_history")
-
-# Reset the database
+# Drop all tables and recreate them
 if __name__ == "__main__":
-    # Confirm reset
+    import dotenv
+    import os
+    
+    dotenv.load_dotenv()
+
     confirm = input("Are you sure you want to reset the database? (y/n): ")
     if confirm.lower() != "y":
         print("Database reset cancelled.")
         exit(0)
-    
-    # Get the database engine
-    engine = database.Engine()
 
-    # Delete everything
-    Base.metadata.drop_all(engine)
-
-    # Create the tables in the database
-    Base.metadata.create_all(engine)
+    engine = create_engine(os.environ.get("DATABASE_URL"), echo=True)
+    SQLModel.metadata.drop_all(engine)
+    SQLModel.metadata.create_all(engine)
 
