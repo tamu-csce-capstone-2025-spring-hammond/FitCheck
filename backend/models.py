@@ -3,10 +3,10 @@
 Run this file directly to reset the database.
 """
 
-import database
+import backend.database as database
 
-from sqlalchemy import create_engine, Column, Integer, String, DateTime, ForeignKey, Boolean, Enum, Text
-from sqlalchemy.orm import declarative_base, sessionmaker, relationship
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum
+from sqlalchemy.orm import declarative_base, relationship
 from sqlalchemy.sql import func
 
 

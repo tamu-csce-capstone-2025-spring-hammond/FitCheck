@@ -3,9 +3,9 @@
 from functools import cache
 from uuid import uuid4
 
-import environment
-import models
-from auth import derive_password
+import backend.environment as environment
+import backend.models as models
+from backend.auth import derive_password
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
