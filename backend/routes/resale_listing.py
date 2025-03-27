@@ -11,32 +11,28 @@ from backend.models import User, ClothingItem, Outfit, OutfitItem, ResaleListing
 
 # FastAPI router
 router = APIRouter()
+@router.get("/resale_listings/{listing_id}")
+def get_resale_listing(listing_id: int, db: Session = Depends(get_db)):
+    listing = db.get(ResaleListing, listing_id)
+    if not listing:
+        raise HTTPException(status_code=404, detail="Resale listing not found")
+    return listing
 
-@router.post("/resale-listing")
+@router.post("/resale_listings/")
 def create_resale_listing(listing: ResaleListing, db: Session = Depends(get_db)):
     db.add(listing)
     db.commit()
     db.refresh(listing)
     return listing
 
-@router.get("/resale-listing/{listing_id}")
-def get_resale_listing(listing_id: int, db: Session = Depends(get_db)):
-    listing = db.query(ResaleListing).filter(ResaleListing.id == listing_id).first()
+@router.put("/resale_listings/{listing_id}")
+def update_resale_listing(listing_id: int, listing_update: ResaleListing, db: Session = Depends(get_db)):
+    listing = db.get(ResaleListing, listing_id)
     if not listing:
         raise HTTPException(status_code=404, detail="Resale listing not found")
-    return listing
-
-@router.put("/resale-listing/{listing_id}")
-def update_resale_listing(listing_id: int, listing: ResaleListing, db: Session = Depends(get_db)):
-    db_listing = db.query(ResaleListing).filter(ResaleListing.id == listing_id).first()
-    if not db_listing:
-        raise HTTPException(status_code=404, detail="Resale listing not found")
-    
-    for key, value in listing.dict(exclude_unset=True).items():
-        setattr(db_listing, key, value)
-    
+    listing_data = listing_update.dict(exclude_unset=True)
+    for key, value in listing_data.items():
+        setattr(listing, key, value)
     db.commit()
-    db.refresh(db_listing)
-    return db_listing
-
-
+    db.refresh(listing)
+    return listing

@@ -13,29 +13,28 @@ from backend.models import User, ClothingItem, Outfit, OutfitItem, ResaleListing
 
 
 
-@router.post("/outfit")
+@router.get("/outfits/{outfit_id}")
+def get_outfit(outfit_id: int, db: Session = Depends(get_db)):
+    outfit = db.get(Outfit, outfit_id)
+    if not outfit:
+        raise HTTPException(status_code=404, detail="Outfit not found")
+    return outfit
+
+@router.post("/outfits/")
 def create_outfit(outfit: Outfit, db: Session = Depends(get_db)):
     db.add(outfit)
     db.commit()
     db.refresh(outfit)
     return outfit
 
-@router.get("/outfit/{outfit_id}")
-def get_outfit(outfit_id: int, db: Session = Depends(get_db)):
-    outfit = db.query(Outfit).filter(Outfit.id == outfit_id).first()
+@router.put("/outfits/{outfit_id}")
+def update_outfit(outfit_id: int, outfit_update: Outfit, db: Session = Depends(get_db)):
+    outfit = db.get(Outfit, outfit_id)
     if not outfit:
         raise HTTPException(status_code=404, detail="Outfit not found")
-    return outfit
-
-@router.put("/outfit/{outfit_id}")
-def update_outfit(outfit_id: int, outfit: Outfit, db: Session = Depends(get_db)):
-    db_outfit = db.query(Outfit).filter(Outfit.id == outfit_id).first()
-    if not db_outfit:
-        raise HTTPException(status_code=404, detail="Outfit not found")
-    
-    for key, value in outfit.dict(exclude_unset=True).items():
-        setattr(db_outfit, key, value)
-    
+    outfit_data = outfit_update.dict(exclude_unset=True)
+    for key, value in outfit_data.items():
+        setattr(outfit, key, value)
     db.commit()
-    db.refresh(db_outfit)
-    return db_outfit
+    db.refresh(outfit)
+    return outfit

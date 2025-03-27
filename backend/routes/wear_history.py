@@ -11,30 +11,16 @@ from backend.models import User, ClothingItem, Outfit, OutfitItem, ResaleListing
 router = APIRouter()
 
 
-@router.post("/wear-history")
-def create_wear_history(wear: WearHistory, db: Session = Depends(get_db)):
-    db.add(wear)
-    db.commit()
-    db.refresh(wear)
-    return wear
-
-@router.get("/wear-history/{wear_id}")
-def get_wear_history(wear_id: int, db: Session = Depends(get_db)):
-    wear = db.query(WearHistory).filter(WearHistory.id == wear_id).first()
-    if not wear:
+@router.get("/wear_history/{history_id}")
+def get_wear_history(history_id: int, db: Session = Depends(get_db)):
+    history = db.get(WearHistory, history_id)
+    if not history:
         raise HTTPException(status_code=404, detail="Wear history not found")
-    return wear
+    return history
 
-@router.put("/wear-history/{wear_id}")
-def update_wear_history(wear_id: int, wear: WearHistory, db: Session = Depends(get_db)):
-    db_wear = db.query(WearHistory).filter(WearHistory.id == wear_id).first()
-    if not db_wear:
-        raise HTTPException(status_code=404, detail="Wear history not found")
-    
-    for key, value in wear.dict(exclude_unset=True).items():
-        setattr(db_wear, key, value)
-    
+@router.post("/wear_history/")
+def create_wear_history(history: WearHistory, db: Session = Depends(get_db)):
+    db.add(history)
     db.commit()
-    db.refresh(db_wear)
-    return db_wear
-
+    db.refresh(history)
+    return history

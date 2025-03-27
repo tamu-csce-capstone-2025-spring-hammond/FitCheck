@@ -1,4 +1,4 @@
-"""SQLAlchemy ORM models for the database.
+"""SQLmodel ORM models for the database.
 
 Run this file directly to reset the database.
 """
