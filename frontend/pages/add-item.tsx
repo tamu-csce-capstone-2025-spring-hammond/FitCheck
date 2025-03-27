@@ -4,10 +4,11 @@ import Header from "../components/header";
 import Footer from "../components/footer";
 import Navbar from "../components/navbar";
 import DarkButton from "@/components/tags-and-buttons/dark-button";
+import CameraModal from "@/components/cameramodal";
 export default function AddItem() {
   const [image, setImage] = useState<string | null>(null);
   const [selfie, setSelfie] = useState<string | null>(null);
-
+  const [showCamera, setShowCamera] = useState(false);
   // Handle file selection
   const handleImageChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -98,10 +99,11 @@ export default function AddItem() {
           </div>
         </div>
 
-        <Navbar />
+        <Navbar onAddClick={() => {setShowCamera(true)}}/>
       </main>
 
       <Footer />
+      <CameraModal isVisible={showCamera} onClose={() => setShowCamera(false)} />
     </div>
   );
 }

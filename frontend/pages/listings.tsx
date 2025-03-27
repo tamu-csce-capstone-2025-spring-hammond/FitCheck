@@ -1,9 +1,13 @@
+import { useState } from "react";
 import Header from "../components/header";
 import Footer from "../components/footer";
 import Navbar from "../components/navbar";
 import FilterWithItems from "@/components/sorting/filter-with-items";
+import CameraModal from "@/components/cameramodal";
 
 export default function Listings() {
+  const [showCamera, setShowCamera] = useState(false);
+
   return (
     <div className="FitCheck">
       <Header></Header>
@@ -16,10 +20,11 @@ export default function Listings() {
           <FilterWithItems></FilterWithItems>
         </div>
 
-        <Navbar></Navbar>
+        <Navbar onAddClick={() => {setShowCamera(true)}}></Navbar>
       </main>
 
       <Footer></Footer>
+      <CameraModal isVisible={showCamera} onClose={() => setShowCamera(false)} />
     </div>
   );
 }
