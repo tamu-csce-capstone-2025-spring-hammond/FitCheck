@@ -546,9 +546,6 @@ a:active img {
   fill: var(--accent);
 }
 
-.FitCheck {
-  background-color: var(--white) !important;
-}
 .FitCheck .__site-content {
   position: relative;
   display: flex;
