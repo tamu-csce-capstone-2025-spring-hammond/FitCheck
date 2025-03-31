@@ -1,12 +1,5 @@
 """FitCheck Backend Main - Called on startup"""
 
-# Add the parent directory to the path
-# This is necessary to import from "backend"
-import sys
-import os
-sys.path.append(os.path.abspath(os.path.dirname(__file__)))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
 
 import backend.environment as environment
 
