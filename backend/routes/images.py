@@ -4,24 +4,27 @@ import boto3
 from fastapi import APIRouter, File, HTTPException, UploadFile
 from pydantic import BaseModel
 
-import backend.environment as environment
-from backend.clothes_addition import parse_image
-import backend.database as database
+import environment
+from clothes_addition import parse_image
+import database
 
 import uuid
 
-from backend.s3connection import add_image_obj
+from s3connection import add_image_obj
 import chromadb
 
 # FastAPI router
 router = APIRouter()
 
 
-class TestRequest(BaseModel):
+class StandardRequest(BaseModel):
     message: str
 
+class ParsedRequest(BaseModel):
+    parsed: list
+
 @router.post("/parse_image")
-def post_parse_image(request: TestRequest):
+def post_parse_image(request: StandardRequest):
     print(request)
     return parse_image(request.message)
 
@@ -80,7 +83,7 @@ def upload_image(file: UploadFile = File(...)):
     }
 
 @router.post('/chroma-upload')
-def chroma_upload(request: TestRequest):
+def chroma_upload(request: StandardRequest):
     client = chromadb.HttpClient(host=environment.get('CHROMA_DB_ADDRESS'), port=8000)
     collection = client.get_or_create_collection(name="test")
 
@@ -94,7 +97,7 @@ def chroma_upload(request: TestRequest):
     }
 
 @router.post('/chroma-query')
-def chroma_query(request: TestRequest):
+def chroma_query(request: StandardRequest):
     client = chromadb.HttpClient(host=environment.get('CHROMA_DB_ADDRESS'), port=8000)
     collection = client.get_or_create_collection(name="test")
     results = collection.query(
