@@ -83,7 +83,7 @@ export default function Navbar({ onAddClick }: { onAddClick?: () => void }) {
               />
             </span>
           </button>
-          <Link href="/add-item" legacyBehavior>
+          <Link href="/try-on" legacyBehavior>
             <span
               className={`flex flex-col justify-center items-center ${
                 isActive("/try-on") ? "text-accent" : ""

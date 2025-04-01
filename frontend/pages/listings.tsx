@@ -14,9 +14,9 @@ export default function Listings() {
 
       <main className="_site-grid min-h-[90vh] relative mb-64">
         <div className="my-24 _grid-3">
-          <h1 className="bold mb-12 bg-body p-12 text-body-light">
+            <h1 className="bold mb-12 bg-body p-12 text-body-light rounded-t-[10px]">
             My Listings
-          </h1>
+            </h1>
           <FilterWithItems></FilterWithItems>
         </div>
 
