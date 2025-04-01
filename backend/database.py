@@ -4,9 +4,9 @@ from functools import cache
 from uuid import uuid4
 from sqlmodel import Session, select
 
-import backend.environment as environment
-import backend.models as models
-from backend.auth import derive_password
+import environment
+import models
+from auth import derive_password
 from sqlmodel import create_engine
 
 
@@ -78,7 +78,7 @@ def create_user(name: str, email: str, password: str):
 
 
 def add_clothing_item(user_id: int, name: str, size: str, color: str, style: str, brand: str, category: str):
-    from backend.models import ClothingItem
+    from models import ClothingItem
 
     with get_session() as session:
         item = ClothingItem(

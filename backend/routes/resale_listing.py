@@ -4,8 +4,8 @@ from fastapi import APIRouter, Header, HTTPException, Depends
 
 
 from sqlalchemy.orm import Session
-from backend.database import get_db
-from backend.models import User, ClothingItem, Outfit, OutfitItem, ResaleListing, WearHistory
+from database import get_db
+from models import User, ClothingItem, Outfit, OutfitItem, ResaleListing, WearHistory
 
 
 

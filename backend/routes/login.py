@@ -3,9 +3,9 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
 
-from backend.route_utils import validate_login_strings
-from backend.auth import verify_password
-import backend.database as database
+from route_utils import validate_login_strings
+from auth import verify_password
+import database as database
 
 # FastAPI router
 router = APIRouter()

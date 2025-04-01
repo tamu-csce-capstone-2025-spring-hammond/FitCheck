@@ -4,15 +4,15 @@ from fastapi import APIRouter, Header, HTTPException, Depends
 from sqlmodel import select
 
 
-from backend import database
-from backend.models import ClothingItem
+import database
+from models import ClothingItem
 
 # FastAPI router
 router = APIRouter()
 
 from sqlalchemy.orm import Session, selectinload
-from backend.database import get_db
-from backend.models import User, ClothingItem, Outfit, OutfitItem, ResaleListing, WearHistory
+from database import get_db
+from models import User, ClothingItem, Outfit, OutfitItem, ResaleListing, WearHistory
 
 
 @router.get("/clothing_items/{item_id}")

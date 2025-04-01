@@ -4,13 +4,13 @@ import boto3
 from fastapi import APIRouter, File, HTTPException, UploadFile
 from pydantic import BaseModel
 
-import backend.environment as environment
-from backend.clothes_addition import parse_image
-import backend.database as database
+import environment
+from clothes_addition import parse_image
+import database
 
 import uuid
 
-from backend.s3connection import add_image_obj
+from s3connection import add_image_obj
 import chromadb
 
 # FastAPI router

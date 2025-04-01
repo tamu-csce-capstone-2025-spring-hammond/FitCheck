@@ -1,7 +1,7 @@
 
 import boto3
 import os
-import backend.environment as environment
+import environment
 
 # Get AWS credentials from environment
 aws_access_key = environment.get("AWS_ACCESS_KEY_ID")

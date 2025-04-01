@@ -3,7 +3,7 @@
 from fastapi import APIRouter, Header, HTTPException, Depends
 from sqlmodel import select
 
-from backend.route_utils import enforce_logged_in
+from route_utils import enforce_logged_in
 
 # FastAPI router
 router = APIRouter()
@@ -14,8 +14,8 @@ def get_me(authorization: str = Header(...)):
     return {"user" : current_user}
 
 from sqlalchemy.orm import Session, selectinload
-from backend.database import get_db
-from backend.models import User, ClothingItem, Outfit, OutfitItem, ResaleListing, WearHistory
+from database import get_db
+from models import User, ClothingItem, Outfit, OutfitItem, ResaleListing, WearHistory
 
 @router.get("/users/{user_id}")
 def get_user(user_id: int, db: Session = Depends(get_db)):
