@@ -1,10 +1,9 @@
 """Routes for clothing item management."""
 
-from fastapi import APIRouter, Header, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends
 from sqlmodel import select
 
 
-import database
 from models import ClothingItem, ClothingItemBase, ClothingItemPublicFull
 
 # FastAPI router
@@ -12,7 +11,7 @@ router = APIRouter()
 
 from sqlalchemy.orm import Session, selectinload
 from database import get_db
-from models import User, ClothingItem, Outfit, OutfitItem, ResaleListing, WearHistory
+from models import ClothingItem
 
 
 @router.get("/clothing_items/{item_id}", response_model=ClothingItemPublicFull)

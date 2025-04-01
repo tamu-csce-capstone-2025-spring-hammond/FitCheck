@@ -1,6 +1,6 @@
 """Routes for wear history management."""
 
-from fastapi import APIRouter, Header, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends
 
 
 from sqlmodel import select

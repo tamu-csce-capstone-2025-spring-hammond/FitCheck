@@ -1,12 +1,11 @@
 """Routes for outfit management."""
 
-from fastapi import APIRouter, Header, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends
 
 
 from sqlalchemy.orm import Session, selectinload
 from sqlmodel import select
 from database import get_db
-from models import User, ClothingItem, Outfit, OutfitItem, ResaleListing, WearHistory
 from models import ResaleListing, ResaleListingBase, ResaleListingPublic, ResaleListingPublicFull, ResaleListingUpdate
 
 
