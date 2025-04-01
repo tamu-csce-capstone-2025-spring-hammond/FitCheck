@@ -7,9 +7,31 @@ from sqlmodel import SQLModel, Field, Relationship, create_engine
 from typing import Optional, List
 from datetime import datetime
 
-class User(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
+##### User #####
+
+class UserBase(SQLModel):
+    """Base model for User, used for creating and updating users."""
     name: str
+
+class UserPublic(UserBase):
+    """Public model for User, excluding sensitive information."""
+    id: Optional[int] = None
+    email: str
+    created_at: datetime
+
+class UserPublicFull(UserPublic):
+    clothing_items: List["ClothingItem"] = []
+    outfits: List["Outfit"] = []
+    resale_listings: List["ResaleListing"] = []
+
+
+class UserUpdate(UserBase):
+    """Model for updating an existing user."""
+    name: Optional[str] = None
+
+class User(UserBase, table=True):
+    """User model for the database, including relationships to other tables."""
+    id: Optional[int] = Field(default=None, primary_key=True)
     email: str = Field(unique=True)
     password_salt_and_hash: str
     login_token: str
@@ -19,24 +41,71 @@ class User(SQLModel, table=True):
     outfits: List["Outfit"] = Relationship(back_populates="user")
     resale_listings: List["ResaleListing"] = Relationship(back_populates="user")
 
-class ClothingItem(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
+
+##### ClothingItem #####
+
+class ClothingItemBase(SQLModel):
     name: str
     size: Optional[str] = None
     color: Optional[str] = None
     style: Optional[str] = None
     brand: Optional[str] = None
-    category: str  # Enum not natively supported in SQLModel, use string values
+    category: str
     last_worn: Optional[datetime] = None
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    user_id: int
 
+class ClothingItemPublic(ClothingItemBase):
+    id: Optional[int] = None
+    created_at: datetime
+
+class ClothingItemPublicFull(ClothingItemPublic):
+    outfits: List["OutfitItem"] = []
+    wear_history: List["WearHistory"] = []
+    resale_listing: Optional["ResaleListing"] = None
+
+class ClothingItemUpdate(ClothingItemBase):
+    """Model for updating an existing clothing item."""
+    name: Optional[str] = None
+    size: Optional[str] = None
+    color: Optional[str] = None
+    style: Optional[str] = None
+    brand: Optional[str] = None
+    category: Optional[str] = None
+    last_worn: Optional[datetime] = None
+    user_id: Optional[int] = None
+
+class ClothingItem(ClothingItemBase, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    
+    created_at: datetime = Field(default_factory=datetime.utcnow)
     user_id: int = Field(foreign_key="user.id")
     user: Optional[User] = Relationship(back_populates="clothing_items")
     outfits: List["OutfitItem"] = Relationship(back_populates="clothing_item")
     wear_history: List["WearHistory"] = Relationship(back_populates="clothing_item")
     resale_listing: Optional["ResaleListing"] = Relationship(back_populates="clothing_item")
 
-class Outfit(SQLModel, table=True):
+##### Outfit and OutfitItem #####
+
+class OutfitBase(SQLModel):
+    """Base model for Outfit, used for creating and updating outfits."""
+    name: str
+    user_id: int
+
+class OutfitPublic(OutfitBase):
+    """Public model for Outfit, including ID and created timestamp."""
+    id: Optional[int] = None
+    created_at: datetime
+
+class OutfitPublicFull(OutfitPublic):
+    """Detailed public model for Outfit, including related clothing items."""
+    items: List["OutfitItem"] = []
+
+class OutfitUpdate(OutfitBase):
+    """Model for updating an existing outfit."""
+    name: Optional[str] = None
+    user_id: Optional[int] = None
+
+class Outfit(OutfitBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     user_id: int = Field(foreign_key="user.id")
     name: str
@@ -53,7 +122,39 @@ class OutfitItem(SQLModel, table=True):
     outfit: Optional[Outfit] = Relationship(back_populates="items")
     clothing_item: Optional[ClothingItem] = Relationship(back_populates="outfits")
 
-class ResaleListing(SQLModel, table=True):
+
+
+##### ResaleListing #####
+
+
+class ResaleListingBase(SQLModel):
+    """Base model for ResaleListing, used for creating and updating listings."""
+    user_id: int
+    clothing_item_id: int
+    platform: str
+    price: int
+    url: str
+    status: str
+    sold_on: Optional[datetime] = None
+
+class ResaleListingPublic(ResaleListingBase):
+    """Public model for ResaleListing, including ID and created timestamp."""
+    id: Optional[int] = None
+    created_at: datetime
+
+class ResaleListingPublicFull(ResaleListingPublic):
+    """Detailed public model for ResaleListing, including related clothing item."""
+    clothing_item: Optional["ClothingItem"] = None
+
+class ResaleListingUpdate(ResaleListingBase):
+    """Model for updating an existing resale listing."""
+    platform: Optional[str] = None
+    price: Optional[int] = None
+    url: Optional[str] = None
+    status: Optional[str] = None
+    sold_on: Optional[datetime] = None
+
+class ResaleListing(ResaleListingBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     user_id: int = Field(foreign_key="user.id")
     clothing_item_id: int = Field(foreign_key="clothingitem.id")
@@ -67,7 +168,29 @@ class ResaleListing(SQLModel, table=True):
     user: Optional[User] = Relationship(back_populates="resale_listings")
     clothing_item: Optional[ClothingItem] = Relationship(back_populates="resale_listing")
 
-class WearHistory(SQLModel, table=True):
+
+##### WearHistory #####
+
+class WearHistoryBase(SQLModel):
+    """Base model for WearHistory, used for creating and updating wear records."""
+    clothing_item_id: int
+    date: datetime
+
+class WearHistoryPublic(WearHistoryBase):
+    """Public model for WearHistory, including ID and created timestamp."""
+    id: Optional[int] = None
+    created_at: datetime
+
+class WearHistoryPublicFull(WearHistoryPublic):
+    """Detailed public model for WearHistory, including related clothing item."""
+    clothing_item: Optional["ClothingItem"] = None
+
+class WearHistoryUpdate(WearHistoryBase):
+    """Model for updating an existing wear history record."""
+    date: Optional[datetime] = None
+
+
+class WearHistory(WearHistoryBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     clothing_item_id: int = Field(foreign_key="clothingitem.id")
     date: datetime
