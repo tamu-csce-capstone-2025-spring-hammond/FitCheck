@@ -27,13 +27,10 @@ h1 {
   @include font(4, 3.5, 5rem, 4.5rem);
   font-weight: 400;
 }
-h1.bold {
-  font-weight: 800;
-}
 h2 {
   @include font(3.2, 2, 4rem, 3.5rem);
 }
-h2.bold {
+.bold {
   font-weight: 800;
 }
 h1.header {

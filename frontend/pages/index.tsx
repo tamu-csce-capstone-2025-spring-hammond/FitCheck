@@ -12,7 +12,7 @@ export default function Home() {
   const [showCamera, setShowCamera] = useState(false);
 
   return (
-    <div className="FitCheck">
+    <div className="FitCheck bg-white">
       <Header></Header>
 
       <main className="_site-grid min-h-[90vh] relative mb-64">

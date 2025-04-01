@@ -2,8 +2,8 @@
 
 from fastapi import HTTPException
 
-import backend.database as database
-import backend.constants as constants
+import database as database
+import constants as constants
 
 import re
 

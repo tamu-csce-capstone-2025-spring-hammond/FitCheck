@@ -388,10 +388,6 @@ h1 {
   }
 }
 
-h1.bold {
-  font-weight: 800;
-}
-
 h2 {
   font-size: 3.2rem;
   line-height: 4rem;
@@ -463,7 +459,7 @@ h2 {
   }
 }
 
-h2.bold {
+.bold {
   font-weight: 800;
 }
 
@@ -532,6 +528,7 @@ body {
   margin: 0;
   padding: 0;
   position: relative;
+  color: var(--body);
 }
 
 html {
@@ -546,9 +543,11 @@ a:active img {
   fill: var(--accent);
 }
 
-.FitCheck {
-  background-color: var(--white);
+button a,
+button p {
+  color: var(--body);
 }
+
 .FitCheck .__site-content {
   position: relative;
   display: flex;

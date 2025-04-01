@@ -1,6 +1,7 @@
 """FitCheck Backend Main - Called on startup"""
 
-import backend.environment as environment
+
+import environment
 
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
@@ -22,7 +23,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-from backend.routes import login, user, clothing_item, outfit, resale_listing, wear_history, images
+from routes import login, user, clothing_item, outfit, resale_listing, wear_history, images
 # Include routes
 app.include_router(login.router)
 app.include_router(user.router)

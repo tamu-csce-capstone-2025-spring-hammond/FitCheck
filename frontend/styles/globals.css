@@ -3,11 +3,11 @@
 @tailwind utilities;
 @import url("https://fonts.googleapis.com/css2?family=Platypi:ital,wght@0,300..800;1,300..800&display=swap");
 
-@layer utilities {
+/* @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
-}
+} */
 
 @layer base {
   :root {
@@ -37,7 +37,19 @@
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
   }
-  .dark {
+  @layer base {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    p {
+      font-size: revert;
+      font-weight: revert;
+    }
+  }
+  /* .dark {
     --black: 0 0% 3.9%;
     --white: 0 0% 98%;
     --card: 0 0% 3.9%;
@@ -62,14 +74,14 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
-  }
+  } */
 }
 
-@layer base {
+/* @layer base {
   * {
     @apply border-border;
   }
   body {
     @apply bg-black text-white;
   }
-}
+} */

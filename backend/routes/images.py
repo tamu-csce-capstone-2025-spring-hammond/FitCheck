@@ -4,23 +4,27 @@ import boto3
 from fastapi import APIRouter, File, HTTPException, UploadFile
 from pydantic import BaseModel
 
-import backend.environment as environment
-from backend.clothes_addition import parse_image
-import backend.database as database
+import environment
+from clothes_addition import parse_image
+import database
 
 import uuid
 
-from backend.s3connection import add_image_obj
+from s3connection import add_image_obj
+import chromadb
 
 # FastAPI router
 router = APIRouter()
 
 
-class TestRequest(BaseModel):
+class StandardRequest(BaseModel):
     message: str
 
+class ParsedRequest(BaseModel):
+    parsed: list
+
 @router.post("/parse_image")
-def post_parse_image(request: TestRequest):
+def post_parse_image(request: StandardRequest):
     print(request)
     return parse_image(request.message)
 
@@ -30,8 +34,6 @@ def upload_image(file: UploadFile = File(...)):
 
     # TEMP WHILE AUTH NOT IN PLACE
     current_user = 1
-
-
 
     # Get AWS credentials from environment
     aws_access_key = environment.get("AWS_ACCESS_KEY_ID")
@@ -78,4 +80,32 @@ def upload_image(file: UploadFile = File(...)):
         "message": "Upload and parse successful",
         "s3_url": s3_url,
         "parsed_items": saved_items,
+    }
+
+@router.post('/chroma-upload')
+def chroma_upload(request: StandardRequest):
+    client = chromadb.HttpClient(host=environment.get('CHROMA_DB_ADDRESS'), port=8000)
+    collection = client.get_or_create_collection(name="test")
+
+    collection.add(
+        documents=[doc['cloth_description'] for doc in request.parsed],
+        ids=[str(doc['cloth_color']) + str(doc['cloth_size']) + str(doc['cloth_type']) for doc in request.parsed], 
+    )
+
+    return {
+        "message": "Chroma upload successful",
+    }
+
+@router.post('/chroma-query')
+def chroma_query(request: StandardRequest):
+    client = chromadb.HttpClient(host=environment.get('CHROMA_DB_ADDRESS'), port=8000)
+    collection = client.get_or_create_collection(name="test")
+    results = collection.query(
+        query_texts=[request.message],
+        n_results=3,
+    )
+
+    return {
+        "message": "Chroma query successful",
+        "results": results,
     }
