@@ -77,15 +77,16 @@ def create_user(name: str, email: str, password: str):
     return user
 
 
-def add_clothing_item(user_id: int, name: str, size: str, color: str, style: str, brand: str, category: str):
+def add_clothing_item(user_id: int, description: str, size: str, color: str, s3url: str, style: str, brand: str, category: str):
     from models import ClothingItem
 
     with get_session() as session:
         item = ClothingItem(
             user_id=user_id,
-            name=name,
+            description=description,
             size=size,
             color=color,
+            s3url=s3url,
             style=style,
             brand=brand,
             category=category,

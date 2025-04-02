@@ -3,38 +3,30 @@
 import boto3
 from fastapi import APIRouter, File, HTTPException, UploadFile, Header
 from pydantic import BaseModel
-
 import environment
 from clothes_addition import parse_image
 import database
-
 import uuid
-
 from s3connection import add_image_obj
 import chromadb
-
 from route_utils import enforce_logged_in
 
 # FastAPI router
 router = APIRouter()
 
-
 class StandardRequest(BaseModel):
-    message: str
+    message: str | None = None
+    db_name: str | None = None
 
 class ParsedRequest(BaseModel):
     parsed: list
 
 @router.post("/parse_image")
 def post_parse_image(request: StandardRequest):
-    print(request)
     return parse_image(request.message)
 
-
-@router.post("/upload-image")
+@router.post("/upload-new-image")
 async def upload_image(file: UploadFile = File(...), authorization: str = Header(...)):
-    print("I AM HERE 1")
-    # TEMP WHILE AUTH NOT IN PLACE
     current_user = enforce_logged_in(authorization)
 
     # Get AWS credentials from environment
@@ -42,6 +34,7 @@ async def upload_image(file: UploadFile = File(...), authorization: str = Header
     aws_secret_key = environment.get("AWS_SECRET_ACCESS_KEY")
     aws_region = environment.get("AWS_DEFAULT_REGION")
     bucket_name = "hack-fitcheck"
+
     # Initialize S3 client
     s3_client = boto3.client(
         "s3",
@@ -50,6 +43,7 @@ async def upload_image(file: UploadFile = File(...), authorization: str = Header
         region_name=aws_region,
     )
 
+    # Derive file name and upload the file to S3
     file_name = f"{uuid.uuid4()}_{file.filename}"
     upload_result = add_image_obj(file.file, bucket_name, file_name)
     s3_url = f"https://{bucket_name}.s3.amazonaws.com/{file_name}"
@@ -57,23 +51,37 @@ async def upload_image(file: UploadFile = File(...), authorization: str = Header
         parsed_items = parse_image(s3_url)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Image parsing failed: {e}")
+    
+    # Add clothing items to the cockroach database
     saved_items = []
     for item in parsed_items:
         clothing = database.add_clothing_item(
             user_id=current_user.id,
-            name=item["cloth_description"],
+            description=item["cloth_description"],
             size=item["cloth_size"],
             color=item["cloth_color"],
+            s3url=s3_url,
             style=None,
             brand=None,
             category=item["cloth_type"].capitalize(),  
         )
+
         saved_items.append({
-            "id": clothing.id,
-            "name": clothing.name,
+            "id": str(clothing.id),
             "category": clothing.category,
+            'description': clothing.description,
         })
-    print("I AM HERE")
+        print(f"Saved clothing item with ID {clothing.id}")
+
+    # Upload parsed items to ChromaDB
+    client = chromadb.HttpClient(host=environment.get('CHROMA_DB_ADDRESS'), port=8000)
+    collection = client.get_or_create_collection('clothing_items')
+
+    collection.add(
+        documents=[item['description'] for item in saved_items],
+        ids=[item['id'] for item in saved_items], 
+    )
+
     return {
         "message": "Upload and parse successful",
         "s3_url": s3_url,
@@ -83,7 +91,7 @@ async def upload_image(file: UploadFile = File(...), authorization: str = Header
 @router.post('/chroma-upload')
 def chroma_upload(request: StandardRequest):
     client = chromadb.HttpClient(host=environment.get('CHROMA_DB_ADDRESS'), port=8000)
-    collection = client.get_or_create_collection(name="test")
+    collection = client.get_or_create_collection(name=request.db_name)
 
     collection.add(
         documents=[doc['cloth_description'] for doc in request.parsed],
@@ -107,3 +115,13 @@ def chroma_query(request: StandardRequest):
         "message": "Chroma query successful",
         "results": results,
     }
+
+if __name__ == '__main__':
+    client = chromadb.HttpClient(host=environment.get('CHROMA_DB_ADDRESS'), port=8000)
+    collection = client.get_or_create_collection(name="clothing_items")
+    results = collection.query(
+        query_texts=['any clothes'],
+        n_results=3,
+    )
+
+    print(results)

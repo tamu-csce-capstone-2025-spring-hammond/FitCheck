@@ -60,7 +60,7 @@ export default function CameraModal({
     formData.append("file", file);
 
     try {
-        const res = await fetch(`/api/upload-image`, {
+        const res = await fetch(`/api/upload-new-image`, {
         method: "POST",
         body: formData,
       });

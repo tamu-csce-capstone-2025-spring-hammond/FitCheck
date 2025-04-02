@@ -24,7 +24,6 @@ class UserPublicFull(UserPublic):
     outfits: List["Outfit"] = []
     resale_listings: List["ResaleListing"] = []
 
-
 class UserUpdate(UserBase):
     """Model for updating an existing user."""
     name: Optional[str] = None
@@ -45,11 +44,13 @@ class User(UserBase, table=True):
 ##### ClothingItem #####
 
 class ClothingItemBase(SQLModel):
-    name: str
+    name: Optional[str] = None
     size: Optional[str] = None
     color: Optional[str] = None
     style: Optional[str] = None
     brand: Optional[str] = None
+    s3url: Optional[str] = None
+    description: Optional[str] = None
     category: str
     last_worn: Optional[datetime] = None
     user_id: int
@@ -76,7 +77,6 @@ class ClothingItemUpdate(ClothingItemBase):
 
 class ClothingItem(ClothingItemBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    
     created_at: datetime = Field(default_factory=datetime.utcnow)
     user_id: int = Field(foreign_key="user.id")
     user: Optional[User] = Relationship(back_populates="clothing_items")

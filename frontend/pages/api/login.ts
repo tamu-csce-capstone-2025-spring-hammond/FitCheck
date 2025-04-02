@@ -14,7 +14,7 @@ export default async function loginRoute(req: NextApiRequest, res: NextApiRespon
 
     // Get the backend URL
     const url = `${process.env.BACKEND_URL}login`;
-
+    console.log(`Login request to ${url}`);
     // Pass the request
     const response = await fetch(url, {
         method: "POST",
