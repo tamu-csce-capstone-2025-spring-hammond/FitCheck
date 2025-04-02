@@ -11,7 +11,9 @@ const ProductCard: React.FC<Props> = ({ itemName, category, href }) => {
   return (
     <Link href={href}>
       <div className="border rounded-lg overflow-hidden">
-        <div className="aspect-square bg-muted"></div>
+        <div className="aspect-square bg-muted">
+          <img src={href} alt={itemName} className="w-full h-full object-cover" />
+        </div>
         <div className="p-4">
           <p className="title">{itemName}</p>
           <p className="">{category}</p>
@@ -20,5 +22,6 @@ const ProductCard: React.FC<Props> = ({ itemName, category, href }) => {
     </Link>
   );
 };
+
 
 export default ProductCard;

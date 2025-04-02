@@ -1,43 +1,60 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChevronDown, ChevronUp, X } from "lucide-react";
 import { Button } from "@/components/imported-ui/button";
 import { Checkbox } from "@/components/imported-ui/checkbox";
 import { Label } from "@/components/imported-ui/label";
 import { Badge } from "@/components/imported-ui/badge";
-// import { Slider } from "@/components/imported-ui/slider";
 
-export default function ProductFilters() {
-  // State for tracking which filters are open
+interface ProductFiltersProps {
+  selectedFilters: Record<string, string[]>;
+  setSelectedFilters: (filters: Record<string, string[]>) => void;
+}
+
+export default function ProductFilters({
+  selectedFilters,
+  setSelectedFilters,
+}: ProductFiltersProps) {
   const [openFilters, setOpenFilters] = useState<Record<string, boolean>>({
     category: false,
     brand: false,
     size: false,
     color: false,
-    price: false,
-    tag: false,
   });
 
-  // State for tracking selected filters
-  const [selectedFilters, setSelectedFilters] = useState<
-    Record<string, string[]>
-  >({
+  const [filterOptions, setFilterOptions] = useState<Record<string, string[]>>({
     category: [],
     brand: [],
     size: [],
     color: [],
-    tag: [],
   });
 
-  // State for price range
-  const [priceRange, setPriceRange] = useState([0, 1000]);
+  useEffect(() => {
+    const fetchFilterOptions = async () => {
+      try {
+        const fields = ["category", "brand", "size", "color"];
+        const options: Record<string, string[]> = {};
 
-  // Toggle filter dropdown
-  const toggleFilter = (filter: string) => {
-    setOpenFilters({
-      ...openFilters,
-      [filter]: !openFilters[filter],
-    });
-  };
+        for (let field of fields) {
+          const response = await fetch(`/api/unique-values/${field}`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+          const data = await response.json();
+          options[field] = JSON.parse(data) || [];
+
+        }
+
+        console.log("Fetched filter options:", options); 
+        setFilterOptions(options);
+      } catch (error) {
+        console.error("Error fetching filter options:", error);
+      }
+    };
+
+    fetchFilterOptions();
+  }, []);
 
   // Handle checkbox change
   const handleFilterChange = (type: string, value: string) => {
@@ -66,45 +83,22 @@ export default function ProductFilters() {
       brand: [],
       size: [],
       color: [],
-      tag: [],
     });
-    setPriceRange([0, 1000]);
   };
 
-  // Count total active filters
   const activeFilterCount =
-    Object.values(selectedFilters).flat().length +
-    (priceRange[0] > 0 || priceRange[1] < 1000 ? 1 : 0);
+    Object.values(selectedFilters).flat().length;
 
-    
-  // Sample filter options (in a real app, these would come from your data)
-  const filterOptions = {
-    category: ["Clothing", "Shoes", "Accessories", "Sportswear", "Outerwear"],
-    brand: ["Nike", "Adidas", "Puma", "New Balance", "Under Armour", "Reebok"],
-    size: ["XS", "S", "M", "L", "XL", "XXL"],
-    color: [
-      "Black",
-      "White",
-      "Red",
-      "Blue",
-      "Green",
-      "Yellow",
-      "Purple",
-      "Orange",
-      "Gray",
-    ],
-    tag: [
-      "New Arrival",
-      "Sale",
-      "Limited Edition",
-      "Best Seller",
-      "Eco-friendly",
-    ],
+  const toggleFilter = (filterKey: string) => {
+    setOpenFilters((prev) => {
+      const newState = { ...prev, [filterKey]: !prev[filterKey] };
+      console.log("openFilters state updated:", newState);
+      return newState;
+    });
   };
 
   return (
     <div className="w-full">
-      {/* Active filters display */}
       {activeFilterCount > 0 && (
         <div className="mb-6">
           <div className="flex items-center justify-between mb-2">
@@ -134,254 +128,52 @@ export default function ProductFilters() {
                 </Badge>
               ))
             )}
-            {(priceRange[0] > 0 || priceRange[1] < 1000) && (
-              <Badge variant="outline" className="px-2 py-1 rounded-md">
-                ${priceRange[0]} - ${priceRange[1]}
-                <X
-                  className="ml-1 h-3 w-3 cursor-pointer"
-                  onClick={() => setPriceRange([0, 1000])}
-                />
-              </Badge>
-            )}
           </div>
         </div>
       )}
 
-      {/* Filter sections */}
       <div className="space-y-4">
-        {/* Category Filter */}
-        <div className="border rounded-lg overflow-hidden">
-          <button
-            onClick={() => toggleFilter("category")}
-            className="flex items-center justify-between w-full p-4 text-left font-medium"
-          >
-            <span>Category</span>
-            {openFilters.category ? (
-              <ChevronUp className="h-4 w-4" />
-            ) : (
-              <ChevronDown className="h-4 w-4" />
-            )}
-          </button>
-          {openFilters.category && (
-            <div className="p-4 pt-4 border-t">
-              <div className="space-y-2">
-                {filterOptions.category.map((category) => (
-                  <div key={category} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`category-${category}`}
-                      checked={selectedFilters.category.includes(category)}
-                      onCheckedChange={() =>
-                        handleFilterChange("category", category)
-                      }
-                    />
-                    <Label
-                      htmlFor={`category-${category}`}
-                      className="text-md font-normal cursor-pointer"
-                    >
-                      {category}
-                    </Label>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Brand Filter */}
-        <div className="border rounded-lg overflow-hidden">
-          <button
-            onClick={() => toggleFilter("brand")}
-            className="flex items-center justify-between w-full p-4 text-left font-medium"
-          >
-            <span>Brand</span>
-            {openFilters.brand ? (
-              <ChevronUp className="h-4 w-4" />
-            ) : (
-              <ChevronDown className="h-4 w-4" />
-            )}
-          </button>
-          {openFilters.brand && (
-            <div className="p-4 pt-4 border-t">
-              <div className="space-y-2">
-                {filterOptions.brand.map((brand) => (
-                  <div key={brand} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`brand-${brand}`}
-                      checked={selectedFilters.brand.includes(brand)}
-                      onCheckedChange={() => handleFilterChange("brand", brand)}
-                    />
-                    <Label
-                      htmlFor={`brand-${brand}`}
-                      className="text-md font-normal cursor-pointer"
-                    >
-                      {brand}
-                    </Label>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Size Filter */}
-        <div className="border rounded-lg overflow-hidden">
-          <button
-            onClick={() => toggleFilter("size")}
-            className="flex items-center justify-between w-full p-4 text-left font-medium"
-          >
-            <span>Size</span>
-            {openFilters.size ? (
-              <ChevronUp className="h-4 w-4" />
-            ) : (
-              <ChevronDown className="h-4 w-4" />
-            )}
-          </button>
-          {openFilters.size && (
-            <div className="p-4 pt-4 border-t">
-              <div className="grid grid-cols-3 gap-2">
-                {filterOptions.size.map((size) => (
-                  <div key={size} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`size-${size}`}
-                      checked={selectedFilters.size.includes(size)}
-                      onCheckedChange={() => handleFilterChange("size", size)}
-                    />
-                    <Label
-                      htmlFor={`size-${size}`}
-                      className="text-md font-normal cursor-pointer"
-                    >
-                      {size}
-                    </Label>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Color Filter */}
-        <div className="border rounded-lg overflow-hidden">
-          <button
-            onClick={() => toggleFilter("color")}
-            className="flex items-center justify-between w-full p-4 text-left font-medium"
-          >
-            <span>Color</span>
-            {openFilters.color ? (
-              <ChevronUp className="h-4 w-4" />
-            ) : (
-              <ChevronDown className="h-4 w-4" />
-            )}
-          </button>
-          {openFilters.color && (
-            <div className="p-4 pt-4 border-t">
-              <div className="grid grid-cols-2 gap-2">
-                {filterOptions.color.map((color) => (
-                  <div key={color} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`color-${color}`}
-                      checked={selectedFilters.color.includes(color)}
-                      onCheckedChange={() => handleFilterChange("color", color)}
-                    />
-                    <div className="flex items-center space-x-2">
-                      <div
-                        className="w-4 h-4 rounded-full border"
-                        style={{ backgroundColor: color.toLowerCase() }}
-                      ></div>
-                      <Label
-                        htmlFor={`color-${color}`}
-                        className="text-sm font-normal cursor-pointer"
-                      >
-                        {color}
-                      </Label>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Price Filter
-        <div className="border rounded-lg overflow-hidden">
-          <button
-            onClick={() => toggleFilter("price")}
-            className="flex items-center justify-between w-full p-4 text-left font-medium"
-          >
-            <span>Price</span>
-            {openFilters.price ? (
-              <ChevronUp className="h-4 w-4" />
-            ) : (
-              <ChevronDown className="h-4 w-4" />
-            )}
-          </button>
-          {openFilters.price && (
-            <div className="p-4 pt-4 border-t">
-              <div className="space-y-4">
-                <div className="pt-4">
-                  <Slider
-                    defaultValue={[0, 1000]}
-                    max={1000}
-                    step={10}
-                    value={priceRange}
-                    onValueChange={setPriceRange}
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="border rounded-md px-3 py-1">
-                    <span className="text-md">$</span>
-                    <span className="text-md">{priceRange[0]}</span>
-                  </div>
-                  <div className="border rounded-md px-3 py-1">
-                    <span className="text-md">$</span>
-                    <span className="text-md">{priceRange[1]}</span>
-                  </div>
+        {Object.keys(filterOptions).map((filterKey) => (
+          <div key={filterKey} className="border rounded-lg overflow-hidden">
+            <button
+              onClick={() => toggleFilter(filterKey)} 
+              className="flex items-center justify-between w-full p-4 text-left font-medium"
+            >
+              <span>{filterKey.charAt(0).toUpperCase() + filterKey.slice(1)}</span>
+              {openFilters[filterKey] ? (
+                <ChevronUp className="h-4 w-4" />
+              ) : (
+                <ChevronDown className="h-4 w-4" />
+              )}
+            </button>
+            {openFilters[filterKey] && (
+              <div className="p-4 pt-4 border-t">
+                <div className="space-y-2">
+                  {Array.isArray(filterOptions[filterKey]) &&
+                    filterOptions[filterKey].map((option) => (
+                      <div key={option} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`${filterKey}-${option}`}
+                          checked={selectedFilters[filterKey].includes(option)}
+                          onCheckedChange={() =>
+                            handleFilterChange(filterKey, option)
+                          }
+                        />
+                        <Label
+                          htmlFor={`${filterKey}-${option}`}
+                          className="text-md font-normal cursor-pointer"
+                        >
+                          {option}
+                        </Label>
+                      </div>
+                    ))}
                 </div>
               </div>
-            </div>
-          )}
-        </div> */}
-
-        {/* Tag Filter */}
-        <div className="border rounded-lg overflow-hidden">
-          <button
-            onClick={() => toggleFilter("tag")}
-            className="flex items-center justify-between w-full p-4 text-left font-medium"
-          >
-            <span>Tag</span>
-            {openFilters.tag ? (
-              <ChevronUp className="h-4 w-4" />
-            ) : (
-              <ChevronDown className="h-4 w-4" />
             )}
-          </button>
-          {openFilters.tag && (
-            <div className="p-4 pt-4 border-t">
-              <div className="space-y-2">
-                {filterOptions.tag.map((tag) => (
-                  <div key={tag} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`tag-${tag}`}
-                      checked={selectedFilters.tag.includes(tag)}
-                      onCheckedChange={() => handleFilterChange("tag", tag)}
-                    />
-                    <Label
-                      htmlFor={`tag-${tag}`}
-                      className="text-md font-normal cursor-pointer"
-                    >
-                      {tag}
-                    </Label>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Apply Filters Button (for mobile) */}
-      <div className="mt-6 sm:hidden">
-        <Button className="w-full">Apply Filters ({activeFilterCount})</Button>
+          </div>
+        ))}
       </div>
     </div>
   );
 }
+

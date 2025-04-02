@@ -1,9 +1,8 @@
 import boto3
 from fastapi import APIRouter, File, HTTPException, UploadFile, Header, Depends
-from fastapi import APIRouter, HTTPException, Depends
 from models import ClothingItem, ClothingItemBase, ClothingItemPublicFull
 from pydantic import BaseModel
-
+import json
 from sqlmodel import SQLModel, Field, Session, create_engine, select
 from database import get_db
 from models import ClothingItem
@@ -28,7 +27,6 @@ def post_by_field(
     current_user = enforce_logged_in(authorization)
     
     query = select(ClothingItem).where(ClothingItem.user_id == current_user.id)
-    print("IM HEREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE")
     print(request.category)
     if request.category:
         query = query.where(ClothingItem.category.in_(request.category))
@@ -49,10 +47,10 @@ def post_by_field(
     
     return items
 
-@router.get("/unique-tags-by-field")
-def get_unique_tags_by_field(field: str, authorization: str = Header(...), db: Session = Depends(get_db)):
+@router.get("/unique-values/{field}")
+def get_unique_values_by_field(field: str, authorization: str = Header(...), db: Session = Depends(get_db)):
     current_user = enforce_logged_in(authorization)
-    query = select(ClothingItem).where(getattr(ClothingItem, 'user_id') == current_user.id)
+    query = select(ClothingItem).where(ClothingItem.user_id == current_user.id)
     
     if hasattr(ClothingItem, field):
         query = query.distinct(getattr(ClothingItem, field))
@@ -60,4 +58,5 @@ def get_unique_tags_by_field(field: str, authorization: str = Header(...), db: S
         raise ValueError(f"Field {field} does not exist on the model.")
 
     items = db.exec(query).all()
-    return items
+    return json.dumps([getattr(item, field) for item in items])
+

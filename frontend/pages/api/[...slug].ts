@@ -21,14 +21,12 @@ export default async function backendRoute(req: NextApiRequest, res: NextApiResp
     const backend_url = req.url.replace(/^\/api\//, '');
     const url = `${process.env.BACKEND_URL}${backend_url}`;
     console.log(`Passing request to ${url}`);
-
     // Pass the request
     const response = await fetch(url, {
         method: req.method,
         headers: headers,
         body: req.method === 'POST' ? JSON.stringify(req.body) : undefined,
     });
-
     // Pass the response
     let responseBody;
     try {
