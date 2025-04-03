@@ -53,6 +53,7 @@ def post_to_catalog(name, currency, price, image_url, retailer_id, description="
     
     url = f"https://graph.facebook.com/{FACEBOOK_CATALOG_ID}/products"
     headers = {"Authorization": f"Bearer {FACEBOOK_ACCESS_TOKEN}"}
+    price = price*100 # convert to cents
     payload = {
         "name": name,
         "currency": currency,
@@ -148,15 +149,15 @@ def delete_product(name):
 
 def main():
     # Example usage
-    name = "test5"
+    name = "Fake Uniqlo T-shirt"
     currency = "USD"
-    price = 13
+    price = 18
     image_url = "https://en.wikipedia.org/wiki/Image#/media/File:Image_created_with_a_mobile_phone.png"
-    retailer_id = "phone-camera" # has to be unique
+    retailer_id = "uniqlo-medium-green-tshirt" # has to be unique
     new_image_url = "https://image.uniqlo.com/UQ/ST3/WesternCommon/imagesgoods/465187/sub/goods_465187_sub14_3x4.jpg?width=600"
-    description = "new description"
-
-    # post_to_catalog(name, currency, price, new_image_url, retailer_id, description) # post request
+    description = "Medium Green T-shirt"
+    
+    # post_to_catalog(name, currency, price, new_image_url, retailer_id, description, website_link="https://www.uniqlo.com/us/en/products/E465187-000/01?colorDisplayCode=18&sizeDisplayCode=003") # post request
 
     # get_product_id(name) # get product id
     
@@ -166,7 +167,7 @@ def main():
     
     # delete_product("test5") # delete product
     
-    # update_product_price(name, 15) # update product price
+    # update_product_price(name, 18) # update product price
     
     # get_product_availability(name) # get product availability
     
