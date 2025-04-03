@@ -9,6 +9,30 @@ FACEBOOK_CATALOG_ID = os.getenv("FACEBOOK_CATALOG_ID")
 PAGE_ACCESS_TOKEN = os.getenv("PAGE_ACCESS_TOKEN")
 
 
+def post_to_catalog(name, currency, price, image_url, retailer_id, description="", website_link="https://www.facebook.com/business/shops"):
+    '''will post a new item to the facebook catalog shop'''
+    
+    url = f"https://graph.facebook.com/{FACEBOOK_CATALOG_ID}/products"
+    headers = {"Authorization": f"Bearer {FACEBOOK_ACCESS_TOKEN}"}
+    price = price*100 # price is handled in cents
+    payload = {
+        "name": name,
+        "currency": currency,
+        "price": price,
+        "image_url": image_url,
+        "retailer_id": retailer_id,
+        "url": website_link,
+        "description": description
+    }
+    response = requests.post(url, headers=headers, data=payload)
+    
+    if response.status_code == 200:
+        print("Product posted successfully")
+        return response.json()
+    else:
+        raise Exception(f"Error posting product: {response.text}")
+    
+
 def get_product_id(name):
     '''given a product name, will return the product id'''
     
@@ -45,41 +69,17 @@ def get_product_availability(name):
         return None
     else:
         data = response.json()
-        print(name,"is", data.get("availability", "No availability info"))
+        print(name, "is", data.get("availability", "No availability info"))
         return data
-
-def post_to_catalog(name, currency, price, image_url, retailer_id, description="", website_link="https://www.facebook.com/business/shops"):
-    '''will post a new item to the facebook catalog shop'''
-    
-    url = f"https://graph.facebook.com/{FACEBOOK_CATALOG_ID}/products"
-    headers = {"Authorization": f"Bearer {FACEBOOK_ACCESS_TOKEN}"}
-    price = price*100 # convert to cents
-    payload = {
-        "name": name,
-        "currency": currency,
-        "price": price,
-        "image_url": image_url,
-        "retailer_id": retailer_id,
-        "url": website_link,
-        "description": description
-    }
-    response = requests.post(url, headers=headers, data=payload)
-    
-    if response.status_code == 200:
-        print("Product posted successfully")
-        return response.json()
-    else:
-        raise Exception(f"Error posting product: {response.text}")
 
 
 def update_product_price(name, price):
     '''given a product name and new price number, will update accordingly'''
-    # price is in cents
     
     product_id = get_product_id(name)
     url = f"https://graph.facebook.com/{product_id}"
     headers = {"Authorization": f"Bearer {FACEBOOK_ACCESS_TOKEN}"}
-    price = price*100
+    price = price*100 # price is handled in cents
     payload = {
         "price": price
     }
@@ -159,7 +159,7 @@ def main():
     
     # post_to_catalog(name, currency, price, new_image_url, retailer_id, description, website_link="https://www.uniqlo.com/us/en/products/E465187-000/01?colorDisplayCode=18&sizeDisplayCode=003") # post request
 
-    # get_product_id(name) # get product id
+    get_product_id(name) # get product id
     
     # update_product_description(name, "new description") # update product description
     
