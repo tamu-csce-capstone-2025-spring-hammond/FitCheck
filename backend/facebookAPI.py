@@ -30,7 +30,25 @@ def get_product_id(name):
     return data
 
 
-def post_to_catalog(name, currency, price, image_url, retailer_id):
+def get_product_availability(name):
+    '''given a product name, will return the product availability'''
+    product_id = get_product_id(name)
+    url = f"https://graph.facebook.com/v22.0/{product_id}"
+    headers = {"Authorization": f"Bearer {FACEBOOK_ACCESS_TOKEN}"}
+    params = {
+        "fields": "availability",
+    }
+    response = requests.get(url,headers=headers, params=params)
+    
+    if response.status_code != 200:
+        print("Error fetching products:", response.status_code)
+        return None
+    else:
+        data = response.json()
+        print(name,"is", data.get("availability", "No availability info"))
+        return data
+
+def post_to_catalog(name, currency, price, image_url, retailer_id, description="", website_link="https://www.facebook.com/business/shops"):
     '''will post a new item to the facebook catalog shop'''
     
     url = f"https://graph.facebook.com/{FACEBOOK_CATALOG_ID}/products"
@@ -40,7 +58,9 @@ def post_to_catalog(name, currency, price, image_url, retailer_id):
         "currency": currency,
         "price": price,
         "image_url": image_url,
-        "retailer_id": retailer_id
+        "retailer_id": retailer_id,
+        "url": website_link,
+        "description": description
     }
     response = requests.post(url, headers=headers, data=payload)
     
@@ -128,14 +148,15 @@ def delete_product(name):
 
 def main():
     # Example usage
-    name = "test4"
+    name = "test5"
     currency = "USD"
     price = 13
     image_url = "https://en.wikipedia.org/wiki/Image#/media/File:Image_created_with_a_mobile_phone.png"
-    retailer_id = "phone-camera-2" # has to be unique
+    retailer_id = "phone-camera" # has to be unique
     new_image_url = "https://image.uniqlo.com/UQ/ST3/WesternCommon/imagesgoods/465187/sub/goods_465187_sub14_3x4.jpg?width=600"
+    description = "new description"
 
-    # post_response= post_to_catalog(name, currency, price, image_url, retailer_id) # post request
+    # post_to_catalog(name, currency, price, new_image_url, retailer_id, description) # post request
 
     # get_product_id(name) # get product id
     
@@ -146,6 +167,8 @@ def main():
     # delete_product("test5") # delete product
     
     # update_product_price(name, 15) # update product price
+    
+    # get_product_availability(name) # get product availability
     
 
 if __name__ == "__main__":
