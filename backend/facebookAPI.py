@@ -9,64 +9,144 @@ FACEBOOK_CATALOG_ID = os.getenv("FACEBOOK_CATALOG_ID")
 PAGE_ACCESS_TOKEN = os.getenv("PAGE_ACCESS_TOKEN")
 
 
-# get offer, 
-# https://graph.facebook.com/v22.0/1815240749254364/products?access_token=EAATL6xQpwDMBOZCH9RsgBluK8E2n9f2ShCcNSqrxhgTlNppC05xNdBiqgPg704VisNKfJ4lf07f2VoECr4aOCOXt2HkOipqZBR2KIV7fGdXJAMaBj3MGijAI67dNH2O28OojOZBPcJfrmYtew7f519XFG1eYu7OL7XchKasz0ZBDyZAlkPOGjH3tXStphpHVuhXiGhgleGvL7RTSEpgZDZD
-
-# POST REQUEST:
-# https://graph.facebook.com/v22.0/1815240749254364/products?name=test5&currency=USD&price=1300&image_url=https%3A%2F%2Fen.wikipedia.org%2Fwiki%2FImage%23%2Fmedia%2FFile%3AImage_created_with_a_mobile_phone.png&retailer_id=phone-camera&access_token=EAATL6xQpwDMBOZCCh0ThCMgoVCVIk98tpy7aEsg5B9YL5lAecsSL23zIuH7tDoF8574XNzOMw20gWyfZCwJvvBCtpdtHheiUuEiWitxxCOE3HrjSMHmATxSYb1wIMwqvlZCsyjKeM8yRnNOnqcCZBeZCzqZAjp4mzsmOIMLcfvPXk1WlNVkiZBXhFQEuZAJ3kJVBHRZB349v9qMJLsZBWjUqAtGw9u
-
-# def post_to_catalog(name, currency, price, image_url, retailer_id):
-#     url = f"https://graph.facebook.com/FACEBOOK_CATALOG_ID/products"
-    
-#     payload = {
-#         "name": name,
-#         "currency": currency,
-#         "price": price,
-#         "image_url": image_url,
-#         "retailer_id": retailer_id
-#     }
-    
-#     response = requests.post(url, data=payload)
-#     return response.json()
-
 def get_product_id(name):
-    url = f"https://graph.facebook.com/"
-    url += FACEBOOK_CATALOG_ID
-    url += "/products?access_token="
-    url += FACEBOOK_ACCESS_TOKEN
-    response = requests.get(url)
+    '''given a product name, will return the product id'''
+    
+    url = f"https://graph.facebook.com/v22.0/{FACEBOOK_CATALOG_ID}/products"
+    headers = {"Authorization": f"Bearer {FACEBOOK_ACCESS_TOKEN}"}
+    response = requests.get(url,headers=headers)
+    
+    if response.status_code != 200:
+        print("Error fetching products:", response.status_code)
+        return None
+    
     data = response.json()
     for product in data.get("data", []):
         if product.get("name") == name:
+            print("Product found:", product)
             return product.get("id")
+    
+    print("Product not found, error:", response.status_code)
     return data
+
+
+def post_to_catalog(name, currency, price, image_url, retailer_id):
+    '''will post a new item to the facebook catalog shop'''
+    
+    url = f"https://graph.facebook.com/{FACEBOOK_CATALOG_ID}/products"
+    headers = {"Authorization": f"Bearer {FACEBOOK_ACCESS_TOKEN}"}
+    payload = {
+        "name": name,
+        "currency": currency,
+        "price": price,
+        "image_url": image_url,
+        "retailer_id": retailer_id
+    }
+    response = requests.post(url, headers=headers, data=payload)
+    
+    if response.status_code == 200:
+        print("Product posted successfully")
+        return response.json()
+    else:
+        raise Exception(f"Error posting product: {response.text}")
+
+
+def update_product_price(name, price):
+    '''given a product name and new price number, will update accordingly'''
+    # price is in cents
+    
+    product_id = get_product_id(name)
+    url = f"https://graph.facebook.com/{product_id}"
+    headers = {"Authorization": f"Bearer {FACEBOOK_ACCESS_TOKEN}"}
+    price = price*100
+    payload = {
+        "price": price
+    }
+    response = requests.post(url, headers=headers, data=payload)
+    
+    if response.status_code != 200:
+        print("Error updating product price:", response.status_code)
+        return None
+    else:
+        print("Product price updated successfully")
+        return response.json()
+
+
+def update_product_description(name, description):
+    '''given a product name and new description, will update accordingly'''
+    
+    product_id = get_product_id(name)
+    url = f"https://graph.facebook.com/{product_id}"
+    headers = {"Authorization": f"Bearer {FACEBOOK_ACCESS_TOKEN}"}
+    payload = {
+        "description": description
+    }
+    response = requests.post(url, headers=headers, data=payload)
+    
+    if response.status_code != 200:
+        print("Error updating product description:", response.status_code)
+        return None
+    else:
+        print("Product description updated successfully")
+        return response.json()
     
 
-# def update_product_description(product_id, description, access_token):
-#     url = f"https://graph.facebook.com/{product_id}"
+def update_image_url(name, image_url):
+    '''given a product name and new image_url, will update accordingly'''
     
-#     payload = {
-#         "description": description,
-#         "access_token": access_token
-#     }
+    product_id = get_product_id(name)
+    url = f"https://graph.facebook.com/{product_id}"
+    headers = {"Authorization": f"Bearer {FACEBOOK_ACCESS_TOKEN}"}
+    payload = {
+        "image_url": image_url
+    }
+    response = requests.post(url, headers=headers, data=payload)
     
-#     response = requests.post(url, data=payload)
-#     return response.json()
+    if response.status_code != 200:
+        print("Error updating product image:", response.status_code)
+        return None
+    else:
+        print("Product image updated successfully")
+        return response.json()
+
+
+def delete_product(name):
+    '''given a product name, will delete the product'''
+    
+    product_id = get_product_id(name)
+    url = f"https://graph.facebook.com/{product_id}"
+    headers = {"Authorization": f"Bearer {FACEBOOK_ACCESS_TOKEN}"}
+    response = requests.delete(url, headers=headers)
+    
+    if response.status_code != 200:
+        print("Error deleting product:", response.status_code)
+        return None
+    else:
+        print("Product deleted successfully")
+        return response.json()
+    
 
 def main():
     # Example usage
-    name = "test5"
+    name = "test4"
     currency = "USD"
-    price = 1300
+    price = 13
     image_url = "https://en.wikipedia.org/wiki/Image#/media/File:Image_created_with_a_mobile_phone.png"
-    retailer_id = "phone-camera"
+    retailer_id = "phone-camera-2" # has to be unique
+    new_image_url = "https://image.uniqlo.com/UQ/ST3/WesternCommon/imagesgoods/465187/sub/goods_465187_sub14_3x4.jpg?width=600"
 
-    # post_response = post_to_catalog(name, currency, price, image_url, retailer_id)
-    # print(post_response)
+    # post_response= post_to_catalog(name, currency, price, image_url, retailer_id) # post request
 
-    product_id = get_product_id(name)
-    print(product_id)
-
+    # get_product_id(name) # get product id
+    
+    # update_product_description(name, "new description") # update product description
+    
+    # update_image_url(name, new_image_url) # update image url
+    
+    # delete_product("test5") # delete product
+    
+    # update_product_price(name, 15) # update product price
+    
 
 if __name__ == "__main__":
     main()
