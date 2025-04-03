@@ -95,3 +95,31 @@ def add_clothing_item(user_id: int, description: str, size: str, color: str, s3u
         session.commit()
         session.refresh(item)
         return item
+    
+def add_outfit(user_id: int, clothing_item_ids: list[int], description: str, s3url: str):
+    from models import Outfit
+
+    outfit = Outfit(
+        clothing_item_ids=clothing_item_ids,
+        description=description,
+        s3url=s3url,
+        user_id=user_id,
+    )
+    with get_session() as session:
+        
+        session.add(outfit)
+        session.commit()
+        session.refresh(outfit)
+        return outfit
+
+def add_outfit_item(outfit_id: int, clothing_item_id: str):
+    from models import OutfitItem
+    outfit_item = OutfitItem(
+        outfit_id=outfit_id,
+        clothing_item_id=clothing_item_id
+    )
+
+    with get_session() as session:
+        session.add(outfit_item)
+        session.commit()
+        return outfit_item

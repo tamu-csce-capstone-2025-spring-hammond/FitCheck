@@ -4,7 +4,7 @@ import boto3
 from fastapi import APIRouter, File, HTTPException, UploadFile, Header
 from pydantic import BaseModel
 import environment
-from clothes_addition import parse_image
+from clothes_addition import parse_clothing_items, parse_outfit
 import database
 import uuid
 from s3connection import add_image_obj
@@ -23,7 +23,7 @@ class ParsedRequest(BaseModel):
 
 @router.post("/parse_image")
 def post_parse_image(request: StandardRequest):
-    return parse_image(request.message)
+    return parse_clothing_items(request.message)
 
 @router.post("/upload-new-image")
 async def upload_image(file: UploadFile = File(...), authorization: str = Header(...)):
@@ -48,7 +48,7 @@ async def upload_image(file: UploadFile = File(...), authorization: str = Header
     upload_result = add_image_obj(file.file, bucket_name, file_name)
     s3_url = f"https://{bucket_name}.s3.amazonaws.com/{file_name}"
     try:
-        parsed_items = parse_image(s3_url)
+        parsed_items = parse_clothing_items(s3_url)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Image parsing failed: {e}")
     
@@ -88,6 +88,92 @@ async def upload_image(file: UploadFile = File(...), authorization: str = Header
         "parsed_items": saved_items,
     }
 
+@router.post("/upload-new-outfit")
+async def upload_outfit(file: UploadFile = File(...), authorization: str = Header(...)):
+    print('got here 1')
+    current_user = enforce_logged_in(authorization)
+
+    # Get AWS credentials from environment
+    aws_access_key = environment.get("AWS_ACCESS_KEY_ID")
+    aws_secret_key = environment.get("AWS_SECRET_ACCESS_KEY")
+    aws_region = environment.get("AWS_DEFAULT_REGION")
+    bucket_name = "hack-fitcheck"
+
+    # Initialize S3 client
+    s3_client = boto3.client(
+        "s3",
+        aws_access_key_id=aws_access_key,
+        aws_secret_access_key=aws_secret_key,
+        region_name=aws_region,
+    )
+
+    # Derive file name and upload the file to S3
+    file_name = f"{uuid.uuid4()}_{file.filename}"
+    upload_result = add_image_obj(file.file, bucket_name, file_name)
+    s3_url = f"https://{bucket_name}.s3.amazonaws.com/{file_name}"
+    
+    try:
+        # Parse the clothing items from the image
+        parsed_items = parse_clothing_items(s3_url)
+        description = parse_outfit(s3_url)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Image parsing failed: {e}")
+    
+    # Add outfit to the cockroach database
+    saved_items = []
+    print('got here 2')
+
+    # Create a ChromaDB client to search for existing items
+    client = chromadb.HttpClient(host=environment.get('CHROMA_DB_ADDRESS'), port=8000)
+    collection = client.get_or_create_collection(name="clothing_items")
+
+    for item in parsed_items:
+        # Query ChromaDB to find the matching clothing item
+        results = collection.query(
+            query_texts=[item["cloth_description"]],
+            n_results=1,
+        )
+        saved_items.append({
+            "id": str(results['ids'][0][0]),
+        })
+
+    print(saved_items)
+    
+    # Create the outfit entry in the database (without items first)
+    outfit = database.add_outfit(
+        user_id=current_user.id,
+        description=description,
+        s3url=s3_url,
+        clothing_item_ids=[str(item['id']) for item in saved_items],
+    )   
+    print("got here 3")
+    
+    # Create OutfitItem entries to link clothing items with the outfit
+    for item in saved_items:
+        print('outfit.id', outfit.id)
+        database.add_outfit_item(
+            outfit_id=outfit.id,
+            clothing_item_id=item['id']
+        )
+
+    print("got here 4")
+    
+    # Upload the outfit to ChromaDB
+    client = chromadb.HttpClient(host=environment.get('CHROMA_DB_ADDRESS'), port=8000)
+    collection = client.get_or_create_collection('outfits')
+
+    collection.add(
+        documents=[outfit.description],
+        ids=[str(outfit.id)], 
+    )
+
+    print("got here 5")
+    return {
+        "message": "Upload and parse successful",
+        "s3_url": s3_url,
+        "parsed_items": saved_items,
+    }
+
 @router.post('/chroma-upload')
 def chroma_upload(request: StandardRequest):
     client = chromadb.HttpClient(host=environment.get('CHROMA_DB_ADDRESS'), port=8000)
@@ -101,6 +187,9 @@ def chroma_upload(request: StandardRequest):
     return {
         "message": "Chroma upload successful",
     }
+
+
+
 
 @router.post('/chroma-query')
 def chroma_query(request: StandardRequest):
