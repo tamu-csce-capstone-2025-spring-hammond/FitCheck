@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Filter, Grid3X3 } from "lucide-react";
 import { Button } from "@/components/imported-ui/button";
 import {
@@ -9,7 +9,6 @@ import {
   SheetTrigger,
 } from "@/components/imported-ui/sheet";
 import ProductFilters from "./product-filters";
-// import Link from "next/link";
 import ProductCard from "./product-card";
 
 interface ClothingItem {
@@ -23,7 +22,7 @@ interface ClothingItem {
   name: string;
   s3url: string;
   size: string;
-  user_id: number; 
+  user_id: number;
 }
 
 export default function FilterWithItems() {
@@ -36,7 +35,10 @@ export default function FilterWithItems() {
     color: [],
     tag: [],
   });
+  const [searchQuery, setSearchQuery] = useState("");
+  const [submitQuery, setSubmitQuery] = useState(""); // Separate state to track submit action
 
+  // Fetch filtered items when filters change
   useEffect(() => {
     const fetchFilteredItems = async () => {
       try {
@@ -48,8 +50,7 @@ export default function FilterWithItems() {
           body: JSON.stringify(selectedFilters),
         });
         const data = await response.json();
-        console.log(data)
-
+        console.log("Filtered items:", data); // Log the filtered items
         setFilteredItems(data);
       } catch (error) {
         console.error("Error fetching filtered items:", error);
@@ -57,6 +58,43 @@ export default function FilterWithItems() {
     };
     fetchFilteredItems();
   }, [selectedFilters]);
+
+  useEffect(() => {
+    // Only fetch search results when submitQuery changes
+    const fetchSearchResults = async () => {
+      if (submitQuery) {
+        try {
+          const response = await fetch("/api/search", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ query: submitQuery }),
+          });
+          const data = await response.json();
+          console.log("Search results:", data); // Log the search results
+          setFilteredItems(data); 
+        } catch (error) {
+          console.error("Error fetching search results:", error);
+        }
+      }
+    };
+
+    // Call the fetch function only if the query is not empty
+    if (submitQuery) {
+      fetchSearchResults();
+    }
+  }, [submitQuery]);  // Trigger this effect only when submitQuery changes
+
+  const handleSearchSubmit = () => {
+    setSubmitQuery(searchQuery);  // Set submitQuery to trigger search
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      setSubmitQuery(searchQuery);  // Trigger search on Enter key press
+    }
+  };
 
   return (
     <div className="container bg-white">
@@ -91,14 +129,27 @@ export default function FilterWithItems() {
                 className="w-full sm:max-w-md overflow-auto bg-white"
               >
                 <h2 className="text-xl font-semibold mb-6">Filters</h2>
-                <ProductFilters 
+                <ProductFilters
                   selectedFilters={selectedFilters}
-                  setSelectedFilters={setSelectedFilters}/>
+                  setSelectedFilters={setSelectedFilters} />
               </SheetContent>
             </Sheet>
             <Button size="icon">
               <Grid3X3 className="h-4 w-4" />
             </Button>
+          </div>
+
+          {/* Search Bar - Above Product Grid */}
+          <div className="mb-4">
+            <input
+              type="text"
+              className="w-full p-2 border rounded"
+              placeholder="Search for items..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={handleKeyDown}  // Trigger search on Enter key press
+            />
+            <Button onClick={handleSearchSubmit} className="mt-2">Submit Search</Button>  {/* Submit button */}
           </div>
 
           {/* Product Grid - Placeholder */}
@@ -114,7 +165,7 @@ export default function FilterWithItems() {
                   />
                 ))
               ) : (
-                <div>No items found</div> // Handle the case where no items match the filters
+                <div>No items found</div>
               )}
             </div>
           </div>
