@@ -21,6 +21,7 @@ distro==1.9.0
 dnspython==2.7.0
 dotenv==0.9.9
 durationpy==0.9
+ebaysdk==2.2.0
 email_validator==2.2.0
 eralchemy==1.5.0
 exceptiongroup==1.2.2
