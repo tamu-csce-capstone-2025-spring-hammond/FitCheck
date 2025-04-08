@@ -98,7 +98,6 @@ export default function FilterWithItems() {
 
   return (
     <div className="container bg-white">
-      {/* Search Bar - Above Product Grid */}
       <div className="w-full flex flex-col md:flex-row gap-4 md:gap-8 mb-12">
         <input
           type="text"
