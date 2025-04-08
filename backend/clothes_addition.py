@@ -1,9 +1,10 @@
 from openai import OpenAI
 from dotenv import load_dotenv
 import chromadb
+import asyncio
 import json
 
-def parse_image(url : str):
+def parse_clothing_items(url : str):
     '''
     This function takes in an image url and returns a list of json objects for each clothing item in the image.
     Each json object contains the cloth type, cloth size, clothing color, and clothing description.
@@ -32,6 +33,7 @@ def parse_image(url : str):
     '''
     load_dotenv()
     client = OpenAI()
+
     completion = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[
@@ -56,6 +58,34 @@ def parse_image(url : str):
 
     parsed = [i for i in json.loads(completion.choices[0].message.content)]
     return parsed
+
+def parse_outfit(url : str):
+    load_dotenv()
+    client = OpenAI()
+
+    completion = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {
+                "role": "user",
+                "content": [
+                    {"type": "text", "text": '''Describe this outfit in a fun and illustrative way.
+                    '''},
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": url,
+                        },
+                    },
+                ],
+            }
+        ],
+        max_tokens=300,
+    )
+
+    parsed = [completion.choices[0].message.content]
+    return parsed
+
 
 def upload_to_chroma(parsed : list):
     '''
@@ -101,6 +131,6 @@ def query_chroma(chroma_db_name : str, query : str, num_items : int):
     return results
 
 if __name__ == '__main__':
-    for i in parse_image('https://media.gq.com/photos/5ab146e7a3a5ca214d8baf78/master/w_1600%2Cc_limit/Not-Normal-High-Fashion-Gets-Serious-About-Regular-Clothes-12.jpg'):
-        print(i)
+    result = parse_clothing_items('https://hack-fitcheck.s3.amazonaws.com/2d773c76-4e55-4fd6-b089-ed05a707ee32_photo.jpg')
+    print(result)
 

@@ -24,7 +24,6 @@ class UserPublicFull(UserPublic):
     outfits: List["Outfit"] = []
     resale_listings: List["ResaleListing"] = []
 
-
 class UserUpdate(UserBase):
     """Model for updating an existing user."""
     name: Optional[str] = None
@@ -45,11 +44,13 @@ class User(UserBase, table=True):
 ##### ClothingItem #####
 
 class ClothingItemBase(SQLModel):
-    name: str
+    name: Optional[str] = None
     size: Optional[str] = None
     color: Optional[str] = None
     style: Optional[str] = None
     brand: Optional[str] = None
+    s3url: Optional[str] = None
+    description: Optional[str] = None
     category: str
     last_worn: Optional[datetime] = None
     user_id: int
@@ -76,7 +77,6 @@ class ClothingItemUpdate(ClothingItemBase):
 
 class ClothingItem(ClothingItemBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    
     created_at: datetime = Field(default_factory=datetime.utcnow)
     user_id: int = Field(foreign_key="user.id")
     user: Optional[User] = Relationship(back_populates="clothing_items")
@@ -84,8 +84,7 @@ class ClothingItem(ClothingItemBase, table=True):
     wear_history: List["WearHistory"] = Relationship(back_populates="clothing_item")
     resale_listing: Optional["ResaleListing"] = Relationship(back_populates="clothing_item")
 
-##### Outfit and OutfitItem #####
-
+# Outfit and OutfitItem Models
 class OutfitBase(SQLModel):
     """Base model for Outfit, used for creating and updating outfits."""
     name: str
@@ -108,21 +107,22 @@ class OutfitUpdate(OutfitBase):
 class Outfit(OutfitBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     user_id: int = Field(foreign_key="user.id")
-    name: str
+    name: Optional[str] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
+    description: Optional[str] = None
 
-    user: Optional[User] = Relationship(back_populates="outfits")
+    user: Optional["User"] = Relationship(back_populates="outfits")
     items: List["OutfitItem"] = Relationship(back_populates="outfit")
 
+
+# The relationship table for connecting outfits to clothing items
 class OutfitItem(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     outfit_id: int = Field(foreign_key="outfit.id")
     clothing_item_id: int = Field(foreign_key="clothingitem.id")
-
+    description: Optional[str] = None
     outfit: Optional[Outfit] = Relationship(back_populates="items")
     clothing_item: Optional[ClothingItem] = Relationship(back_populates="outfits")
-
-
 
 ##### ResaleListing #####
 
@@ -212,6 +212,7 @@ if __name__ == "__main__":
         exit(0)
 
     engine = create_engine(os.environ.get("DATABASE_URL"), echo=True)
-    SQLModel.metadata.drop_all(engine)
+    SQLModel.metadata.drop_all(engine, tables=[Outfit.__table__, OutfitItem.__table__])
     SQLModel.metadata.create_all(engine)
+
 

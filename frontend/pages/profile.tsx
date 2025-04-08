@@ -1,21 +1,18 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 
-export default function CameraModal({
-  isVisible,
-  onClose,
-}: {
-  isVisible: boolean;
-  onClose: () => void;
-}) {
+export default function ProfilePage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadResult, setUploadResult] = useState<string | null>(null);
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
-    if (isVisible && navigator.mediaDevices?.getUserMedia) {
+    if (navigator.mediaDevices?.getUserMedia) {
       navigator.mediaDevices
         .getUserMedia({ video: true })
         .then((stream) => {
@@ -29,7 +26,7 @@ export default function CameraModal({
       const stream = videoRef.current?.srcObject as MediaStream;
       stream?.getTracks().forEach((track) => track.stop());
     };
-  }, [isVisible]);
+  }, []);
 
   const takePhoto = async () => {
     if (!videoRef.current || !canvasRef.current) return;
@@ -55,18 +52,18 @@ export default function CameraModal({
     setUploading(true);
     setUploadResult(null);
 
-    // TEMPLATE FOR HOW TO UPLOAD AN IMAGE TO THE BACKEND
     const formData = new FormData();
     formData.append("file", file);
 
     try {
-        const res = await fetch(`/api/upload-new-image`, {
+      const res = await fetch("/api/upload-new-outfit", {
         method: "POST",
         body: formData,
       });
 
       const data = await res.json();
       setUploadResult(data.file_name || data.message);
+      setPhotoUrl(data.s3_url); // Assuming the backend returns the S3 URL of the uploaded image
     } catch (err) {
       console.error("Upload failed", err);
       setUploadResult("❌ Upload failed");
@@ -75,33 +72,41 @@ export default function CameraModal({
     }
   };
 
-  if (!isVisible) return null;
-
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50">
-      <div className="bg-white p-4 rounded-xl w-full max-w-md relative">
-        <video ref={videoRef} autoPlay className="w-full rounded-xl" />
+    <div className="container mx-auto mt-10">
+      <h2 className="text-2xl mb-6">Create an Outfit</h2>
+      <div className="relative w-full max-w-md mx-auto">
+        <video ref={videoRef} autoPlay className="w-full rounded-lg" />
         <canvas ref={canvasRef} style={{ display: "none" }} />
-        <button
-          onClick={onClose}
-          className="absolute top-2 right-2 text-black font-bold text-xl"
-        >
-          ✕
-        </button>
-        <button
-          onClick={takePhoto}
-          disabled={uploading}
-          className="mt-4 w-full bg-black text-white py-2 rounded-lg"
-        >
-          {uploading ? "Uploading..." : "Take & Upload Photo"}
-        </button>
-
-        {uploadResult && (
-          <div className="mt-4 text-center text-sm text-gray-700 break-all">
-            ✅ Uploaded: {uploadResult}
-          </div>
-        )}
+        <div className="absolute top-0 right-0 p-4">
+          <button
+            onClick={() => router.push("/")} // Add a navigation action here for exit
+            className="bg-black text-white rounded-full p-2"
+          >
+            ✕
+          </button>
+        </div>
       </div>
+      <button
+        onClick={takePhoto}
+        disabled={uploading}
+        className="mt-4 w-full bg-black text-white py-2 rounded-lg"
+      >
+        {uploading ? "Uploading..." : "Take & Upload Outfit"}
+      </button>
+
+      {photoUrl && (
+        <div className="mt-6 text-center">
+          <img src={photoUrl} alt="Taken outfit" className="w-full rounded-lg" />
+          <p className="mt-2 text-gray-500">Your outfit has been uploaded!</p>
+        </div>
+      )}
+
+      {uploadResult && (
+        <div className="mt-4 text-center text-sm text-gray-700 break-all">
+          ✅ Uploaded: {uploadResult}
+        </div>
+      )}
     </div>
   );
 }

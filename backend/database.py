@@ -77,15 +77,16 @@ def create_user(name: str, email: str, password: str):
     return user
 
 
-def add_clothing_item(user_id: int, name: str, size: str, color: str, style: str, brand: str, category: str):
+def add_clothing_item(user_id: int, description: str, size: str, color: str, s3url: str, style: str, brand: str, category: str):
     from models import ClothingItem
 
     with get_session() as session:
         item = ClothingItem(
             user_id=user_id,
-            name=name,
+            description=description,
             size=size,
             color=color,
+            s3url=s3url,
             style=style,
             brand=brand,
             category=category,
@@ -94,3 +95,31 @@ def add_clothing_item(user_id: int, name: str, size: str, color: str, style: str
         session.commit()
         session.refresh(item)
         return item
+    
+def add_outfit(user_id: int, clothing_item_ids: list[int], description: str, s3url: str):
+    from models import Outfit
+
+    outfit = Outfit(
+        clothing_item_ids=clothing_item_ids,
+        description=description,
+        s3url=s3url,
+        user_id=user_id,
+    )
+    with get_session() as session:
+        
+        session.add(outfit)
+        session.commit()
+        session.refresh(outfit)
+        return outfit
+
+def add_outfit_item(outfit_id: int, clothing_item_id: str):
+    from models import OutfitItem
+    outfit_item = OutfitItem(
+        outfit_id=outfit_id,
+        clothing_item_id=clothing_item_id
+    )
+
+    with get_session() as session:
+        session.add(outfit_item)
+        session.commit()
+        return outfit_item

@@ -9,17 +9,16 @@ export const config = {
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const backendUrl = process.env.BACKEND_URL || "http://localhost:8000";
-
+  const loginToken = req.cookies["login_token"] || "";
+  const headers = new Headers(req.headers as HeadersInit);
+  headers.set('Authorization', `Bearer ${loginToken}`);
   try {
-    const response = await fetch(`${backendUrl}upload-image`, {
+    const response = await fetch(`${backendUrl}upload-new-image`, {
       method: "POST",
-      headers: {
-        ...req.headers, 
-      },
+      headers: headers,
       body: req as unknown as BodyInit,
       duplex: "half",
     });
-
     const data = await response.json();
     res.status(response.status).json(data);
   } catch (error) {
