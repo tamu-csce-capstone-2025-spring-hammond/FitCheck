@@ -69,6 +69,7 @@ export default function FilterWithItems() {
                     key={i}
                     itemName="Listed Item Name"
                     category="category"
+                    price="$10.50"
                     href={`/listed-item/${i}`}
                   />
                 </Link>

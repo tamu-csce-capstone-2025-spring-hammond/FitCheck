@@ -300,7 +300,6 @@ export default function ProductFilters() {
           )}
         </div>
 
-        Price Filter
         <div className="border rounded-lg overflow-hidden">
           <button
             onClick={() => toggleFilter("price")}
