@@ -139,7 +139,7 @@ export default function Navbar({ onAddClick }: { onAddClick?: () => void }) {
               <p className="mt-auto text-sm">Try On</p>
             </span>
           </Link>
-          <Link href="/calendar" legacyBehavior>
+          <Link href="/ootd-calendar" legacyBehavior>
             <span
               className={`flex flex-col justify-center items-center ${
                 isActive("/calendar") ? "text-accent" : ""
