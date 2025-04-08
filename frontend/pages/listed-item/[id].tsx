@@ -44,8 +44,8 @@ export default function ProductPage() {
             {/* Right column - Product details */}
             <div className="flex flex-col">
               <div className="flex justify-between items-center mb-4">
-                <h1 className="bold">Product ID: {id}</h1>
-                <DarkButton text="Edit Item" href={`/edit-item/${id}`} />
+                <h1 className="bold">Listed Product: {id}</h1>
+                <DarkButton text="Edit Item Info" href={`/edit-item/${id}`} />
               </div>
 
               {/* Tags */}
@@ -65,17 +65,9 @@ export default function ProductPage() {
 
               <hr className="my-4" />
 
-              {/* Dates */}
-              <div className="space-y-2 mb-6">
-                <p className="italic">Last Worn: mm/dd/yyy</p>
-                <p className="italic">Date Archived: mm/dd/yyy</p>
-              </div>
-
-              <hr className="my-4" />
-
               {/* List item button */}
               <div className="mt-12">
-                <LightButton text="List Item" href="/profile" />
+                <LightButton text="Edit Listed Item" href="/profile" />
               </div>
             </div>
           </div>

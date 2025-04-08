@@ -10,6 +10,7 @@ import {
 } from "@/components/imported-ui/sheet";
 import ProductFilters from "./listings-product-filters";
 import Link from "next/link";
+import ListedItemCard from "./listed-item-card";
 
 export default function FilterWithItems() {
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -56,14 +57,20 @@ export default function FilterWithItems() {
           <div className="flex-1">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {Array.from({ length: 9 }).map((_, i) => (
-                <Link key={i} href={`/product/${i}`} passHref>
-                  <div key={i} className="border rounded-lg overflow-hidden">
+                <Link key={i} href={`/listed-item/${i}`} passHref>
+                  {/* <div key={i} className="border rounded-lg overflow-hidden">
                     <div className="aspect-square bg-muted"></div>
                     <div className="p-4">
-                      <p className="title">Item Name</p>
-                      <p className="text-muted-foreground text-sm">Category</p>
+                      <p className="title">Listed Item</p>
+                      <p className="text-muted-foreground text-sm">Date Listed: </p>
                     </div>
-                  </div>
+                  </div> */}
+                  <ListedItemCard
+                    key={i}
+                    itemName="Listed Item Name"
+                    category="category"
+                    href={`/listed-item/${i}`}
+                  />
                 </Link>
               ))}
             </div>

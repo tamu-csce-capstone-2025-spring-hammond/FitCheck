@@ -10,7 +10,7 @@ import {
 } from "@/components/imported-ui/sheet";
 import ProductFilters from "./product-filters";
 // import Link from "next/link";
-import ProductCard from "./product-card";
+import ItemCard from "./item-card";
 
 export default function FilterWithItems() {
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -57,7 +57,7 @@ export default function FilterWithItems() {
           <div className="flex-1">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {Array.from({ length: 9 }).map((_, i) => (
-                <ProductCard key={i} itemName="Item Name" category="category" href={`/product/${i}`} /> 
+                <ItemCard key={i} itemName="Item Name" category="category" href={`/item/${i}`} /> 
               ))}
             </div>
           </div>
