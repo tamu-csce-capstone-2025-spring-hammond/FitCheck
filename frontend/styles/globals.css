@@ -48,6 +48,10 @@
       font-size: revert;
       font-weight: revert;
     }
+    svg {
+      width: 4rem;
+      height: 4rem;
+    }
   }
   /* .dark {
     --black: 0 0% 3.9%;
