@@ -98,6 +98,21 @@ export default function FilterWithItems() {
 
   return (
     <div className="container bg-white">
+      {/* Search Bar - Above Product Grid */}
+      <div className="w-full flex flex-col md:flex-row gap-4 md:gap-8 mb-12">
+        <input
+          type="text"
+          className="w-full p-2 border rounded"
+          placeholder="Search for items..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyDown={handleKeyDown}
+        />
+        <Button onClick={handleSearchSubmit} className="align-end mt-2 h-full ">
+          Submit Search
+        </Button>{" "}
+      </div>
+
       <div className="flex flex-col space-y-6">
         {/* Page Header */}
         <div>
@@ -148,25 +163,9 @@ export default function FilterWithItems() {
             </Button>
           </div>
 
-          {/* Search Bar - Above Product Grid */}
-          <div className="mb-4">
-            <input
-              type="text"
-              className="w-full p-2 border rounded"
-              placeholder="Search for items..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={handleKeyDown} // Trigger search on Enter key press
-            />
-            <Button onClick={handleSearchSubmit} className="mt-2">
-              Submit Search
-            </Button>{" "}
-            {/* Submit button */}
-          </div>
-
           {/* Product Grid - Placeholder */}
           <div className="flex-1">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredItems.length > 0 ? (
                 filteredItems.map((item) => (
                   <ProductCard
