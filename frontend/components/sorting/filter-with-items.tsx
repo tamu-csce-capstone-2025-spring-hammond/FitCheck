@@ -9,7 +9,7 @@ import {
   SheetTrigger,
 } from "@/components/imported-ui/sheet";
 import ProductFilters from "./product-filters";
-import ProductCard from "./product-card";
+import ProductCard from "./item-card";
 
 interface ClothingItem {
   brand: string;
@@ -73,7 +73,7 @@ export default function FilterWithItems() {
           });
           const data = await response.json();
           console.log("Search results:", data); // Log the search results
-          setFilteredItems(data); 
+          setFilteredItems(data);
         } catch (error) {
           console.error("Error fetching search results:", error);
         }
@@ -84,15 +84,15 @@ export default function FilterWithItems() {
     if (submitQuery) {
       fetchSearchResults();
     }
-  }, [submitQuery]);  // Trigger this effect only when submitQuery changes
+  }, [submitQuery]); // Trigger this effect only when submitQuery changes
 
   const handleSearchSubmit = () => {
-    setSubmitQuery(searchQuery);  // Set submitQuery to trigger search
+    setSubmitQuery(searchQuery); // Set submitQuery to trigger search
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      setSubmitQuery(searchQuery);  // Trigger search on Enter key press
+    if (e.key === "Enter") {
+      setSubmitQuery(searchQuery); // Trigger search on Enter key press
     }
   };
 
@@ -111,7 +111,10 @@ export default function FilterWithItems() {
               <h2 className="text-xl font-semibold mb-6">Filters</h2>
               <ProductFilters
                 selectedFilters={selectedFilters}
-                setSelectedFilters={setSelectedFilters} />
+                setSelectedFilters={(filters) =>
+                  setSelectedFilters(filters as typeof selectedFilters)
+                }
+              />
             </div>
           </div>
 
@@ -131,7 +134,13 @@ export default function FilterWithItems() {
                 <h2 className="text-xl font-semibold mb-6">Filters</h2>
                 <ProductFilters
                   selectedFilters={selectedFilters}
-                  setSelectedFilters={setSelectedFilters} />
+                  setSelectedFilters={(filters) => {
+                    setSelectedFilters({
+                      ...selectedFilters,
+                      ...(filters as typeof selectedFilters),
+                    });
+                  }}
+                />
               </SheetContent>
             </Sheet>
             <Button size="icon">
@@ -147,9 +156,12 @@ export default function FilterWithItems() {
               placeholder="Search for items..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={handleKeyDown}  // Trigger search on Enter key press
+              onKeyDown={handleKeyDown} // Trigger search on Enter key press
             />
-            <Button onClick={handleSearchSubmit} className="mt-2">Submit Search</Button>  {/* Submit button */}
+            <Button onClick={handleSearchSubmit} className="mt-2">
+              Submit Search
+            </Button>{" "}
+            {/* Submit button */}
           </div>
 
           {/* Product Grid - Placeholder */}
