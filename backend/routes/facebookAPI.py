@@ -1,14 +1,12 @@
 import requests
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
-import os
-from dotenv import load_dotenv
+import environment
 
-load_dotenv()
 
-FACEBOOK_ACCESS_TOKEN = os.getenv("FACEBOOK_ACCESS_TOKEN")
-FACEBOOK_CATALOG_ID = os.getenv("FACEBOOK_CATALOG_ID")
-PAGE_ACCESS_TOKEN = os.getenv("PAGE_ACCESS_TOKEN")
+FACEBOOK_ACCESS_TOKEN = environment.get("FACEBOOK_ACCESS_TOKEN")
+FACEBOOK_CATALOG_ID = environment.get("FACEBOOK_CATALOG_ID")
+PAGE_ACCESS_TOKEN = environment.get("PAGE_ACCESS_TOKEN")
 
 # FastAPI router
 router = APIRouter()

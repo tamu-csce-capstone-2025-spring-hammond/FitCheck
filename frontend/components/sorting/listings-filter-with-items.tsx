@@ -17,7 +17,6 @@ export default function FilterWithItems() {
   return (
     <div className="container bg-white">
       <div className="flex flex-col space-y-6">
-        {/* Page Header */}
         <div>
           <h2 className="bold">Organize</h2>
         </div>
@@ -53,22 +52,16 @@ export default function FilterWithItems() {
             </Button>
           </div>
 
-          {/* Product Grid - Placeholder */}
+          {/* PLACEHOLDER LISTINGS */}
           <div className="flex-1">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {Array.from({ length: 9 }).map((_, i) => (
                 <Link key={i} href={`/listed-item/${i}`} passHref>
-                  {/* <div key={i} className="border rounded-lg overflow-hidden">
-                    <div className="aspect-square bg-muted"></div>
-                    <div className="p-4">
-                      <p className="title">Listed Item</p>
-                      <p className="text-muted-foreground text-sm">Date Listed: </p>
-                    </div>
-                  </div> */}
                   <ListedItemCard
                     key={i}
                     itemName="Listed Item Name"
                     category="category"
+                    price="$10.50"
                     href={`/listed-item/${i}`}
                   />
                 </Link>

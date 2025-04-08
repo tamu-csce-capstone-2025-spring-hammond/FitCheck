@@ -1,72 +1,72 @@
 *,
 *:after,
 *:before {
-	box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 * {
-	margin: 0;
-	padding: 0;
-	font: inherit;
+  margin: 0;
+  padding: 0;
+  font: inherit;
 }
 
 img,
 picture,
 svg,
 video {
-	display: block;
-	max-width: 100%;
+  display: block;
+  max-width: 100%;
 }
 
 a,
 button {
-	cursor: pointer;
+  cursor: pointer;
 }
 
 ._site-grid {
-	--begin-end-column: 1fr;
+  --begin-end-column: 1fr;
 
-	display: grid;
-	grid-template-columns:
-		[full-left-start] var(--begin-end-column)
-		[nav-start second-start] 1fr [third-start] 1fr [fourth-start] repeat(
-			19,
-			1fr
-		)
-		[fourth-end] 1fr
-		[second-end third-end] 1fr [nav-end] var(--begin-end-column)
-		[ full-right-end];
-	@include respond(700) {
-		--begin-end-column: 2rem;
-	}
+  display: grid;
+  grid-template-columns:
+    [full-left-start] var(--begin-end-column)
+    [nav-start second-start] 1fr [third-start] 1fr [fourth-start] repeat(
+      19,
+      1fr
+    )
+    [fourth-end] 1fr
+    [second-end third-end] 1fr [nav-end] var(--begin-end-column)
+    [ full-right-end];
+  @include respond(700) {
+    --begin-end-column: 2rem;
+  }
 }
 
 ._grid-2 {
-	grid-column: second;
+  grid-column: 2/-2;
 }
 
 ._grid-3 {
-	grid-column: third;
-	@include respond(900) {
-		grid-column: 2/-2;
-	}
+  grid-column: third;
+  @include respond(900) {
+    grid-column: 2/-2;
+  }
 }
 ._grid-4 {
-	grid-column: fourth;
+  grid-column: fourth;
 
-	@include respond(900) {
-		grid-column: third;
-	}
-	@include respond(500) {
-		grid-column: second;
-	}
+  @include respond(900) {
+    grid-column: third;
+  }
+  @include respond(500) {
+    grid-column: second;
+  }
 }
 ._grid-nav {
-	grid-column: nav;
+  grid-column: nav;
 }
 ._grid-full-right {
-	grid-column-end: full-right;
+  grid-column-end: full-right;
 }
 ._grid-full-left {
-	grid-column-start: full-left;
+  grid-column-start: full-left;
 }

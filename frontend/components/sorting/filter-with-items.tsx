@@ -98,6 +98,35 @@ export default function FilterWithItems() {
 
   return (
     <div className="container bg-white">
+      <div className="w-full flex flex-col md:flex-row gap-4 mb-12">
+        <input
+          type="text"
+          className="w-full p-2 border rounded"
+          placeholder="Search for items..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyDown={handleKeyDown}
+        />
+        <Button
+          onClick={handleSearchSubmit}
+          className="border-0 shadow-none align-center mt-2 h-full hover:bg-white"
+        >
+            <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="2"
+            stroke="currentColor"
+            >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+            />
+            </svg>
+        </Button>{" "}
+      </div>
+
       <div className="flex flex-col space-y-6">
         {/* Page Header */}
         <div>
@@ -148,25 +177,9 @@ export default function FilterWithItems() {
             </Button>
           </div>
 
-          {/* Search Bar - Above Product Grid */}
-          <div className="mb-4">
-            <input
-              type="text"
-              className="w-full p-2 border rounded"
-              placeholder="Search for items..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={handleKeyDown} // Trigger search on Enter key press
-            />
-            <Button onClick={handleSearchSubmit} className="mt-2">
-              Submit Search
-            </Button>{" "}
-            {/* Submit button */}
-          </div>
-
           {/* Product Grid - Placeholder */}
           <div className="flex-1">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredItems.length > 0 ? (
                 filteredItems.map((item) => (
                   <ProductCard
