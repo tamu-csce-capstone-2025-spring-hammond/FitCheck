@@ -15,7 +15,9 @@ export default function Home() {
 
       <main className="_site-grid min-h-[90vh] relative mb-64">
         <div className=" _grid-3">
-          <OOTDCalendar></OOTDCalendar>
+          <div className="my-24">
+            <OOTDCalendar></OOTDCalendar>
+          </div>
         </div>
         <Navbar
           onAddClick={() => {

@@ -18,12 +18,12 @@ export default function OOTDModal({ date, onClose }: Props) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-      <div className="bg-white rounded-xl p-6 w-full max-w-lg shadow-xl relative">
+      <div className="bg-white rounded-lg p-12 w-full max-w-5xl shadow-lg relative">
         <button className="absolute top-2 right-4 text-gray-500" onClick={onClose}>
           ✕
         </button>
 
-        <h2 className="text-lg font-bold mb-4">Outfit for {date}</h2>
+        <h2 className="font-bold mb-4">OOTD for {date}</h2>
 
         {isEditing ? (
           <OOTDEditForm date={date} onCancel={() => setIsEditing(false)} />
@@ -34,26 +34,29 @@ export default function OOTDModal({ date, onClose }: Props) {
               alt="Outfit"
               className="rounded-lg w-full object-cover"
             />
-            <div className="text-sm text-gray-700">{mockOutfitData.notes}</div>
-            <div className="flex flex-wrap gap-2">
+            <div className="">{mockOutfitData.notes}</div>
+            <div className="flex flex-wrap justify-start gap-2">
               {mockOutfitData.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="bg-gray-200 text-gray-700 px-2 py-1 rounded-full text-xs"
+                  className="flex justify-center align-center bg-accent-3 text-gray-500 min-w-36 py-1 text-lg"
                 >
                   {tag}
                 </span>
               ))}
             </div>
 
-            <div className="flex justify-between mt-6">
+            <div className="flex flex-col gap-8 pt-12 ">
               <button
                 onClick={() => setIsEditing(true)}
-                className="text-sm px-4 py-2 bg-black text-white rounded-xl"
+                className="px-12 py-2 bg-black text-white rounded-lg w-full"
               >
+                <p className="text-white rounded-lg">
                 Edit
+
+                </p>
               </button>
-              <button className="text-sm text-red-500 underline">Delete</button>
+              <button className="text-heart-red underline">Delete</button>
             </div>
           </div>
         )}
