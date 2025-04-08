@@ -14,7 +14,7 @@ export default function Home() {
       <Header></Header>
 
       <main className="_site-grid min-h-[90vh] relative mb-64">
-        <div className=" _grid-3">
+        <div className=" _grid-2">
           <div className="my-24">
             <OOTDCalendar></OOTDCalendar>
           </div>

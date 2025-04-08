@@ -29,7 +29,7 @@ export default function OOTDEditForm({ date, onCancel }: Props) {
   };
 
   const handleSubmit = () => {
-    // TODO: Send to backend (upload to S3, save to DB)
+    //Send to backend (upload to S3, save to DB)
     console.log({ image, notes, tags });
     onCancel();
   };
@@ -39,7 +39,7 @@ export default function OOTDEditForm({ date, onCancel }: Props) {
       {preview ? (
         <img src={preview} alt="Preview" className="rounded-lg w-full object-cover" />
       ) : (
-        <label className="border border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer block text-sm text-gray-500">
+        <label className="border border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer block text-gray-500">
           <input
             type="file"
             accept="image/*"
@@ -51,7 +51,7 @@ export default function OOTDEditForm({ date, onCancel }: Props) {
       )}
 
       <textarea
-        className="w-full border border-gray-300 rounded-lg p-2 text-sm"
+        className="w-full border border-gray-300 rounded-lg p-2"
         rows={3}
         placeholder="Write outfit notes..."
         value={notes}
@@ -63,7 +63,7 @@ export default function OOTDEditForm({ date, onCancel }: Props) {
           <button
             key={tag}
             type="button"
-            className={`px-3 py-1 rounded-full text-xs border ${
+            className={`px-8 py-1 rounded-full text-lg border ${
               tags.includes(tag)
                 ? "bg-black text-white"
                 : "bg-white text-gray-700"
@@ -75,16 +75,16 @@ export default function OOTDEditForm({ date, onCancel }: Props) {
         ))}
       </div>
 
-      <div className="flex justify-end gap-4">
+      <div className="flex justify-end gap-12 pt-8 ">
         <button
           onClick={onCancel}
-          className="text-sm text-gray-500 underline"
+          className="text-gray-500 underline"
         >
           Cancel
         </button>
         <button
           onClick={handleSubmit}
-          className="text-sm bg-black text-white px-4 py-2 rounded-xl"
+          className="bg-black text-white min-w-48 py-2 rounded-xl"
         >
           Save
         </button>

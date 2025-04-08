@@ -1,5 +1,6 @@
 // ootd-modal.tx
 import { useState } from "react";
+import Image from "next/image";
 import OOTDEditForm from "@/components/ootd-edit-form";
 
 type Props = {
@@ -19,7 +20,7 @@ export default function OOTDModal({ date, onClose }: Props) {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-12 w-full max-w-5xl shadow-lg relative">
-        <button className="absolute top-2 right-4 text-gray-500" onClick={onClose}>
+        <button className="absolute top-8 right-12 text-gray-500" onClick={onClose}>
           ✕
         </button>
 
@@ -28,14 +29,16 @@ export default function OOTDModal({ date, onClose }: Props) {
         {isEditing ? (
           <OOTDEditForm date={date} onCancel={() => setIsEditing(false)} />
         ) : (
-          <div className="space-y-4">
-            <img
+          <div>
+            <Image
               src={mockOutfitData.imageUrl}
               alt="Outfit"
+              width={1024}
+              height={768}
               className="rounded-lg w-full object-cover"
             />
             <div className="">{mockOutfitData.notes}</div>
-            <div className="flex flex-wrap justify-start gap-2">
+            <div className="flex flex-wrap justify-start gap-2 mt-4">
               {mockOutfitData.tags.map((tag) => (
                 <span
                   key={tag}
@@ -53,7 +56,6 @@ export default function OOTDModal({ date, onClose }: Props) {
               >
                 <p className="text-white rounded-lg">
                 Edit
-
                 </p>
               </button>
               <button className="text-heart-red underline">Delete</button>

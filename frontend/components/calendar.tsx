@@ -32,9 +32,11 @@ export default function OOTDCalendar() {
     mockOutfits.find((o) => o.date === dateStr);
 
   return (
-    <div className="grid grid-cols-7 gap-2 p-4 bg-gray-50 rounded-xl shadow">
+    <div className="flex flex-col items-center justify-center gap-12">
+      <h2>{new Date().toLocaleString('default', { month: 'long' })} {year}</h2>
+    <div className="w-full grid grid-cols-7 gap-2 p-4 bg-gray-50 rounded-xl shadow">
       {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
-        <div key={d} className="text-center font-bold text-sm text-gray-500">
+        <div key={d} className="text-center font-bold text-gray-500">
           {d}
         </div>
       ))}
@@ -46,12 +48,12 @@ export default function OOTDCalendar() {
         return (
           <div
             key={idx}
-            className="aspect-square border border-gray-200 rounded-lg bg-white hover:bg-gray-100 cursor-pointer flex flex-col items-center justify-center text-xs"
+            className="aspect-square border border-gray-200 rounded-lg bg-white hover:bg-gray-100 cursor-pointer flex flex-col items-center justify-center text-lg relative"
             onClick={() => date && setSelectedDate(dateStr!)}
           >
             {date && (
               <>
-                <span className="mb-1 font-medium">{date.getDate()}</span>
+                <span className="mb-1 absolute top-4 right-6">{date.getDate()}</span>
                 {outfit?.thumbnailUrl && (
                   <Image
                     src={outfit.thumbnailUrl}
@@ -73,6 +75,7 @@ export default function OOTDCalendar() {
           onClose={() => setSelectedDate(null)}
         />
       )}
+    </div>
     </div>
   );
 }
