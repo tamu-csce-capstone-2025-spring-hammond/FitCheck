@@ -123,3 +123,13 @@ def add_outfit_item(outfit_id: int, clothing_item_id: str):
         session.add(outfit_item)
         session.commit()
         return outfit_item
+
+def mark_clothing_item_worn(clothing_item_id: str):
+    from models import ClothingItem
+    with get_session() as session:
+        clothing_item = session.exec(select(ClothingItem).where(ClothingItem.id == clothing_item_id)).first()
+        clothing_item.worn = True
+        session.add(clothing_item)
+        session.commit()
+        return clothing_item
+
