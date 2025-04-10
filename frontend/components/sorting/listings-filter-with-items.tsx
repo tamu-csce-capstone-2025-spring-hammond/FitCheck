@@ -56,7 +56,6 @@ export default function FilterWithItems() {
           <div className="flex-1">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {Array.from({ length: 9 }).map((_, i) => (
-                <Link key={i} href={`/listed-item/${i}`} passHref>
                   <ListedItemCard
                     key={i}
                     itemName="Listed Item Name"
@@ -64,7 +63,6 @@ export default function FilterWithItems() {
                     price="$10.50"
                     href={`/listed-item/${i}`}
                   />
-                </Link>
               ))}
             </div>
           </div>
