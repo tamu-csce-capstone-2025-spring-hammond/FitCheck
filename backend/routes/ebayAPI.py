@@ -7,6 +7,9 @@ import base64
 
 load_dotenv()
 
+# FastAPI router
+router = APIRouter()
+
 
 # 🔐 Replace these with your actual values
 CLIENT_ID = os.getenv("EBAY_CLIENT_ID")
