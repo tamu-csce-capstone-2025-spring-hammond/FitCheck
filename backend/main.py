@@ -8,7 +8,10 @@ from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 # Start FastAPI app
-app = FastAPI()
+app = FastAPI(
+    title="FitCheck API Docs",
+    version="0.3"
+)
 
 # CORS configuration
 origins = [
