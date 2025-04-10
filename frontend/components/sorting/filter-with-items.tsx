@@ -130,7 +130,7 @@ export default function FilterWithItems() {
 
   return (
     <div className="container bg-white">
-      <div className="w-full flex flex-col md:flex-row gap-4 mb-2">
+      <div className="w-full flex flex-row gap-4 mb-2">
         <input
           type="text"
           className="w-full p-2 border rounded"
