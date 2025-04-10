@@ -246,7 +246,7 @@ export default function FilterWithItems() {
                 filteredItems.map((item) => (
                   <ProductCard
                     key={item.id}
-                    itemName={item.name}
+                    itemName={item.description}
                     category={item.category}
                     href={item.s3url}
                   />
