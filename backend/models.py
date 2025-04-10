@@ -213,7 +213,7 @@ if __name__ == "__main__":
         exit(0)
 
     engine = create_engine(os.environ.get("DATABASE_URL"), echo=True)
-    SQLModel.metadata.drop_all(engine, tables=[Outfit.__table__, OutfitItem.__table__])
+    SQLModel.metadata.drop_all(engine)
     SQLModel.metadata.create_all(engine)
 
 

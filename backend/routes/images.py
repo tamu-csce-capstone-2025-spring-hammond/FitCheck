@@ -149,6 +149,11 @@ async def upload_outfit(file: UploadFile = File(...), authorization: str = Heade
             outfit_id=outfit.id,
             clothing_item_id=item['id']
         )
+    
+    # Mark the associated ClothingItem as worn
+    for item in saved_items:
+        database.mark_clothing_item_worn(item['id'])
+    
 
     
     # Upload the outfit to ChromaDB
