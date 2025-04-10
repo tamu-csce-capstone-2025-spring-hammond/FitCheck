@@ -10,6 +10,7 @@ export default function Header() {
               FitCheck
             </Link>
           </h1>
+          <Link href={`/login`}>
           <div>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -26,6 +27,7 @@ export default function Header() {
               />
             </svg>
           </div>
+          </Link>
         </div>
       </div>
     </header>
