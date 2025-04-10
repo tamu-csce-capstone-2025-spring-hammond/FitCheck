@@ -199,6 +199,25 @@ def chroma_query(request: StandardRequest):
         "results": results,
     }
 
+@router.get('/chroma-clear-all')
+def chroma_clear_all():
+    client = chromadb.HttpClient(host=environment.get('CHROMA_DB_ADDRESS'), port=8000)
+
+    try:
+        collection_names = client.list_collections()  # Now returns List[str] in v0.6.0
+
+        for name in collection_names:
+            client.delete_collection(name=name)
+
+        return {
+            "message": f"Deleted {len(collection_names)} collections.",
+            "deleted_collections": collection_names
+        }
+
+    except Exception as e:
+        return {"error": str(e)}
+
+
 if __name__ == '__main__':
     client = chromadb.HttpClient(host=environment.get('CHROMA_DB_ADDRESS'), port=8000)
     collection = client.get_or_create_collection(name="clothing_items")
