@@ -8,7 +8,7 @@ from database import get_db
 from models import ClothingItem
 from route_utils import enforce_logged_in
 from typing import List, Optional
-#import chromadb
+import chromadb
 import database
 import environment 
 
