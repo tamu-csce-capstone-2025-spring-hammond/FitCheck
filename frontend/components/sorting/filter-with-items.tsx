@@ -10,6 +10,7 @@ import {
 } from "@/components/imported-ui/sheet";
 import ProductFilters from "./product-filters";
 import ProductCard from "./item-card";
+import Image from "next/image";
 
 interface ClothingItem {
   brand: string;
@@ -141,7 +142,7 @@ export default function FilterWithItems() {
         />
         <Button
           onClick={handleSearchSubmit}
-          className="border-0 shadow-none align-center mt-2 h-full hover:bg-white"
+          className="border-0 shadow-none align-center h-full hover:bg-white"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -158,10 +159,10 @@ export default function FilterWithItems() {
           </svg>
         </Button>{" "}
       </div>
-      <div className="mb-8">
+      <div className="flex w-full mt-4 justify-end">
         <Button
           onClick={handleClearSearch}
-          className="mt-2 h-full border-heart-red border-[1px]  hover:bg-heart-red "
+          className=" mt-2 h-full border-heart-red border-[1px]  hover:bg-heart-red "
         >
           <p className=" text-heart-red text-sm hover:text-white">
             Clear Search Results
@@ -240,7 +241,7 @@ export default function FilterWithItems() {
           </div>
 
           {/* Product Grid - Placeholder */}
-          <div className="flex-1">
+          <div className="flex-1 relative">
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredItems.length > 0 ? (
                 filteredItems.map((item) => (
@@ -252,7 +253,18 @@ export default function FilterWithItems() {
                   />
                 ))
               ) : (
-                <div>No items found</div>
+                <div className="absolute inset-0 top-24 flex flex-col items-center justify-center">
+                  <Image
+                    src="/images/icons/error.svg"
+                    alt="No items found"
+                    width={48}
+                    height={48}
+                    className="mx-auto"
+                  />
+                  <p className="text-center text-gray-400 text-md italic mt-4">
+                    No items found, try something new!
+                  </p>
+                </div>
               )}
             </div>
           </div>
