@@ -164,7 +164,7 @@ export default function FilterWithItems() {
           onClick={handleClearSearch}
           className=" mt-2 h-full border-heart-red border-[1px]  hover:bg-heart-red "
         >
-          <p className=" text-heart-red text-sm hover:text-white">
+          <p className=" text-heart-red text-lg hover:text-white">
             Clear Search Results
           </p>
         </Button>
