@@ -1,6 +1,6 @@
 from openai import OpenAI
 from dotenv import load_dotenv
-import chromadb
+#import chromadb
 import asyncio
 import json
 

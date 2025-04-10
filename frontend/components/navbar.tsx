@@ -10,10 +10,10 @@ export default function Navbar({ onAddClick }: { onAddClick?: () => void }) {
   return (
     <header className="bottom-12 left-0 right-0 fixed max-w-3xl mx-auto text-body-light">
       <div className="bg-black md:rounded-xl shadow-md">
-        <div className="px-16 py-2 flex justify-between align-middle py-6">
+        <div className="px-16  flex justify-between align-middle py-6 gap-2">
           <Link href="/" legacyBehavior>
             <span
-              className={`flex flex-col justify-center items-center ${
+              className={`flex gap-2 flex-col justify-center items-center ${
                 isActive("/") ? "text-accent" : ""
               }`}
             >
@@ -45,7 +45,7 @@ export default function Navbar({ onAddClick }: { onAddClick?: () => void }) {
           </Link>
           <Link href="/listings" legacyBehavior>
             <span
-              className={`flex flex-col justify-center items-center ${
+              className={`flex gap-2 flex-col justify-center items-center ${
                 isActive("/listings") ? "text-accent" : ""
               }`}
             >
@@ -73,7 +73,7 @@ export default function Navbar({ onAddClick }: { onAddClick?: () => void }) {
             </span>
           </Link>
           <button onClick={onAddClick}>
-            <span className="flex flex-col justify-center items-center">
+            <span className="flex gap-2 flex-col justify-center items-center">
               <Image
                 src="/images/icons/add.svg"
                 alt="Add"
@@ -85,7 +85,7 @@ export default function Navbar({ onAddClick }: { onAddClick?: () => void }) {
           </button>
           <Link href="/try-on" legacyBehavior>
             <span
-              className={`flex flex-col justify-center items-center ${
+              className={`flex gap-2 flex-col justify-center items-center ${
                 isActive("/try-on") ? "text-accent" : ""
               }`}
             >
@@ -139,9 +139,9 @@ export default function Navbar({ onAddClick }: { onAddClick?: () => void }) {
               <p className="mt-auto text-sm">Try On</p>
             </span>
           </Link>
-          <Link href="/calendar" legacyBehavior>
+          <Link href="/ootd-calendar" legacyBehavior>
             <span
-              className={`flex flex-col justify-center items-center ${
+              className={`flex gap-2 flex-col justify-center items-center ${
                 isActive("/calendar") ? "text-accent" : ""
               }`}
             >

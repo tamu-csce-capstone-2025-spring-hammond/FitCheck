@@ -47,7 +47,7 @@ button {
 }
 
 ._grid-2 {
-  grid-column: second;
+  grid-column: 2/-2;
 }
 
 ._grid-3 {

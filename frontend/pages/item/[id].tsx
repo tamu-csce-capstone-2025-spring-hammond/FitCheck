@@ -75,7 +75,10 @@ export default function ProductPage() {
 
               {/* List item button */}
               <div className="mt-12">
-                <LightButton text="List Item" href="/profile" />
+                <LightButton
+                  text="List Item"
+                  href={`/initial-list-item/${id}`}
+                />
               </div>
             </div>
           </div>

@@ -6,7 +6,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from fastapi import Header
 from pydantic import BaseModel
 import boto3
-import chromadb
+#import chromadb
 import environment
 from urllib.parse import urlparse
 

@@ -7,7 +7,10 @@ import { Badge } from "@/components/imported-ui/badge";
 
 interface ProductFiltersProps {
   selectedFilters: Record<string, string[]>;
-  setSelectedFilters: (filters: Record<string, string[]>) => void;
+  // setSelectedFilters: (filters: Record<string, string[]>) => void;
+  setSelectedFilters: React.Dispatch<
+    React.SetStateAction<Record<string, string[]>>
+  >;
 }
 
 export default function ProductFilters({
@@ -43,10 +46,9 @@ export default function ProductFilters({
           });
           const data = await response.json();
           options[field] = JSON.parse(data) || [];
-
         }
 
-        console.log("Fetched filter options:", options); 
+        console.log("Fetched filter options:", options);
         setFilterOptions(options);
       } catch (error) {
         console.error("Error fetching filter options:", error);
@@ -86,8 +88,7 @@ export default function ProductFilters({
     });
   };
 
-  const activeFilterCount =
-    Object.values(selectedFilters).flat().length;
+  const activeFilterCount = Object.values(selectedFilters).flat().length;
 
   const toggleFilter = (filterKey: string) => {
     setOpenFilters((prev) => {
@@ -136,10 +137,12 @@ export default function ProductFilters({
         {Object.keys(filterOptions).map((filterKey) => (
           <div key={filterKey} className="border rounded-lg overflow-hidden">
             <button
-              onClick={() => toggleFilter(filterKey)} 
+              onClick={() => toggleFilter(filterKey)}
               className="flex items-center justify-between w-full p-4 text-left font-medium"
             >
-              <span>{filterKey.charAt(0).toUpperCase() + filterKey.slice(1)}</span>
+              <span>
+                {filterKey.charAt(0).toUpperCase() + filterKey.slice(1)}
+              </span>
               {openFilters[filterKey] ? (
                 <ChevronUp className="h-4 w-4" />
               ) : (
@@ -176,4 +179,3 @@ export default function ProductFilters({
     </div>
   );
 }
-
