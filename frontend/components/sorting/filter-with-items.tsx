@@ -48,7 +48,7 @@ export default function FilterWithItems() {
       color: [],
       tag: [],
     });
-  
+
     try {
       const response = await fetch("/api/by-field", {
         method: "POST",
@@ -69,7 +69,6 @@ export default function FilterWithItems() {
       console.error("Error resetting items:", error);
     }
   };
-  
 
   // Fetch filtered items when filters change
   useEffect(() => {
@@ -131,7 +130,7 @@ export default function FilterWithItems() {
 
   return (
     <div className="container bg-white">
-      <div className="w-full flex flex-col md:flex-row gap-4 mb-12">
+      <div className="w-full flex flex-col md:flex-row gap-4 mb-2">
         <input
           type="text"
           className="w-full p-2 border rounded"
@@ -144,41 +143,43 @@ export default function FilterWithItems() {
           onClick={handleSearchSubmit}
           className="border-0 shadow-none align-center mt-2 h-full hover:bg-white"
         >
-            <svg
+          <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
             strokeWidth="2"
             stroke="currentColor"
-            >
+          >
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
               d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
             />
-            </svg>
+          </svg>
         </Button>{" "}
+      </div>
+      <div className="mb-8">
         <Button
           onClick={handleClearSearch}
-          variant="outline"
-          className="mt-2 h-full"
-          
+          className="mt-2 h-full border-heart-red border-[1px]  hover:bg-heart-red "
         >
-          Clear
+          <p className=" text-heart-red text-sm hover:text-white">
+            Clear Search Results
+          </p>
         </Button>
       </div>
 
       <div className="flex flex-col space-y-6">
-        {/* Page Header */}
         <div>
           <h2 className="bold">Organize</h2>
         </div>
+        <hr></hr>
 
         <div className="flex flex-col lg:flex-row gap-8 bg-white">
           {/* Filters - Desktop */}
           <div className="hidden lg:block w-64 flex-shrink-0">
             <div className="sticky top-6">
-              <h2 className="text-xl font-semibold mb-6">Filters</h2>
+              <p className="bold mb-6">Filters</p>
               <ProductFilters
                 selectedFilters={selectedFilters}
                 setSelectedFilters={(filters) =>
@@ -189,12 +190,32 @@ export default function FilterWithItems() {
           </div>
 
           {/* Filters - Mobile */}
-          <div className="lg:hidden flex justify-between items-center mb-4">
+          <div className="lg:hidden flex justify-between items-center mb-4  ">
             <Sheet open={filtersOpen} onOpenChange={setFiltersOpen}>
               <SheetTrigger asChild>
-                <Button className="flex items-center gap-2">
-                  <Filter className="h-4 w-4" />
-                  Filters
+                <Button className="flex items-center gap-2 ">
+                  {/* <Filter className="h-12 w-12" /> */}
+                  <svg
+                    className="!w-6 !h-6"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                    <g
+                      id="SVGRepo_tracerCarrier"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    ></g>
+                    <g id="SVGRepo_iconCarrier">
+                      {" "}
+                      <path d="M0 3H16V1H0V3Z" fill="#000000"></path>{" "}
+                      <path d="M2 7H14V5H2V7Z" fill="#000000"></path>{" "}
+                      <path d="M4 11H12V9H4V11Z" fill="#000000"></path>{" "}
+                      <path d="M10 15H6V13H10V15Z" fill="#000000"></path>{" "}
+                    </g>
+                  </svg>
+                  <p>Filters</p>
                 </Button>
               </SheetTrigger>
               <SheetContent

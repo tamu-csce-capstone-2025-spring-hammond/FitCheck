@@ -55,7 +55,7 @@ export default function Home() {
 
       <main className="_site-grid min-h-[90vh] relative mb-64">
         <div className="_grid-3">
-          <div className="grid grid-cols-[1fr] md:grid-cols-[1fr,1fr] my-24">
+          <div className="grid grid-cols-[1fr] md:grid-cols-[1fr,1fr] mt-16 mb-12">
             <div className="flex flex-col gap-6">
               <h1 className="bold">
                 Welcome To Your Closet, {isLoading ? "..." : error ? "Guest" : userData.name}!
