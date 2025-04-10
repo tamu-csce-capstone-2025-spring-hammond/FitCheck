@@ -227,10 +227,11 @@ def main():
     name = "Fake Uniqlo T-shirt"
     currency = "USD"
     price = 18
-    image_url = "https://en.wikipedia.org/wiki/Image#/media/File:Image_created_with_a_mobile_phone.png"
+    image_url = "https://media-hosting.imagekit.io/73fe1c298ee74a65/Image_created_with_a_mobile_phone.png?Expires=1838924401&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=vQpBJWYhqWxT1L1JcJ8eLypJzdmOkJneFUx1OgcaOvMRLZgYjtp4ZKx6cM6UVIxUWwojnI3~rBz0NeM9cn5r7YmT6j7bXqoM5GlaGmD-DR8HY5NwrlwB1frtV-uzEgsGY-fbo6oBa9eDZk6JZDeivH9JjkTHMGCxOs2R3RGXziwvVQPgNf-kRV~HPe5aqYZWa-JpEiQsHpMs7WSFJyzeqbuybY65QtiejBSlvSUp4kBdMzEAd-gd1eoFz8Y-1Wa0mGra3pHlx0MqLWh-nDdChSr500-ERXqpf7be1Bg~LJ465MUGhUI4iCQFmd3l5m0jL0Q0zCe~G8~klaWAJKg8Ng__"
     retailer_id = "uniqlo-medium-green-tshirt" # has to be unique
     new_image_url = "https://image.uniqlo.com/UQ/ST3/WesternCommon/imagesgoods/465187/sub/goods_465187_sub14_3x4.jpg?width=600"
     description = "Medium Green T-shirt"
+    # post_to_catalog(name, currency, price, image_url, retailer_id, description)
 
 if __name__ == "__main__":
     main()
