@@ -8,6 +8,9 @@ from database import get_db
 from models import ClothingItem
 from route_utils import enforce_logged_in
 from typing import List, Optional
+import chromadb
+import database
+import environment 
 
 # FastAPI router
 router = APIRouter()
@@ -27,7 +30,6 @@ def post_by_field(
     current_user = enforce_logged_in(authorization)
     
     query = select(ClothingItem).where(ClothingItem.user_id == current_user.id)
-    print(request.category)
     if request.category:
         query = query.where(ClothingItem.category.in_(request.category))
     
@@ -60,3 +62,39 @@ def get_unique_values_by_field(field: str, authorization: str = Header(...), db:
     items = db.exec(query).all()
     return json.dumps([getattr(item, field) for item in items])
 
+class SearchRequest(BaseModel):
+    query: str  # The search query text
+
+@router.post("/search")
+def search(request: SearchRequest, authorization: str = Header(...), db: Session = Depends(get_db)):
+    current_user = enforce_logged_in(authorization)
+
+    # Initialize ChromaDB client
+    client = chromadb.HttpClient(host=environment.get('CHROMA_DB_ADDRESS'), port=8000)
+    collection = client.get_or_create_collection(name="clothing_items")
+
+    # Query ChromaDB for similar items
+    try:
+        results = collection.query(
+            query_texts=[request.query], 
+            n_results=5  
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Chroma query failed: {e}")
+
+    # Parse the results from ChromaDB
+    matching_items = []
+    for result in range(len(results['ids'][0])):
+        if results['distances'][0][result] < 1:
+            item_id = results['ids'][0][result]
+        # Fetch the clothing item from the database using the ID
+            clothing_item = db.query(ClothingItem).filter(ClothingItem.id == item_id).first()
+            matching_items.append(clothing_item)
+        
+
+    print("____________________________")
+    print("Matching items from ChromaDB:")
+    print(matching_items)
+    print("____________________________")
+
+    return matching_items

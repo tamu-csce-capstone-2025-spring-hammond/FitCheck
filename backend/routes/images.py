@@ -71,7 +71,6 @@ async def upload_image(file: UploadFile = File(...), authorization: str = Header
             "category": clothing.category,
             'description': clothing.description,
         })
-        print(f"Saved clothing item with ID {clothing.id}")
 
     # Upload parsed items to ChromaDB
     client = chromadb.HttpClient(host=environment.get('CHROMA_DB_ADDRESS'), port=8000)
@@ -90,7 +89,6 @@ async def upload_image(file: UploadFile = File(...), authorization: str = Header
 
 @router.post("/upload-new-outfit")
 async def upload_outfit(file: UploadFile = File(...), authorization: str = Header(...)):
-    print('got here 1')
     current_user = enforce_logged_in(authorization)
 
     # Get AWS credentials from environment
@@ -121,7 +119,6 @@ async def upload_outfit(file: UploadFile = File(...), authorization: str = Heade
     
     # Add outfit to the cockroach database
     saved_items = []
-    print('got here 2')
 
     # Create a ChromaDB client to search for existing items
     client = chromadb.HttpClient(host=environment.get('CHROMA_DB_ADDRESS'), port=8000)
@@ -137,7 +134,6 @@ async def upload_outfit(file: UploadFile = File(...), authorization: str = Heade
             "id": str(results['ids'][0][0]),
         })
 
-    print(saved_items)
     
     # Create the outfit entry in the database (without items first)
     outfit = database.add_outfit(
@@ -146,17 +142,14 @@ async def upload_outfit(file: UploadFile = File(...), authorization: str = Heade
         s3url=s3_url,
         clothing_item_ids=[str(item['id']) for item in saved_items],
     )   
-    print("got here 3")
     
     # Create OutfitItem entries to link clothing items with the outfit
     for item in saved_items:
-        print('outfit.id', outfit.id)
         database.add_outfit_item(
             outfit_id=outfit.id,
             clothing_item_id=item['id']
         )
 
-    print("got here 4")
     
     # Upload the outfit to ChromaDB
     client = chromadb.HttpClient(host=environment.get('CHROMA_DB_ADDRESS'), port=8000)
@@ -167,7 +160,6 @@ async def upload_outfit(file: UploadFile = File(...), authorization: str = Heade
         ids=[str(outfit.id)], 
     )
 
-    print("got here 5")
     return {
         "message": "Upload and parse successful",
         "s3_url": s3_url,
@@ -187,9 +179,6 @@ def chroma_upload(request: StandardRequest):
     return {
         "message": "Chroma upload successful",
     }
-
-
-
 
 @router.post('/chroma-query')
 def chroma_query(request: StandardRequest):
