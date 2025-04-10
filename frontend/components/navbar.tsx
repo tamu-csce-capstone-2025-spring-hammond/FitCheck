@@ -8,7 +8,7 @@ export default function Navbar({ onAddClick }: { onAddClick?: () => void }) {
   const isActive = (path: string) => router.pathname === path;
 
   return (
-    <header className="bottom-12 left-0 right-0 fixed max-w-3xl mx-auto text-body-light">
+    <header className="bottom-0 md:bottom-12 left-0 right-0 fixed max-w-3xl mx-auto text-body-light">
       <div className="bg-black md:rounded-xl shadow-md">
         <div className="px-16  flex justify-between align-middle py-6 gap-2">
           <Link href="/" legacyBehavior>
