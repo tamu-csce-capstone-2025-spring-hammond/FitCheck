@@ -88,7 +88,7 @@ def search(request: SearchRequest, authorization: str = Header(...), db: Session
         if results['distances'][0][result] < 1:
             item_id = results['ids'][0][result]
         # Fetch the clothing item from the database using the ID
-            clothing_item = db.query(ClothingItem).filter(ClothingItem.id == item_id).first()
+            clothing_item = db.query(ClothingItem).filter(ClothingItem.id == item_id).where(ClothingItem.user_id == current_user.id).first()
             matching_items.append(clothing_item)
         
 
