@@ -26,7 +26,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-from routes import login, user, clothing_item, outfit, resale_listing, wear_history, images, filter, facebookAPI
+from routes import login, user, clothing_item, outfit, resale_listing, wear_history, images, filter, facebookAPI, ebayAPI
 # Include routes
 app.include_router(login.router)
 app.include_router(user.router)
@@ -37,6 +37,7 @@ app.include_router(wear_history.router)
 app.include_router(images.router)
 app.include_router(filter.router)
 app.include_router(facebookAPI.router)
+app.include_router(ebayAPI.router)
 
 @app.get("/")
 def get_root():
