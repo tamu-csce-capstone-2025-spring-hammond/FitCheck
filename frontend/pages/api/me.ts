@@ -21,7 +21,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const formattedToken = loginToken.startsWith('Bearer ') ? loginToken : `Bearer ${loginToken}`;
     console.log('Formatted token:', formattedToken);
 
-    const backendUrl = `${process.env.BACKEND_URL}/users/me`.replace(/\/+$/, '');
+    const backendUrl = `${process.env.BACKEND_URL}/users/me`.replace(/([^:]\/)\/+/g, "$1");
     console.log('Fetching from:', backendUrl);
 
     const response = await fetch(backendUrl, {

@@ -8,7 +8,7 @@ from clothes_addition import parse_clothing_items, parse_outfit
 import database
 import uuid
 from s3connection import add_image_obj
-#import chromadb
+import chromadb
 from route_utils import enforce_logged_in
 
 # FastAPI router

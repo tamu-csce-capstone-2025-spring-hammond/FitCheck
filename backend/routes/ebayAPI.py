@@ -1,0 +1,36 @@
+import requests
+from fastapi import APIRouter, HTTPException, Depends
+from pydantic import BaseModel
+import os
+from dotenv import load_dotenv
+import base64
+
+load_dotenv()
+
+# FastAPI router
+router = APIRouter()
+
+
+# 🔐 Replace these with your actual values
+CLIENT_ID = os.getenv("EBAY_CLIENT_ID")
+CLIENT_SECRET = os.getenv("EBAY_CLIENT_SECRET")
+REDIRECT_URI = "https://developer.ebay.com/tools/oauth-token-generator"
+AUTH_CODE = "v%5E1.1%23i%5E1%23f%5E0%23p%5E3%23r%5E1%23I%5E3%23t%5EUl41XzExOjg3QTZGNjZGRjE0ODYzOUNDM0FENTZCQjc2QjZGODkzXzFfMSNFXjEyODQ%3D"
+ACCESS_TOKEN = "v^1.1#i^1#f^0#p^3#I^3#r^0#t^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"
+
+
+def getInventoryItem(name):
+    url = "https://api.sandbox.ebay.com/sell/inventory/v1/inventory_item/"
+    url += name
+    headers = {"Authorization": f"Bearer {ACCESS_TOKEN}"}
+    response = requests.get(url,headers=headers)
+    return response.json()
+
+    
+def main():
+    # Example usage
+    item_sku = "test-sku-001"
+    print(getInventoryItem(item_sku))
+    
+if __name__ == "__main__":
+    main()

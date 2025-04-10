@@ -54,6 +54,7 @@ class ClothingItemBase(SQLModel):
     category: str
     last_worn: Optional[datetime] = None
     user_id: int
+    worn: Optional[bool] = None
 
 class ClothingItemPublic(ClothingItemBase):
     id: Optional[int] = None

@@ -38,6 +38,39 @@ export default function FilterWithItems() {
   const [searchQuery, setSearchQuery] = useState("");
   const [submitQuery, setSubmitQuery] = useState(""); // Separate state to track submit action
 
+  const handleClearSearch = async () => {
+    setSearchQuery("");
+    setSubmitQuery("");
+    setSelectedFilters({
+      category: [],
+      brand: [],
+      size: [],
+      color: [],
+      tag: [],
+    });
+  
+    try {
+      const response = await fetch("/api/by-field", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          category: [],
+          brand: [],
+          size: [],
+          color: [],
+          tag: [],
+        }),
+      });
+      const data = await response.json();
+      setFilteredItems(data);
+    } catch (error) {
+      console.error("Error resetting items:", error);
+    }
+  };
+  
+
   // Fetch filtered items when filters change
   useEffect(() => {
     const fetchFilteredItems = async () => {
@@ -115,16 +148,24 @@ export default function FilterWithItems() {
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
-            stroke-width="2"
+            strokeWidth="2"
             stroke="currentColor"
             >
             <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeLinecap="round"
+              strokeLinejoin="round"
               d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
             />
             </svg>
         </Button>{" "}
+        <Button
+          onClick={handleClearSearch}
+          variant="outline"
+          className="mt-2 h-full"
+          
+        >
+          Clear
+        </Button>
       </div>
 
       <div className="flex flex-col space-y-6">
