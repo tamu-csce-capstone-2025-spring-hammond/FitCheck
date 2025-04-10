@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 
 export default function CameraModal({
   isVisible,
@@ -60,7 +61,7 @@ export default function CameraModal({
     formData.append("file", file);
 
     try {
-        const res = await fetch(`/api/upload-new-image`, {
+      const res = await fetch(`/api/upload-new-image`, {
         method: "POST",
         body: formData,
       });
@@ -79,22 +80,54 @@ export default function CameraModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50">
-      <div className="bg-white p-4 rounded-xl w-full max-w-md relative">
-        <video ref={videoRef} autoPlay className="w-full rounded-xl" />
+      <div className="bg-black  rounded-lg w-full h-[90%] w-[90%] md:w-[60%] relative px-8 pt-12 pb-64">
+        <video
+          ref={videoRef}
+          autoPlay
+          className="w-full rounded-xl h-full object-cover"
+        />
         <canvas ref={canvasRef} style={{ display: "none" }} />
         <button
           onClick={onClose}
-          className="absolute top-2 right-2 text-black font-bold text-xl"
+          className="absolute top-6 right-6 text-black font-bold text-xl"
         >
-          ✕
+          <div className="p-4 md:p-8 bg-black rounded-xl">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="2"
+              stroke="white"
+              className="size-12"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M6 18 18 6M6 6l12 12"
+              />
+            </svg>
+          </div>
         </button>
-        <button
-          onClick={takePhoto}
-          disabled={uploading}
-          className="mt-4 w-full bg-black text-white py-2 rounded-lg"
-        >
-          {uploading ? "Uploading..." : "Take & Upload Photo"}
-        </button>
+
+        <div className="flex flex-col justify-center align-center gap-4 my-8 w-full">
+          <button
+            onClick={takePhoto}
+            disabled={uploading}
+            className="flex flex-col justify-center align-center gap-6 mt-4 w-full bg-black text-white py-2 rounded-lg"
+          >
+            <Image
+              src="/images/icons/camera-button.svg"
+              alt="Add"
+              width={72}
+              height={72}
+              className="h-24 w-auto"
+            />
+          </button>
+          <p className="text-center text-sm text-white bold">
+            {" "}
+            {uploading ? "Uploading..." : "Take & Upload Photo"}
+          </p>
+        </div>
 
         {uploadResult && (
           <div className="mt-4 text-center text-sm text-gray-700 break-all">
