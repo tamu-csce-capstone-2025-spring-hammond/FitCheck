@@ -1,12 +1,19 @@
 import requests
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
-import environment
+# import environment
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
+FACEBOOK_ACCESS_TOKEN = os.getenv("FACEBOOK_ACCESS_TOKEN")
+FACEBOOK_CATALOG_ID = os.getenv("FACEBOOK_CATALOG_ID")
+PAGE_ACCESS_TOKEN = os.getenv("PAGE_ACCESS_TOKEN")
+filtered_products = []
 
-FACEBOOK_ACCESS_TOKEN = environment.get("FACEBOOK_ACCESS_TOKEN")
-FACEBOOK_CATALOG_ID = environment.get("FACEBOOK_CATALOG_ID")
-PAGE_ACCESS_TOKEN = environment.get("PAGE_ACCESS_TOKEN")
+# FACEBOOK_ACCESS_TOKEN = environment.get("FACEBOOK_ACCESS_TOKEN")
+# FACEBOOK_CATALOG_ID = environment.get("FACEBOOK_CATALOG_ID")
+# PAGE_ACCESS_TOKEN = environment.get("PAGE_ACCESS_TOKEN")
 
 # FastAPI router
 router = APIRouter()
@@ -71,12 +78,36 @@ def post_to_catalog(name, currency, price, image_url, retailer_id, description="
         return response.json()
     else:
         raise Exception(f"Error posting product: {response.text}")
-    
 
-@router.get("/facebook/catalog/{name}")
-def get_product_id(name):
-    '''given a product name, will return the product id'''
     
+@router.get("/facebook/userproducts/{email}")
+def get_user_products(email):
+    '''given an email, get all products with that in the retailer id'''
+    
+    url = f"https://graph.facebook.com/v22.0/{FACEBOOK_CATALOG_ID}/products"
+    headers = {"Authorization": f"Bearer {FACEBOOK_ACCESS_TOKEN}"}
+    response = requests.get(url,headers=headers)
+    
+    if response.status_code != 200:
+        print("Error fetching products:", response.status_code)
+        return None
+    
+    data = response.json()
+    for product in data.get("data", []):
+        retailer_id = product.get("retailer_id", "")
+        if email in retailer_id:
+            filtered_products.append(product)
+
+    if not filtered_products:
+        print("No products found for the given email.")
+        raise HTTPException(status_code=404, detail="No products found for the given email.")
+    
+    return {"products": filtered_products}  # Return the filtered products as a JSON object
+
+
+@router.get("/facebook/price/{name}")
+def get_price(name):
+    '''given a product name, will return the product id'''
     product_id = 0
     url = f"https://graph.facebook.com/v22.0/{FACEBOOK_CATALOG_ID}/products"
     headers = {"Authorization": f"Bearer {FACEBOOK_ACCESS_TOKEN}"}
@@ -91,11 +122,25 @@ def get_product_id(name):
         if product.get("name") == name:
             product_id = product.get("id")
             break
-    if product_id != 0:
-        return product_id
-    else:
+    if product_id == 0:
         print("Product not found, error:", response.status_code)
         raise HTTPException(status_code=500, detail=data)
+    else:
+        # getting the product availability
+        url = f"https://graph.facebook.com/v22.0/{product_id}"
+        headers = {"Authorization": f"Bearer {FACEBOOK_ACCESS_TOKEN}"}
+        params = {
+            "fields": "price",
+        }
+        response = requests.get(url,headers=headers, params=params)
+        
+        if response.status_code != 200:
+            print("Error fetching products:", response.status_code)
+            return None
+        else:
+            data = response.json()
+            print("Product price:", data)
+            return name + " is priced at " + data.get("price", "No price info")
 
 
 @router.get("/facebook/availability/{name}")
@@ -118,8 +163,8 @@ def get_product_availability(name):
             print("Product found:", product)
             product_id = product.get("id")
     if product_id == 0:
-        print("Product not found")
-        return None
+        print("Product not found, error:", response.status_code)
+        raise HTTPException(status_code=500, detail=data)
     
     # getting the product availability
     url = f"https://graph.facebook.com/v22.0/{product_id}"
@@ -136,6 +181,45 @@ def get_product_availability(name):
         data = response.json()
         print("Product availability:", data)
         return name + "is" + data.get("availability", "No availability info")
+
+@router.get("/facebook/description/{name}")
+def get_product_description(name):
+    '''given a product name, will return the product availability'''
+    
+    # getting the product id for the given name
+    product_id = 0
+    url = f"https://graph.facebook.com/v22.0/{FACEBOOK_CATALOG_ID}/products"
+    headers = {"Authorization": f"Bearer {FACEBOOK_ACCESS_TOKEN}"}
+    response = requests.get(url,headers=headers)
+    
+    if response.status_code != 200:
+        print("Error fetching products:", response.status_code)
+        return None
+    
+    data = response.json()
+    for product in data.get("data", []):
+        if product.get("name") == name:
+            print("Product found:", product)
+            product_id = product.get("id")
+    if product_id == 0:
+        print("Product not found, error:", response.status_code)
+        raise HTTPException(status_code=500, detail=data)
+    
+    # getting the product availability
+    url = f"https://graph.facebook.com/v22.0/{product_id}"
+    headers = {"Authorization": f"Bearer {FACEBOOK_ACCESS_TOKEN}"}
+    params = {
+        "fields": "description",
+    }
+    response = requests.get(url,headers=headers, params=params)
+    
+    if response.status_code != 200:
+        print("Error fetching products:", response.status_code)
+        return None
+    else:
+        data = response.json()
+        print("Product description:", data)
+        return "Description for " + name + " is: " + data.get("description", "No description given")
 
 
 @router.patch("/facebook/update")
@@ -228,10 +312,14 @@ def main():
     currency = "USD"
     price = 18
     image_url = "https://media-hosting.imagekit.io/73fe1c298ee74a65/Image_created_with_a_mobile_phone.png?Expires=1838924401&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=vQpBJWYhqWxT1L1JcJ8eLypJzdmOkJneFUx1OgcaOvMRLZgYjtp4ZKx6cM6UVIxUWwojnI3~rBz0NeM9cn5r7YmT6j7bXqoM5GlaGmD-DR8HY5NwrlwB1frtV-uzEgsGY-fbo6oBa9eDZk6JZDeivH9JjkTHMGCxOs2R3RGXziwvVQPgNf-kRV~HPe5aqYZWa-JpEiQsHpMs7WSFJyzeqbuybY65QtiejBSlvSUp4kBdMzEAd-gd1eoFz8Y-1Wa0mGra3pHlx0MqLWh-nDdChSr500-ERXqpf7be1Bg~LJ465MUGhUI4iCQFmd3l5m0jL0Q0zCe~G8~klaWAJKg8Ng__"
-    retailer_id = "uniqlo-medium-green-tshirt" # has to be unique
+    retailer_id = "anishkarthik@gmail.com-uniqlo-medium-green-tshirt" # has to be unique
     new_image_url = "https://image.uniqlo.com/UQ/ST3/WesternCommon/imagesgoods/465187/sub/goods_465187_sub14_3x4.jpg?width=600"
-    description = "Medium Green T-shirt"
+    description = "the description of the product is now changed"
     # post_to_catalog(name, currency, price, image_url, retailer_id, description)
+    # print(get_user_products("testing"))
+    # print(get_product_id("austin"))
+    # print(get_price("austin"))
+    # print(get_product_description("austin"))
 
 if __name__ == "__main__":
     main()

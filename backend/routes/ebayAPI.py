@@ -11,7 +11,7 @@ load_dotenv()
 router = APIRouter()
 
 
-# 🔐 Replace these with your actual values
+# Replace these with your actual values
 CLIENT_ID = os.getenv("EBAY_CLIENT_ID")
 CLIENT_SECRET = os.getenv("EBAY_CLIENT_SECRET")
 REDIRECT_URI = "https://developer.ebay.com/tools/oauth-token-generator"
