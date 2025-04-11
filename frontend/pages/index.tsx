@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useRouter } from 'next/router';
 import Header from "../components/header";
 import Footer from "../components/footer";
 import Navbar from "../components/navbar";
@@ -8,6 +9,7 @@ import DateWeatherWidget from "../components/index-components/date-weather-widge
 import CameraModal from "@/components/cameramodal";
 
 export default function Home() {
+  const router = useRouter();
   const [showCamera, setShowCamera] = useState(false);
   const [userData, setUserData] = useState({ name: "..." });
   const [error, setError] = useState("");
@@ -23,7 +25,8 @@ export default function Home() {
         console.log('Response status:', response.status);
         
         if (response.status === 401) {
-          setError("Please log in to view your profile");
+          // Redirect to login page if not authenticated
+          router.push('/login');
           return;
         }
         
@@ -46,9 +49,17 @@ export default function Home() {
     }
 
     fetchUser();
-  }, []);
+  }, [router]);
 
-  
+  // Show loading state while checking authentication
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-xl">Loading...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="FitCheck bg-white">
       <Header></Header>
@@ -58,7 +69,7 @@ export default function Home() {
           <div className="grid grid-cols-[1fr] md:grid-cols-[1fr,1fr] mt-16 mb-12">
             <div className="flex flex-col gap-6">
               <h1 className="bold">
-                Welcome To Your Closet, {isLoading ? "..." : error ? "Guest" : userData.name}!
+                Welcome To Your Closet, {error ? "Guest" : userData.name}!
               </h1>
               {error && <p className="text-red-500">{error}</p>}
               <div className="flex flex-col md:flex-row gap-4">
