@@ -9,6 +9,7 @@ import boto3
 #import chromadb
 import environment
 from urllib.parse import urlparse
+import chromadb
 
 
 from models import ClothingItem, ClothingItemBase, ClothingItemPublicFull
