@@ -249,7 +249,8 @@ export default function FilterWithItems() {
                     key={item.id}
                     itemName={item.description}
                     category={item.category}
-                    href={item.s3url}
+                    imageSrc={item.s3url}
+                    href={`/edit-item/${item.id}`}
                   />
                 ))
               ) : (
