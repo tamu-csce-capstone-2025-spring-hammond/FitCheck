@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import Navbar from "@/components/navbar";
@@ -24,24 +24,92 @@ export default function EditItemPage() {
     lastWorn: "2024-03-10",
     archivedDate: "2024-02-15",
     description: "A stylish denim jacket.",
+    price: 0,
+    currency: "USD",
+    quantity: 1,
+    retailer_id: "", // This will be set to the user's email
   });
+
+  const [photos, setPhotos] = useState(["/placeholder.svg"]);
+
+  // Fetch item details when component mounts
+  useEffect(() => {
+    const fetchItemDetails = async () => {
+      if (!id) return;
+      
+      try {
+        const response = await fetch(`/api/clothing_items/${id}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch item details');
+        }
+        const data = await response.json();
+        
+        // Update form data with fetched values
+        setFormData(prev => ({
+          ...prev,
+          name: data.name || prev.name,
+          category: data.category || prev.category,
+          size: data.size || prev.size,
+          brand: data.brand || prev.brand,
+          color: data.color || prev.color,
+          description: data.description || prev.description,
+        }));
+
+        // Update photos if there's an image URL
+        if (data.s3url) {
+          setPhotos([data.s3url]);
+        }
+      } catch (error) {
+        console.error('Error fetching item details:', error);
+      }
+    };
+
+    fetchItemDetails();
+  }, [id]);
 
   // Handle input changes
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   // Handle form submission
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Updated Item Data:", formData);
-    // Here, you would send the updated data to an API or database
-    router.push(`/product/${id}`); // Redirect back to product page
-  };
+    
+    try {
+      // First, post to Facebook catalog
+      const facebookResponse = await fetch('/api/facebook/catalog', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          currency: formData.currency,
+          price: formData.price,
+          image_url: photos[0], // Using the first photo
+          size: formData.size,
+          quantity: formData.quantity,
+          retailer_id: formData.retailer_id,
+          description: formData.description,
+          website_link: "https://www.fitcheck.fashion"
+        }),
+      });
 
-  const [photos, setPhotos] = useState(["/placeholder.svg"]);
+      if (!facebookResponse.ok) {
+        throw new Error('Failed to post to Facebook');
+      }
+
+      // Here, you would send the updated data to your own API or database
+      router.push(`/product/${id}`); // Redirect back to product page
+    } catch (error) {
+      console.error('Error posting to Facebook:', error);
+      // Handle error appropriately
+    }
+  };
 
   const handleAddPhoto = () => {
     // In a real implementation, this would open a file picker
@@ -66,7 +134,7 @@ export default function EditItemPage() {
                     className="w-[130px] h-[130px] border border-gray-300 overflow-hidden bg-white"
                   >
                     <Image
-                      src={photo || "/placeholder.svg"}
+                      src={photo}
                       alt={`Product photo ${index + 1}`}
                       width={130}
                       height={130}
@@ -144,6 +212,57 @@ export default function EditItemPage() {
               />
             </div>
 
+            {/* Price */}
+            <div className="flex flex-col gap-4">
+              <p className="title">Price</p>
+              <div className="flex gap-4">
+                <input
+                  type="number"
+                  name="price"
+                  value={formData.price}
+                  onChange={handleChange}
+                  placeholder="Enter price"
+                  className="border-black w-1/2 border-2 px-3 py-2"
+                />
+                <select
+                  name="currency"
+                  value={formData.currency}
+                  onChange={handleChange}
+                  className="border-black w-1/2 border-2 px-3 py-2"
+                >
+                  <option value="USD">USD</option>
+                  <option value="EUR">EUR</option>
+                  <option value="GBP">GBP</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Quantity */}
+            <div className="flex flex-col gap-4">
+              <p className="title">Quantity</p>
+              <input
+                type="number"
+                name="quantity"
+                value={formData.quantity}
+                onChange={handleChange}
+                min="1"
+                className="border-black w-full border-2 px-3 py-2"
+              />
+            </div>
+
+            {/* Retailer ID (Email) */}
+            <div className="flex flex-col gap-4">
+              <p className="title">Your Email (for Facebook listing)</p>
+              <input
+                type="email"
+                name="retailer_id"
+                value={formData.retailer_id}
+                onChange={handleChange}
+                placeholder="Enter your email"
+                className="border-black w-full border-2 px-3 py-2"
+              />
+            </div>
+
             {/* Custom Tags */}
             <div className="flex flex-col gap-4">
               <p className="title">Custom Tags</p>
@@ -199,9 +318,13 @@ export default function EditItemPage() {
 
             {/* Buttons */}
             <div className="flex gap-4 mt-6 items-center justify-center">
-              {/* <DarkButton text="Save Changes" type="submit" /> */}
               <LightButton text="Cancel" href={`/product/${id}`} />
-              <DarkButton text="Save" href={`/product/${id}`} />
+              <button
+                type="submit"
+                className="title flex justify-center border-4 border-black items-center px-2 lg:px-16 py-4 bg-black text-white rounded-lg hover:text-black hover:bg-accent text-center"
+              >
+                Save
+              </button>
             </div>
           </form>
         </div>
