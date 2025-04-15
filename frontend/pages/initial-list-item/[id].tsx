@@ -123,23 +123,20 @@ export default function EditItemPage() {
       // Post to selected platforms
       for (const platform of platforms) {
         if (platform === 'facebook') {
-          const backendUrl = (process.env.BACKEND_URL || 'http://localhost:8000').replace(/\/$/, '');
+          const backendUrl = (process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000').replace(/\/$/, '');
           const apiUrl = `${backendUrl}/facebook/catalog`;
-          
-          // Use a placeholder image URL for testing
-          const testImageUrl = "https://via.placeholder.com/500x500.png?text=Product+Image";
           
           // Prepare the data exactly as expected by the backend
           const postData = {
             name: formData.name,
             currency: formData.currency,
             price: formData.price,
-            image_url: testImageUrl,
+            image_url: photos[0],
             size: formData.size,
             quantity: formData.quantity,
             retailer_id: retailer_id,
             description: formData.description,
-            website_link: "https://fitcheck.fashion/"
+            website_link: "https://facebook.com/business/shops"
           };
           
           console.log('Posting to Facebook with data:', postData);
