@@ -160,10 +160,10 @@ export default function FilterWithItems() {
           </svg>
         </Button>
       </div>
-      <div className="flex w-full mt-4 justify-between">
+      <div className="flex w-full mt-4 justify-end gap-4">
         <Button
           onClick={() => setDeleteMode(!deleteMode)}
-          className="border-heart-red border-[1px] text-heart-red hover:bg-heart-red hover:text-white"
+          className="border-heart-red border-[1px] text-heart-red hover:bg-heart-red hover:text-white min-w-48"
         >
           <p className="text-heart-red text-lg hover:text-white">
             {deleteMode ? "Exit Delete Mode" : "Delete Items"}
@@ -171,9 +171,9 @@ export default function FilterWithItems() {
         </Button>
         <Button
           onClick={handleClearSearch}
-          className="border-heart-red border-[1px] hover:bg-heart-red"
+          className="border-black border-[1px] hover:bg-black min-w-48"
         >
-          <p className="text-heart-red text-lg hover:text-white">
+          <p className="text-black text-lg hover:text-white">
             Clear Search Results
           </p>
         </Button>
