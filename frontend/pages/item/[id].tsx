@@ -44,7 +44,7 @@ export default function ProductPage() {
             {/* Right column - Product details */}
             <div className="flex flex-col">
               <div className="flex justify-between items-center mb-4">
-                <h1 className="bold">Product ID: {id}</h1>
+                <p className="bold">Item ID: {id}</p>
                 <DarkButton text="Edit Item" href={`/edit-item/${id}`} />
               </div>
 

@@ -31,9 +31,7 @@ export default function Signup() {
 
       <main className="flex flex-1 gap-8 flex-col items-center justify-center p-12">
         <div className="w-full max-w-2xl bg-gray-50 p-12 -mt-[48px] rounded-xl shadow-md border border-gray-200">
-          <h1 className="font-bold mb-6 text-center">
-            Create Your Account ✨
-          </h1>
+          <h1 className="font-bold mb-6 text-center">Create Your Account✨</h1>
 
           <div className="flex flex-col gap-6">
             <input

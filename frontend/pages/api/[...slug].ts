@@ -3,6 +3,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 // Pass-through to the backend
 export default async function backendRoute(req: NextApiRequest, res: NextApiResponse)
 {
+    
     if (!process.env.BACKEND_URL)
     {
         return res.status(500).json({ error: 'BACKEND_URL is not set' });
@@ -21,6 +22,8 @@ export default async function backendRoute(req: NextApiRequest, res: NextApiResp
     const backend_url = req.url.replace(/^\/api\//, '');
     const url = `${process.env.BACKEND_URL}${backend_url}`;
     console.log(`Passing request to ${url}`);
+
+    
     // Pass the request
     const response = await fetch(url, {
         method: req.method,
