@@ -38,6 +38,7 @@ export default function FilterWithItems() {
   });
   const [searchQuery, setSearchQuery] = useState("");
   const [submitQuery, setSubmitQuery] = useState(""); // Separate state to track submit action
+  const [deleteMode, setDeleteMode] = useState(false);
 
   const handleClearSearch = async () => {
     setSearchQuery("");
@@ -157,14 +158,22 @@ export default function FilterWithItems() {
               d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
             />
           </svg>
-        </Button>{" "}
+        </Button>
       </div>
-      <div className="flex w-full mt-4 justify-end">
+      <div className="flex w-full mt-4 justify-between">
+        <Button
+          onClick={() => setDeleteMode(!deleteMode)}
+          className="border-heart-red border-[1px] text-heart-red hover:bg-heart-red hover:text-white"
+        >
+          <p className="text-heart-red text-lg hover:text-white">
+            {deleteMode ? "Exit Delete Mode" : "Delete Items"}
+          </p>
+        </Button>
         <Button
           onClick={handleClearSearch}
-          className=" mt-2 h-full border-heart-red border-[1px]  hover:bg-heart-red "
+          className="border-heart-red border-[1px] hover:bg-heart-red"
         >
-          <p className=" text-heart-red text-lg hover:text-white">
+          <p className="text-heart-red text-lg hover:text-white">
             Clear Search Results
           </p>
         </Button>
@@ -251,6 +260,13 @@ export default function FilterWithItems() {
                     category={item.category}
                     imageSrc={item.s3url}
                     href={`/item/${item.id}`}
+                    id={item.id}
+                    showDeleteButton={deleteMode}
+                    onDelete={(id) => {
+                      console.log("Item deleted:", id);
+                      // Remove the item from the filtered items
+                      setFilteredItems(prevItems => prevItems.filter(item => item.id !== id));
+                    }}
                   />
                 ))
               ) : (
