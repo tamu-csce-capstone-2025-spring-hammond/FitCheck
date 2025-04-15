@@ -13,6 +13,9 @@ const nextConfig = {
   typescript: {
   	ignoreBuildErrors: true,
   },
+  images: {
+    domains: ['hack-fitcheck.s3.amazonaws.com'],
+  },
 };
 
 export default nextConfig;
