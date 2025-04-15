@@ -83,7 +83,7 @@ export default function ProductPage() {
                 />
               </div>
 
-              <div className="mt-12 p-6 border-heart-red border-2 rounded-xl">
+              <div className="mt-4 p-6 border-heart-red border-2 rounded-xl">
                 <RedButton
                   text="Delete Item"
                   href={`/initial-list-item/${id}`}

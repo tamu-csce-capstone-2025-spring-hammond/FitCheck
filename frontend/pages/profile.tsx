@@ -1,112 +1,82 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import Link from "next/link";
+import Header from "../components/header";
+import Footer from "../components/footer";
+import DarkButton from "../components/tags-and-buttons/dark-button";
 
 export default function ProfilePage() {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [uploading, setUploading] = useState(false);
-  const [uploadResult, setUploadResult] = useState<string | null>(null);
-  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const router = useRouter();
 
-  useEffect(() => {
-    if (navigator.mediaDevices?.getUserMedia) {
-      navigator.mediaDevices
-        .getUserMedia({ video: true })
-        .then((stream) => {
-          if (videoRef.current) {
-            videoRef.current.srcObject = stream;
-          }
-        })
-        .catch((err) => console.error("Camera error:", err));
-    }
-    return () => {
-      const stream = videoRef.current?.srcObject as MediaStream;
-      stream?.getTracks().forEach((track) => track.stop());
-    };
-  }, []);
-
-  const takePhoto = async () => {
-    if (!videoRef.current || !canvasRef.current) return;
-
-    const video = videoRef.current;
-    const canvas = canvasRef.current;
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-    canvas.toBlob(async (blob) => {
-      if (!blob) return;
-      const file = new File([blob], "photo.jpg", { type: "image/jpeg" });
-      await uploadToBackend(file);
-    }, "image/jpeg");
-  };
-
-  const uploadToBackend = async (file: File) => {
-    setUploading(true);
-    setUploadResult(null);
-
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const res = await fetch("/api/upload-new-outfit", {
-        method: "POST",
-        body: formData,
-      });
-
-      const data = await res.json();
-      setUploadResult(data.file_name || data.message);
-      setPhotoUrl(data.s3_url); // Assuming the backend returns the S3 URL of the uploaded image
-    } catch (err) {
-      console.error("Upload failed", err);
-      setUploadResult("❌ Upload failed");
-    } finally {
-      setUploading(false);
-    }
-  };
-
   return (
-    <div className="container mx-auto mt-10">
-      <h2 className="text-2xl mb-6">Create an Outfit</h2>
-      <div className="relative w-full max-w-md mx-auto">
-        <video ref={videoRef} autoPlay className="w-full rounded-lg" />
-        <canvas ref={canvasRef} style={{ display: "none" }} />
-        <div className="absolute top-0 right-0 p-4">
-          <button
-            onClick={() => router.push("/")} // Add a navigation action here for exit
-            className="bg-black text-white rounded-full p-2"
-          >
-            ✕
-          </button>
-        </div>
-      </div>
-      <button
-        onClick={takePhoto}
-        disabled={uploading}
-        className="mt-4 w-full bg-black text-white py-2 rounded-lg"
-      >
-        {uploading ? "Uploading..." : "Take & Upload Outfit"}
-      </button>
+    <div className="FitCheck min-h-screen bg-white flex flex-col">
+      <Header />
 
-      {photoUrl && (
-        <div className="mt-6 text-center">
-          <img src={photoUrl} alt="Taken outfit" className="w-full rounded-lg" />
-          <p className="mt-2 text-gray-500">Your outfit has been uploaded!</p>
-        </div>
-      )}
+      <main className="_site-grid">
+        <div className="_grid-3 min-h-[85vh]">
+          {/* Profile Header */}
+          <div className="">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 my-24">
+              <h1 className="bold text-center md:text-left ">👋 Username</h1>
+              <div className="flex gap-4">
+                <button className="min-w-48 border border-gray-300 py-2 px-4 rounded-xl hover:bg-gray-100 transition-all">
+                  Edit Profile
+                </button>
+                <button className="min-w-48 border border-gray-300 py-2 px-4 rounded-xl hover:bg-gray-100 transition-all">
+                  Log Out
+                </button>
+              </div>
+            </div>
 
-      {uploadResult && (
-        <div className="mt-4 text-center text-sm text-gray-700 break-all">
-          ✅ Uploaded: {uploadResult}
+            {/* Profile Info + Closet Preview */}
+            <div className="flex flex-col md:flex-row gap-12 flex-1">
+              {/* Profile Info */}
+              <div className="flex-1 flex flex-col gap-6 text-gray-700 justify-start">
+                <p className="">
+                  <span className="bold">Email:</span> you@example.com
+                </p>
+                <p className="">
+                  <span className="bold">Items in Closet:</span> 
+                </p>
+              </div>
+
+              {/* Closet Preview */}
+              <div className="flex-1 flex flex-col gap-6">
+                <p className="text-gray-500 text-lg">
+                  Your digital wardrobe preview 👕✨
+                </p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                  <div className="aspect-square bg-white border border-gray-300 rounded-xl flex items-center justify-center shadow-sm text-4xl">
+                    👕
+                  </div>
+                  <div className="aspect-square bg-white border border-gray-300 rounded-xl flex items-center justify-center shadow-sm text-4xl">
+                    👖
+                  </div>
+                  <div className="aspect-square bg-white border border-gray-300 rounded-xl flex items-center justify-center shadow-sm text-4xl">
+                    👟
+                  </div>
+                  <div className="aspect-square bg-white border border-gray-300 rounded-xl flex items-center justify-center shadow-sm text-4xl">
+                    🎩
+                  </div>
+                  <div className="aspect-square bg-white border border-gray-300 rounded-xl flex items-center justify-center shadow-sm text-4xl">
+                    👜
+                  </div>
+                  <div className="aspect-square bg-white border border-gray-300 rounded-xl flex items-center justify-center shadow-sm text-4xl">
+                    🧥
+                  </div>
+                </div>
+                <div className="w-full">
+                  <DarkButton text="Back to Closet" href="/" />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      )}
+      </main>
+
+      <Footer />
     </div>
   );
 }

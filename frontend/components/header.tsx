@@ -56,16 +56,16 @@ export default function Header() {
               </svg>
             </button>
             {showDropdown && (
-              <div className="absolute right-0 mt-2 w-48 md:w-56 bg-white rounded-md shadow-lg py-1 z-50">
+              <div className="absolute right-4 mt-48 w-48 md:w-56 bg-white rounded-md shadow-lg py-1 z-50">
                 <Link
                   href="/profile"
-                  className="block px-4 py-2 text-sm md:text-base text-gray-700 hover:bg-gray-100"
+                  className="block bold px-6 py-4 text-lg text-gray-700 hover:bg-gray-100"
                 >
                   Profile
                 </Link>
                 <button
                   onClick={handleLogout}
-                  className="block w-full text-left px-4 py-2 text-sm md:text-base text-gray-700 hover:bg-gray-100"
+                  className="block bold w-full text-left px-6 py-4 text-lg  text-gray-700 hover:bg-gray-100"
                 >
                   Logout
                 </button>
