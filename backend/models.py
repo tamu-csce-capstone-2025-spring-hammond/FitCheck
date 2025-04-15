@@ -6,6 +6,10 @@ Run this file directly to reset the database.
 from sqlmodel import SQLModel, Field, Relationship, create_engine
 from typing import Optional, List
 from datetime import datetime
+import time
+
+def make_id():
+    return int(time.time() * 10)
 
 ##### User #####
 
@@ -30,7 +34,7 @@ class UserUpdate(UserBase):
 
 class User(UserBase, table=True):
     """User model for the database, including relationships to other tables."""
-    id: Optional[int] = Field(default=None, primary_key=True)
+    id: Optional[int] = Field(default_factory=make_id, primary_key=True)
     email: str = Field(unique=True)
     password_salt_and_hash: str
     login_token: str
@@ -77,7 +81,7 @@ class ClothingItemUpdate(ClothingItemBase):
     user_id: Optional[int] = None
 
 class ClothingItem(ClothingItemBase, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
+    id: Optional[int] = Field(default_factory=make_id, primary_key=True)
     created_at: datetime = Field(default_factory=datetime.utcnow)
     user_id: int = Field(foreign_key="user.id")
     user: Optional[User] = Relationship(back_populates="clothing_items")
@@ -106,7 +110,7 @@ class OutfitUpdate(OutfitBase):
     user_id: Optional[int] = None
 
 class Outfit(OutfitBase, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
+    id: Optional[int] = Field(default_factory=make_id, primary_key=True)
     user_id: int = Field(foreign_key="user.id")
     name: Optional[str] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
@@ -118,7 +122,7 @@ class Outfit(OutfitBase, table=True):
 
 # The relationship table for connecting outfits to clothing items
 class OutfitItem(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
+    id: Optional[int] = Field(default_factory=make_id, primary_key=True)
     outfit_id: int = Field(foreign_key="outfit.id")
     clothing_item_id: int = Field(foreign_key="clothingitem.id")
     description: Optional[str] = None
@@ -156,7 +160,7 @@ class ResaleListingUpdate(ResaleListingBase):
     sold_on: Optional[datetime] = None
 
 class ResaleListing(ResaleListingBase, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
+    id: Optional[int] = Field(default_factory=make_id, primary_key=True)
     user_id: int = Field(foreign_key="user.id")
     clothing_item_id: int = Field(foreign_key="clothingitem.id")
     platform: str
@@ -192,7 +196,7 @@ class WearHistoryUpdate(WearHistoryBase):
 
 
 class WearHistory(WearHistoryBase, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
+    id: Optional[int] = Field(default_factory=make_id, primary_key=True)
     clothing_item_id: int = Field(foreign_key="clothingitem.id")
     date: datetime
     created_at: datetime = Field(default_factory=datetime.utcnow)
