@@ -53,7 +53,7 @@ def update_clothing_item(item_id: int, item_update: ClothingItem, db: Session = 
     db.refresh(item)
     return item
 
-@router.delete("/clothing_items/{item_id}", status_code=204)
+@router.delete("/clothing_items/{item_id}")
 def delete_clothing_item(item_id: int, db: Session = Depends(get_db)):
     item = db.get(ClothingItem, item_id)
     s3url = item.s3url if item else None
@@ -84,7 +84,8 @@ def delete_clothing_item(item_id: int, db: Session = Depends(get_db)):
         s3_client.delete_object(Bucket=bucket_name, Key=key)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to delete item from S3: {e}")
-    return
+    print("deleted from s3")
+    return {"message": "Clothing item deleted successfully."}
 
 
 
