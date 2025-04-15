@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/router";
+import Image from "next/image";
 
 export default function Header() {
   const [showDropdown, setShowDropdown] = useState(false);
@@ -8,27 +9,33 @@ export default function Header() {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch('/api/logout', {
-        method: 'POST',
+      const response = await fetch("/api/logout", {
+        method: "POST",
       });
       if (response.ok) {
-        router.push('/login');
+        router.push("/login");
       }
     } catch (error) {
-      console.error('Logout failed:', error);
+      console.error("Logout failed:", error);
     }
   };
 
   return (
     <header className="FitCheck _site-grid shadow-md">
       <div className="_grid-3">
-        <div className="flex justify-between items-center py-4">
+        <div className="flex justify-between items-center py-4 pt-6">
           <h1 className="header text-accent">
             <Link href="/" className="text-inherit no-underline">
-              FitCheck
+              <Image
+                src="/images/logo.svg"
+                alt="FitCheck"
+                width={200}
+                height={25}
+                className="h-16 w-auto"
+              />
             </Link>
           </h1>
-          <div className="relative">
+          <div className="flex justify-center items-center relative">
             <button
               onClick={() => setShowDropdown(!showDropdown)}
               className="focus:outline-none"
@@ -50,7 +57,10 @@ export default function Header() {
             </button>
             {showDropdown && (
               <div className="absolute right-0 mt-2 w-48 md:w-56 bg-white rounded-md shadow-lg py-1 z-50">
-                <Link href="/profile" className="block px-4 py-2 text-sm md:text-base text-gray-700 hover:bg-gray-100">
+                <Link
+                  href="/profile"
+                  className="block px-4 py-2 text-sm md:text-base text-gray-700 hover:bg-gray-100"
+                >
                   Profile
                 </Link>
                 <button
