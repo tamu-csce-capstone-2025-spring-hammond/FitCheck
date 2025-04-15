@@ -13,6 +13,7 @@ export default function ProductPage() {
   const { id } = router.query;
 
   return (
+    // item/[id].tsx
     <div className="FitCheck">
       <Header></Header>
 
