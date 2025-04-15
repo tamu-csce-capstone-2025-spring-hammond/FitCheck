@@ -13,24 +13,25 @@ export default function EditItemPage() {
   const router = useRouter();
   const { id } = router.query;
 
-  // Simulated existing data (replace with actual API fetch)
+  // Initialize form data with empty values
   const [formData, setFormData] = useState({
-    name: "Denim Jacket",
-    category: "Jacket",
-    size: "Small",
-    brand: "Levi's",
-    color: "Blue",
-    tags: ["Casual", "Spring"],
-    lastWorn: "2024-03-10",
-    archivedDate: "2024-02-15",
-    description: "A stylish denim jacket.",
+    name: "",
+    category: "",
+    size: "",
+    brand: "",
+    color: "",
+    tags: [],
+    lastWorn: "",
+    archivedDate: "",
+    description: "",
     price: 0,
     currency: "USD",
     quantity: 1,
-    retailer_id: "", // This will be set to the user's email
+    retailer_id: "",
   });
 
   const [photos, setPhotos] = useState(["/placeholder.svg"]);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Fetch item details when component mounts
   useEffect(() => {
@@ -47,12 +48,15 @@ export default function EditItemPage() {
         // Update form data with fetched values
         setFormData(prev => ({
           ...prev,
-          name: data.name || prev.name,
-          category: data.category || prev.category,
-          size: data.size || prev.size,
-          brand: data.brand || prev.brand,
-          color: data.color || prev.color,
-          description: data.description || prev.description,
+          name: data.name || "",
+          category: data.category || "",
+          size: data.size || "",
+          brand: data.brand || "",
+          color: data.color || "",
+          description: data.description || "",
+          lastWorn: data.last_worn ? new Date(data.last_worn).toISOString().split('T')[0] : "",
+          archivedDate: data.archived_date ? new Date(data.archived_date).toISOString().split('T')[0] : "",
+          tags: data.tags || [],
         }));
 
         // Update photos if there's an image URL
@@ -61,11 +65,27 @@ export default function EditItemPage() {
         }
       } catch (error) {
         console.error('Error fetching item details:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     fetchItemDetails();
   }, [id]);
+
+  if (isLoading) {
+    return (
+      <div className="FitCheck">
+        <Header />
+        <main className="_site-grid min-h-[90vh] relative mb-64">
+          <div className="my-24 _grid-3">
+            <h1 className="bold mb-12">Loading...</h1>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   // Handle input changes
   const handleChange = (
