@@ -123,7 +123,7 @@ export default function EditItemPage() {
       // Post to selected platforms
       for (const platform of platforms) {
         if (platform === 'facebook') {
-          const backendUrl = (process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000').replace(/\/$/, '');
+          const backendUrl = (process.env.BACKEND_URL || 'http://localhost:8000').replace(/\/$/, '');
           const apiUrl = `${backendUrl}/facebook/catalog`;
           
           // Use a placeholder image URL for testing
