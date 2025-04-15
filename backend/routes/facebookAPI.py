@@ -1,19 +1,19 @@
 import requests
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
-# import environment
+import environment
 import os
 from dotenv import load_dotenv
 
-load_dotenv()
-FACEBOOK_ACCESS_TOKEN = os.getenv("FACEBOOK_ACCESS_TOKEN")
-FACEBOOK_CATALOG_ID = os.getenv("FACEBOOK_CATALOG_ID")
-PAGE_ACCESS_TOKEN = os.getenv("PAGE_ACCESS_TOKEN")
+# load_dotenv()
+# FACEBOOK_ACCESS_TOKEN = os.getenv("FACEBOOK_ACCESS_TOKEN")
+# FACEBOOK_CATALOG_ID = os.getenv("FACEBOOK_CATALOG_ID")
+# PAGE_ACCESS_TOKEN = os.getenv("PAGE_ACCESS_TOKEN")
 filtered_products = []
 
-# FACEBOOK_ACCESS_TOKEN = environment.get("FACEBOOK_ACCESS_TOKEN")
-# FACEBOOK_CATALOG_ID = environment.get("FACEBOOK_CATALOG_ID")
-# PAGE_ACCESS_TOKEN = environment.get("PAGE_ACCESS_TOKEN")
+FACEBOOK_ACCESS_TOKEN = environment.get("FACEBOOK_ACCESS_TOKEN")
+FACEBOOK_CATALOG_ID = environment.get("FACEBOOK_CATALOG_ID")
+PAGE_ACCESS_TOKEN = environment.get("PAGE_ACCESS_TOKEN")
 
 # FastAPI router
 router = APIRouter()
@@ -27,7 +27,7 @@ class postingRequest(BaseModel):
     quantity: int = 1
     retailer_id: str
     description: str
-    website_link: str = "https://www.facebook.com/business/shops"
+    website_link: str = "https://www.fitcheck.fashion"
     
 class updateRequest(BaseModel):
     name: str
