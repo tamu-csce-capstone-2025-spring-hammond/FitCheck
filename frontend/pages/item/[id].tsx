@@ -5,6 +5,7 @@ import Footer from "@/components/footer";
 import Image from "next/image";
 import DarkButton from "@/components/tags-and-buttons/dark-button";
 import LightButton from "@/components/tags-and-buttons/light-button";
+import RedButton from "@/components/tags-and-buttons/red-button";
 import { useRouter } from "next/router";
 import Navbar from "@/components/navbar";
 
@@ -78,6 +79,13 @@ export default function ProductPage() {
               <div className="mt-12">
                 <LightButton
                   text="List Item"
+                  href={`/initial-list-item/${id}`}
+                />
+              </div>
+
+              <div className="mt-12 p-6 border-heart-red border-2 rounded-xl">
+                <RedButton
+                  text="Delete Item"
                   href={`/initial-list-item/${id}`}
                 />
               </div>

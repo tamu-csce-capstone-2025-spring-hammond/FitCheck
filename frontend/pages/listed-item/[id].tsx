@@ -53,7 +53,6 @@ export default function ProductPage() {
 
               <hr className="my-4" />
 
-              {/* Description */}
               <div className="flex justify-between items-center my-4">
                 <h2 className="mb-6">Item Details</h2>
                 <DarkButton
