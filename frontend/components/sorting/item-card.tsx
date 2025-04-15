@@ -42,8 +42,6 @@ const ProductCard: React.FC<Props> = ({ itemName, category, imageSrc, href, id, 
         if (onDelete) {
           onDelete(id);
         }
-        setShowDeleteModal(false);
-        router.push('/');
       } else {
         console.error("Failed to delete item");
       }
@@ -51,6 +49,8 @@ const ProductCard: React.FC<Props> = ({ itemName, category, imageSrc, href, id, 
       console.error("Error deleting item:", error);
     } finally {
       setIsDeleting(false);
+      setShowDeleteModal(false);
+      router.push('/');
     }
   };
 
