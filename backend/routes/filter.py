@@ -73,6 +73,7 @@ def search(request: SearchRequest, authorization: str = Header(...), db: Session
     client = chromadb.HttpClient(host=environment.get('CHROMA_DB_ADDRESS'), port=8000)
     collection = client.get_or_create_collection(name="clothing_items")
 
+
     # Query ChromaDB for similar items
     try:
         results = collection.query(
