@@ -131,10 +131,10 @@ export default function FilterWithItems() {
 
   return (
     <div className="container bg-white">
-      <div className="w-full flex flex-row gap-4 mb-2">
+      <div className="w-full flex flex-row gap-2 mb-2">
         <input
           type="text"
-          className="w-full p-2 border rounded"
+          className="w-full px-4 py-2 border-[1.5px] border-black/80 rounded "
           placeholder="Search for items..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
