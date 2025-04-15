@@ -30,7 +30,7 @@ def get_clothing_item(item_id: int, db: Session = Depends(get_db)):
         selectinload(ClothingItem.resale_listing)
         )).first()
     if not item:
-        raise HTTPException(status_code=404, detail="Clothing item not found")
+        raise HTTPException(status_code=404, detail="Clothing item with id not found")
     return item
 
 @router.post("/clothing_items/", response_model=ClothingItem)
