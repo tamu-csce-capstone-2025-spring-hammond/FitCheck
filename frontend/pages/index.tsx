@@ -66,13 +66,13 @@ export default function Home() {
 
       <main className="_site-grid min-h-[90vh] relative mb-64">
         <div className="_grid-3">
-          <div className="grid grid-cols-[1fr] md:grid-cols-[1fr,1fr] mt-16 mb-12">
+          <div className="grid grid-cols-[1fr] md:grid-cols-[1fr,1fr] mt-16 mb-16">
             <div className="flex flex-col gap-6">
               <h1 className="bold">
                 Welcome To Your Closet, {error ? "Guest" : userData.name}!
               </h1>
               {error && <p className="text-red-500">{error}</p>}
-              <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex flex-col md:flex-row gap-4 mt-4">
                 <DarkButton text="Get Inspired" href="/profile" />
                 <DarkButton text="Add My OOTD" href="/profile" />
               </div>
