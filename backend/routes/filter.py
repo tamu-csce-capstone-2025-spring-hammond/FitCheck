@@ -86,7 +86,7 @@ def search(request: SearchRequest, authorization: str = Header(...), db: Session
     # Parse the results from ChromaDB
     matching_items = []
     for result in range(len(results['ids'][0])):
-        if results['distances'][0][result] < 1:
+        if results['distances'][0][result] < 5:
             item_id = results['ids'][0][result]
         # Fetch the clothing item from the database using the ID
             clothing_item = db.query(ClothingItem).where(ClothingItem.user_id == current_user.id).filter(ClothingItem.id == item_id).first()
