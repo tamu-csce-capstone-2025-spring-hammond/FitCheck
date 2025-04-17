@@ -123,8 +123,7 @@ export default function EditItemPage() {
       // Post to selected platforms
       for (const platform of platforms) {
         if (platform === 'facebook') {
-          const backendUrl = (process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000').replace(/\/$/, '');
-          const apiUrl = `${backendUrl}/facebook/catalog`;
+          const apiUrl = '/api/facebook/catalog';
           
           // Prepare the data exactly as expected by the backend
           const postData = {
@@ -140,7 +139,6 @@ export default function EditItemPage() {
           };
           
           console.log('Posting to Facebook with data:', postData);
-          console.log('Full URL:', apiUrl);
 
           const facebookResponse = await fetch(apiUrl, {
             method: 'POST',
