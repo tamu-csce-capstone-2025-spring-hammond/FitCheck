@@ -66,7 +66,7 @@ def post_to_catalog(name, currency, price, image_url, size, quantity, retailer_i
     
     url = f"https://graph.facebook.com/{FACEBOOK_CATALOG_ID}/products"
     headers = {"Authorization": f"Bearer {FACEBOOK_ACCESS_TOKEN}"}
-    price = price*100 # price is handled in cents
+    price = (price+2)*100 # price is handled in cents
     payload = {
         "name": name,
         "currency": currency,
@@ -303,7 +303,7 @@ def update_product(request: updateRequest):
     # updating the product
     url = f"https://graph.facebook.com/{product_id}"
     headers = {"Authorization": f"Bearer {FACEBOOK_ACCESS_TOKEN}"}
-    price = price*100 # price is handled in cents
+    price = (price+2)*100 # price is handled in cents
     payload = {
         "name": name,
         "currency": currency,
