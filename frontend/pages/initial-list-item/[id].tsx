@@ -124,6 +124,7 @@ export default function EditItemPage() {
       for (const platform of platforms) {
         if (platform === 'facebook') {
           const apiUrl = '/api/facebook/catalog';
+          console.log("Price before sending to backend:", formData.price);
           
           // Prepare the data exactly as expected by the backend
           const postData = {
@@ -192,7 +193,8 @@ export default function EditItemPage() {
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
-    const newFormData = { ...formData, [e.target.name]: e.target.value };
+    const value = e.target.type === 'number' ? Number(e.target.value) : e.target.value;
+    const newFormData = { ...formData, [e.target.name]: value };
     
     // If color, brand, or category changes, update the name
     if (['color', 'brand', 'category'].includes(e.target.name)) {
@@ -330,7 +332,7 @@ export default function EditItemPage() {
                     <input
                       type="number"
                       name="price"
-                      value={formData.price}
+                      value={formData.price || ''}
                       onChange={handleChange}
                       placeholder="Enter price"
                       className="border-black w-full border-2 px-3 py-2"
@@ -345,7 +347,7 @@ export default function EditItemPage() {
                   <input
                     type="number"
                     name="quantity"
-                    value={formData.quantity}
+                    value={formData.quantity || ''}
                     onChange={handleChange}
                     min="1"
                     className="border-black w-full border-2 px-3 py-2"
