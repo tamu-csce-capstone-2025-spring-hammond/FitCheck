@@ -10,6 +10,7 @@ import Navbar from "@/components/navbar";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/imported-ui/button";
 import { Loader2 } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 interface ItemData {
   id: number;
@@ -129,6 +130,14 @@ export default function ProductPage() {
           <div className="my-24 grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Left column - Images */}
             <div className="space-y-4">
+              <div className="flex items-center gap-4 mb-4">
+                <Button
+                  onClick={() => router.push('/')}
+                  className="title flex justify-center border-2 border-black items-center px-2 lg:px-16 py-4 bg-black text-white rounded-lg hover:text-black hover:bg-accent text-center"
+                >
+                  Back
+                </Button>
+              </div>
               <div className="border border-gray-100 bg-gray-50">
                 <Image
                   src={itemData.s3url || "/placeholder.svg"}
