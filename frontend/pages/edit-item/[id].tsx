@@ -20,6 +20,7 @@ interface ItemData {
   last_worn: string;
   archived_date: string;
   s3url: string;
+  style: string;
 }
 
 export default function EditItemPage() {
@@ -39,6 +40,7 @@ export default function EditItemPage() {
           throw new Error('Failed to fetch item details');
         }
         const data = await response.json();
+        console.log('Fetched item data:', data); // Debug log
         setItemData(data);
       } catch (error) {
         console.error('Error fetching item details:', error);
@@ -67,7 +69,7 @@ export default function EditItemPage() {
       setFormData({
         description: itemData.description || "",
         color: itemData.color || "",
-        style: itemData.tags?.join(', ') || "",
+        style: itemData.style || "",
         last_worn: itemData.last_worn ? new Date(itemData.last_worn).toISOString().split('T')[0] : "",
         size: itemData.size || "",
         category: itemData.category || "",
@@ -202,6 +204,11 @@ export default function EditItemPage() {
             {/* Tags (Style) */}
             <div className="flex flex-col gap-4">
               <p className="title">Tags</p>
+              <div className="flex flex-wrap gap-2 mb-2">
+                {itemData.tags?.map((tag, index) => (
+                  <Tag key={index} text={tag} />
+                ))}
+              </div>
               <input
                 type="text"
                 name="style"

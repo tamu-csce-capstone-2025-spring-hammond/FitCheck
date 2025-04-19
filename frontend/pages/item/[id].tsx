@@ -23,6 +23,7 @@ interface ItemData {
   last_worn: string;
   archived_date: string;
   s3url: string;
+  style?: string;
 }
 
 export default function ProductPage() {
@@ -46,7 +47,8 @@ export default function ProductPage() {
         // Ensure tags is always an array
         const processedData = {
           ...data,
-          tags: Array.isArray(data.tags) ? data.tags : []
+          tags: Array.isArray(data.tags) ? data.tags : [],
+          style: data.style || undefined
         };
         setItemData(processedData);
       } catch (error) {
@@ -158,9 +160,9 @@ export default function ProductPage() {
 
               {/* Tags */}
               <div className="flex flex-wrap gap-2 mb-6">
-                {itemData.tags && itemData.tags.length > 0 ? (
-                  itemData.tags.map((tag, index) => (
-                    <Tag key={index} text={tag} />
+                {itemData.style ? (
+                  itemData.style.split(',').map((tag, index) => (
+                    <Tag key={index} text={tag.trim()} />
                   ))
                 ) : (
                   <p className="text-gray-500">No tags attached.</p>
