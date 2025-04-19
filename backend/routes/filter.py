@@ -60,7 +60,7 @@ def get_unique_values_by_field(field: str, authorization: str = Header(...), db:
         raise ValueError(f"Field {field} does not exist on the model.")
 
     items = db.exec(query).all()
-    return json.dumps([getattr(item, field) for item in items])
+    return [getattr(item, field) for item in items]
 
 class SearchRequest(BaseModel):
     query: str  # The search query text

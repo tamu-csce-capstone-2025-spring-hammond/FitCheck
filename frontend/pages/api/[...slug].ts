@@ -27,6 +27,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         'Content-Type': 'application/json',
     };
 
+    // Get the login token from the cookie
+    const loginToken = req.cookies.login_token;
+    if (loginToken) {
+        headers['Authorization'] = `Bearer ${loginToken}`;
+    }
+
     // Copy relevant headers from the incoming request
     if (req.headers.authorization)
     {
