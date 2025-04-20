@@ -136,3 +136,41 @@ def search(request: SearchRequest, authorization: str = Header(...), db: Session
     print("____________________________")
 
     return matching_items
+
+
+
+@router.post("/search-outfits")
+def search(request: SearchRequest, authorization: str = Header(...), db: Session = Depends(get_db)):
+    current_user = enforce_logged_in(authorization)
+
+    # Initialize ChromaDB client
+    client = chromadb.HttpClient(host=environment.get('CHROMA_DB_ADDRESS'), port=8000)
+    collection = client.get_or_create_collection(name="outfits")
+
+
+    # Query ChromaDB for similar items
+    try:
+        results = collection.query(
+            query_texts=[request.query], 
+            n_results=5  
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Chroma query failed: {e}")
+
+    matching_items = []
+    matching_ids = set()
+    for result in range(len(results['ids'][0])):
+        if results['distances'][0][result] < 1:
+            item_id = results['ids'][0][result]
+            item = db.query(Outfit).where(Outfit.user_id == current_user.id).filter(Outfit.id == item_id).first()
+            if item and item_id not in matching_ids:
+                matching_ids.add(item.id)
+                matching_items.append(item)
+
+    for item in db.query(Outfit).where(Outfit.user_id == current_user.id).where(Outfit.id not in matching_ids).all():
+        if request.query.lower() in item.description.lower() and (item.id not in matching_ids):
+            matching_ids.add(item.id)
+            matching_items.append(item)
+
+    matching_items = list(matching_items)
+    return matching_items

@@ -95,17 +95,17 @@ export default function FilterOutfits() {
     load();
   }, [selectedFilters]);
 
-  // optional search
   useEffect(() => {
     if (!submitQuery) return;
     const search = async () => {
       try {
-        const res = await fetch("/api/search", {
+        const res = await fetch("/api/search-outfits", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ query: submitQuery }),
         });
         const outfits: Outfit[] = await res.json();
+        console.log('got here')
         setFilteredOutfits(outfits);
       } catch (err) {
         console.error("search error:", err);
