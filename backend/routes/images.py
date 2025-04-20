@@ -135,7 +135,6 @@ async def upload_outfit(file: UploadFile = File(...), authorization: str = Heade
         })
 
     
-    # Create the outfit entry in the database (without items first)
     outfit = database.add_outfit(
         user_id=current_user.id,
         description=description,

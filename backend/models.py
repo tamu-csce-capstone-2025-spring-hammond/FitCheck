@@ -115,7 +115,7 @@ class Outfit(OutfitBase, table=True):
     name: Optional[str] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
     description: Optional[str] = None
-
+    s3url: Optional[str] = None
     user: Optional["User"] = Relationship(back_populates="outfits")
     items: List["OutfitItem"] = Relationship(back_populates="outfit")
 

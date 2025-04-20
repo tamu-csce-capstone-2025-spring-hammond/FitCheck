@@ -71,7 +71,7 @@ def parse_outfit(url : str):
             {
                 "role": "user",
                 "content": [
-                    {"type": "text", "text": '''Describe this outfit in a fun and illustrative way. Be as descriptive as possible. Do not use terms like 'unknown' or 'not specified' to describe the objects.
+                    {"type": "text", "text": '''Describe this outfit in a fun illustrative, and straight to the point way. Describe the clothing in detail to best reflect all pieces of clothing the person is wearing. Do not use terms like 'unknown' or 'not specified' to describe the objects.
                     '''},
                     {
                         "type": "image_url",

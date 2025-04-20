@@ -5,12 +5,13 @@ from pydantic import BaseModel
 import json
 from sqlmodel import SQLModel, Field, Session, create_engine, select
 from database import get_db
-from models import ClothingItem
+from models import ClothingItem, Outfit, OutfitItem
 from route_utils import enforce_logged_in
 from typing import List, Optional
 import chromadb
 import database
 import environment 
+from sqlalchemy import distinct
 
 # FastAPI router
 router = APIRouter()
@@ -48,6 +49,34 @@ def post_by_field(
     items = db.exec(query).all()
     
     return items
+
+@router.post("/outfits-by-field")
+def post_by_field_outfit(
+    request: FilterRequest, db: Session = Depends(get_db), authorization: str = Header(...)
+):
+    current_user = enforce_logged_in(authorization)
+    
+    query = select(Outfit).join(OutfitItem, Outfit.id == OutfitItem.outfit_id).join(ClothingItem, OutfitItem.clothing_item_id == ClothingItem.id).where(Outfit.user_id == current_user.id).distinct(Outfit.id) 
+    
+    
+    if request.category:
+        query = query.where(ClothingItem.category.in_(request.category))
+    if request.brand:
+        query = query.where(ClothingItem.brand.in_(request.brand))
+    if request.size:
+        query = query.where(ClothingItem.size.in_(request.size))
+    if request.color:
+        query = query.where(ClothingItem.color.in_(request.color))
+    if request.tag:
+        query = query.where(ClothingItem.tag.in_(request.tag))
+
+    # 4) Execute and return the matching outfits
+    outfits = db.exec(query).all()
+    print("____________________________")
+    print("Matching outfits:")
+    print(outfits)
+    print("____________________________")
+    return outfits
 
 @router.get("/unique-values/{field}")
 def get_unique_values_by_field(field: str, authorization: str = Header(...), db: Session = Depends(get_db)):
