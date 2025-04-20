@@ -154,8 +154,6 @@ async def upload_outfit(file: UploadFile = File(...), authorization: str = Heade
     for item in saved_items:
         database.mark_clothing_item_worn(item['id'])
     
-
-    
     # Upload the outfit to ChromaDB
     client = chromadb.HttpClient(host=environment.get('CHROMA_DB_ADDRESS'), port=8000)
     collection = client.get_or_create_collection('outfits')
