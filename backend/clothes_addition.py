@@ -103,7 +103,7 @@ def upload_to_chroma(parsed : list):
     collection = client.get_or_create_collection(name="test")
 
     collection.add(
-        documents=[doc['cloth_description'] for doc in parsed],
+        documents=[doc['cloth_description'] + str(doc['cloth_color']) + str(doc['cloth_size']) + str(doc['cloth_type']) for doc in parsed],
         ids=[str(doc['cloth_color']) + str(doc['cloth_size']) + str(doc['cloth_type']) for doc in parsed], 
     )
 
