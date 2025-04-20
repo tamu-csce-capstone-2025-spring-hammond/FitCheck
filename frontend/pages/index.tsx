@@ -79,7 +79,7 @@ export default function Home() {
               {error && <p className="text-red-500">{error}</p>}
               <div className="flex flex-col md:flex-row gap-4 mt-4">
                 <DarkButton text="Get Inspired" href="/profile" />
-                <DarkButton text="Add My OOTD" href="/profile" />
+                <DarkButton text="Add an Outfit" href="/profile" />
               </div>
             </div>
             <div className="mt-12 md:mt-0 md:ml-24 flex flex-col gap-4 md:items-end justify-end">

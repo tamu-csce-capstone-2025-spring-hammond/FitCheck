@@ -42,7 +42,7 @@ def parse_clothing_items(url : str):
                 "content": [
                     {"type": "text", "text": '''What clothes are in this image? Return only a json object for each clothing item with the cloth type, cloth size, clothing color, and clothing description.
                         Example:[{"cloth_type": "shirt","cloth_size": "medium","cloth_color": "blue","cloth_description": "a blue shirt with a white logo"}, {"cloth_type": "pants","cloth_size": "large","cloth_color": "black","cloth_description": "black pants with a white stripe"}]
-                        Return nothing except the json object on one line with no quotation marks or text outside of the object.
+                        Return nothing except the json object on one line with no quotation marks or text outside of the object. Do not use terms like 'unknown' or 'not specified' to describe the objects. For the descriptions, be as descriptive as possible.
                     '''},
                     {
                         "type": "image_url",
