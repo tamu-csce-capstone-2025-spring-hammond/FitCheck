@@ -77,7 +77,7 @@ async def upload_image(file: UploadFile = File(...), authorization: str = Header
     collection = client.get_or_create_collection('clothing_items')
 
     collection.add(
-        documents=[item['description'] for item in saved_items],
+        documents=[item['description'] + item['size'] + item['color'] + item['style'] + item['brand'] + item['category'] for item in saved_items],
         ids=[item['id'] for item in saved_items], 
     )
 

@@ -5,6 +5,7 @@ import Footer from "../components/footer";
 import Navbar from "../components/navbar";
 import DarkButton from "../components/tags-and-buttons/dark-button";
 import FilterWithItems from "@/components/sorting/filter-with-items";
+import FilterOutfits from "@/components/sorting/filter-outfits";
 import DateWeatherWidget from "../components/index-components/date-weather-widget";
 import CameraModal from "@/components/cameramodal";
 
@@ -14,6 +15,7 @@ export default function Home() {
   const [userData, setUserData] = useState({ name: "..." });
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [showFilterOutfits, setShowFilterOutfits] = useState(false);
 
   const handleCameraClose = () => {
     setShowCamera(false)
@@ -79,7 +81,10 @@ export default function Home() {
               {error && <p className="text-red-500">{error}</p>}
               <div className="flex flex-col md:flex-row gap-4 mt-4">
                 <DarkButton text="Get Inspired" href="/profile" />
-                <DarkButton text="Add an Outfit" href="/profile" />
+                <DarkButton
+                  text={showFilterOutfits ? "Show Items" : "Show Outfits"}
+                  onClick={() => setShowFilterOutfits(prev => !prev)}
+                />
               </div>
             </div>
             <div className="mt-12 md:mt-0 md:ml-24 flex flex-col gap-4 md:items-end justify-end">
@@ -87,7 +92,12 @@ export default function Home() {
             </div>
           </div>
 
-          <FilterWithItems></FilterWithItems>
+          <div className="flex flex-col gap-6">
+            {showFilterOutfits
+              ? <FilterOutfits />
+              : <FilterWithItems />
+            }
+          </div>
         </div>
         <Navbar onAddClick={() => {setShowCamera(true)}} />
       </main>
