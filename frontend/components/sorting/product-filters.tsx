@@ -41,11 +41,11 @@ export default function ProductFilters({
           const response = await fetch(`/api/unique-values/${field}`, {
             method: "GET",
             headers: {
-              "Content-Type": "application/json",
+              "Content-Type": "application/json"
             },
           });
           const data = await response.json();
-          options[field] = JSON.parse(data) || [];
+          options[field] = data || [];
         }
 
         console.log("Fetched filter options:", options);

@@ -3,7 +3,9 @@ from dotenv import load_dotenv
 #import chromadb
 import asyncio
 import json
-
+import environment
+import os
+import chromadb
 def parse_clothing_items(url : str):
     '''
     This function takes in an image url and returns a list of json objects for each clothing item in the image.
@@ -42,7 +44,7 @@ def parse_clothing_items(url : str):
                 "content": [
                     {"type": "text", "text": '''What clothes are in this image? Return only a json object for each clothing item with the cloth type, cloth size, clothing color, and clothing description.
                         Example:[{"cloth_type": "shirt","cloth_size": "medium","cloth_color": "blue","cloth_description": "a blue shirt with a white logo"}, {"cloth_type": "pants","cloth_size": "large","cloth_color": "black","cloth_description": "black pants with a white stripe"}]
-                        Return nothing except the json object on one line with no quotation marks or text outside of the object.
+                        Return nothing except the json object on one line with no quotation marks or text outside of the object. Do not use terms like 'unknown' or 'not specified' to describe the objects. For the descriptions, be as descriptive as possible.
                     '''},
                     {
                         "type": "image_url",
@@ -69,7 +71,7 @@ def parse_outfit(url : str):
             {
                 "role": "user",
                 "content": [
-                    {"type": "text", "text": '''Describe this outfit in a fun and illustrative way.
+                    {"type": "text", "text": '''Describe this outfit in a fun illustrative, and straight to the point way. Describe the clothing in detail to best reflect all pieces of clothing the person is wearing. Do not use terms like 'unknown' or 'not specified' to describe the objects.
                     '''},
                     {
                         "type": "image_url",
@@ -103,7 +105,7 @@ def upload_to_chroma(parsed : list):
     collection = client.get_or_create_collection(name="test")
 
     collection.add(
-        documents=[doc['cloth_description'] for doc in parsed],
+        documents=[doc['cloth_description'] + str(doc['cloth_color']) + str(doc['cloth_size']) + str(doc['cloth_type']) for doc in parsed],
         ids=[str(doc['cloth_color']) + str(doc['cloth_size']) + str(doc['cloth_type']) for doc in parsed], 
     )
 
@@ -131,6 +133,16 @@ def query_chroma(chroma_db_name : str, query : str, num_items : int):
     return results
 
 if __name__ == '__main__':
-    result = parse_clothing_items('https://hack-fitcheck.s3.amazonaws.com/2d773c76-4e55-4fd6-b089-ed05a707ee32_photo.jpg')
-    print(result)
+    # result = parse_clothing_items('https://hack-fitcheck.s3.amazonaws.com/2d773c76-4e55-4fd6-b089-ed05a707ee32_photo.jpg')
+    # print(result)
+    client = chromadb.HttpClient(host=environment.get('CHROMA_DB_ADDRESS'), port=8000)
+    collection = client.get_or_create_collection(name="clothing_items")
 
+    from chromadb.config import Settings
+
+    all_data = collection.get()
+
+    all_ids_nested = all_data["ids"]
+
+    # 5) flatten and print
+    print(all_ids_nested)

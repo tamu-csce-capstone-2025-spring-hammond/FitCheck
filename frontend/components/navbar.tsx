@@ -81,7 +81,9 @@ export default function Navbar({ onAddClick }: { onAddClick?: () => void }) {
                 height={64}
                 className="h-16 w-auto"
               />
+              <p className="mt-auto text-sm text-body-light">Add Clothing</p>
             </span>
+            
           </button>
           <Link href="/try-on" legacyBehavior>
             <span
@@ -142,7 +144,7 @@ export default function Navbar({ onAddClick }: { onAddClick?: () => void }) {
           <Link href="/ootd-calendar" legacyBehavior>
             <span
               className={`flex gap-2 flex-col justify-center items-center ${
-                isActive("/calendar") ? "text-accent" : ""
+                isActive("/ootd-calendar") ? "text-accent" : ""
               }`}
             >
               <svg

@@ -77,7 +77,7 @@ async def upload_image(file: UploadFile = File(...), authorization: str = Header
     collection = client.get_or_create_collection('clothing_items')
 
     collection.add(
-        documents=[item['description'] for item in saved_items],
+        documents=[item['description'] + item['size'] + item['color'] + item['style'] + item['brand'] + item['category'] for item in saved_items],
         ids=[item['id'] for item in saved_items], 
     )
 
@@ -135,7 +135,6 @@ async def upload_outfit(file: UploadFile = File(...), authorization: str = Heade
         })
 
     
-    # Create the outfit entry in the database (without items first)
     outfit = database.add_outfit(
         user_id=current_user.id,
         description=description,
@@ -153,8 +152,6 @@ async def upload_outfit(file: UploadFile = File(...), authorization: str = Heade
     # Mark the associated ClothingItem as worn
     for item in saved_items:
         database.mark_clothing_item_worn(item['id'])
-    
-
     
     # Upload the outfit to ChromaDB
     client = chromadb.HttpClient(host=environment.get('CHROMA_DB_ADDRESS'), port=8000)

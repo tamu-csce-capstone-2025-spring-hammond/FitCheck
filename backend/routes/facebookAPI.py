@@ -9,7 +9,6 @@ from dotenv import load_dotenv
 # FACEBOOK_ACCESS_TOKEN = os.getenv("FACEBOOK_ACCESS_TOKEN")
 # FACEBOOK_CATALOG_ID = os.getenv("FACEBOOK_CATALOG_ID")
 # PAGE_ACCESS_TOKEN = os.getenv("PAGE_ACCESS_TOKEN")
-filtered_products = []
 
 FACEBOOK_ACCESS_TOKEN = environment.get("FACEBOOK_ACCESS_TOKEN")
 FACEBOOK_CATALOG_ID = environment.get("FACEBOOK_CATALOG_ID")
@@ -91,7 +90,7 @@ def post_to_catalog(name, currency, price, image_url, size, quantity, retailer_i
 @router.get("/facebook/userproducts/{email}")
 def get_user_products(email):
     '''given an email, get all products with that in the retailer id'''
-    
+    filtered_products = []
     url = f"https://graph.facebook.com/v22.0/{FACEBOOK_CATALOG_ID}/products"
     headers = {"Authorization": f"Bearer {FACEBOOK_ACCESS_TOKEN}"}
     response = requests.get(url,headers=headers)

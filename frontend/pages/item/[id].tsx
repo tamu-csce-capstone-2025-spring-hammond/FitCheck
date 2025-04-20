@@ -10,6 +10,7 @@ import Navbar from "@/components/navbar";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/imported-ui/button";
 import { Loader2 } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 interface ItemData {
   id: number;
@@ -22,6 +23,7 @@ interface ItemData {
   last_worn: string;
   archived_date: string;
   s3url: string;
+  style?: string;
 }
 
 export default function ProductPage() {
@@ -46,6 +48,7 @@ export default function ProductPage() {
         const processedData = {
           ...data,
           tags: Array.isArray(data.tags) ? data.tags : [],
+          style: data.style || undefined
         };
         setItemData(processedData);
       } catch (error) {
@@ -129,7 +132,15 @@ export default function ProductPage() {
           <div className="my-24 grid grid-cols-1 md:grid-cols-2 gap-24">
             {/* Left column - Images */}
             <div className="space-y-4">
-              <div className="w-full overflow-hidden object-cover border border-gray-100 bg-gray-50">
+              <div className="flex items-center gap-4 mb-4">
+                <Button
+                  onClick={() => router.push('/')}
+                  className="title flex justify-center border-2 border-black items-center px-2 lg:px-16 py-4 bg-black text-white rounded-lg hover:text-black hover:bg-accent text-center"
+                >
+                  Back
+                </Button>
+              </div>
+              <div className="border border-gray-100 bg-gray-50">
                 <Image
                   src={itemData.s3url || "/placeholder.svg"}
                   alt={itemData.description || "Item image"}
@@ -149,9 +160,9 @@ export default function ProductPage() {
 
               {/* Tags */}
               <div className="flex flex-wrap gap-2 mb-6">
-                {itemData.tags && itemData.tags.length > 0 ? (
-                  itemData.tags.map((tag, index) => (
-                    <Tag key={index} text={tag} />
+                {itemData.style ? (
+                  itemData.style.split(',').map((tag, index) => (
+                    <Tag key={index} text={tag.trim()} />
                   ))
                 ) : (
                   <p className="text-gray-500">No tags attached.</p>
