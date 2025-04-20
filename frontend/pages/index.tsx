@@ -15,6 +15,11 @@ export default function Home() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
+  const handleCameraClose = () => {
+    setShowCamera(false)
+    router.reload()
+  }
+
   useEffect(() => {
     async function fetchUser() {
       try {
@@ -88,7 +93,7 @@ export default function Home() {
       </main>
 
       <Footer></Footer>
-      <CameraModal isVisible={showCamera} onClose={() => setShowCamera(false)} />
+      <CameraModal isVisible={showCamera} onClose={handleCameraClose} />
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useRouter } from 'next/router';
 import Header from "../components/header";
 import Footer from "../components/footer";
 import Navbar from "../components/navbar";
@@ -6,7 +7,12 @@ import ListingFilterWithItems from "@/components/sorting/listings-filter-with-it
 import CameraModal from "@/components/cameramodal";
 
 export default function Listings() {
+  const router = useRouter();
   const [showCamera, setShowCamera] = useState(false);
+  const handleCameraClose = () => {
+    setShowCamera(false)
+    router.reload()
+  }
 
   return (
     <div className="FitCheck">
@@ -24,7 +30,7 @@ export default function Listings() {
       </main>
 
       <Footer></Footer>
-      <CameraModal isVisible={showCamera} onClose={() => setShowCamera(false)} />
+      <CameraModal isVisible={showCamera} onClose={handleCameraClose} />
     </div>
   );
 }
