@@ -255,12 +255,12 @@ export default function EditItemPage() {
                         />
                       </div>
                     ))}
-                    <div
+                    {/* <div
                       onClick={handleAddPhoto}
                       className="w-[130px] h-[130px] border border-dashed border-gray-300 flex items-center justify-center cursor-pointer bg-white"
                     >
                       <Plus className="text-gray-400" />
-                    </div>
+                    </div> */}
                   </div>
                 </div>
 
@@ -409,7 +409,7 @@ export default function EditItemPage() {
 
                 {/* Buttons */}
                 <div className="flex gap-4 mt-6 items-center justify-center">
-                  <LightButton text="Cancel" href={`/product/${id}`} />
+                  <LightButton text="Cancel" href={`/item/${id}`} />
                   <button
                     type="submit"
                     className="title flex justify-center border-4 border-black items-center px-2 lg:px-16 py-4 bg-black text-white rounded-lg hover:text-black hover:bg-accent text-center"

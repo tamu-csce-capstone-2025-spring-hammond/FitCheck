@@ -35,21 +35,21 @@ export default function ProductPage() {
   useEffect(() => {
     const fetchItemData = async () => {
       if (!id) return;
-      
+
       try {
         const response = await fetch(`/api/clothing_items/${id}`);
         if (!response.ok) {
-          throw new Error('Failed to fetch item details');
+          throw new Error("Failed to fetch item details");
         }
         const data = await response.json();
         // Ensure tags is always an array
         const processedData = {
           ...data,
-          tags: Array.isArray(data.tags) ? data.tags : []
+          tags: Array.isArray(data.tags) ? data.tags : [],
         };
         setItemData(processedData);
       } catch (error) {
-        console.error('Error fetching item details:', error);
+        console.error("Error fetching item details:", error);
       } finally {
         setIsLoading(false);
       }
@@ -66,14 +66,14 @@ export default function ProductPage() {
     try {
       setIsDeleting(true);
       const response = await fetch(`/api/clothing_items/${id}`, {
-        method: 'DELETE',
+        method: "DELETE",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
 
       console.log("Delete response:", response);
-      
+
       if (response.ok) {
         console.log("Item deleted successfully");
       } else {
@@ -84,7 +84,7 @@ export default function ProductPage() {
     } finally {
       setIsDeleting(false);
       setShowDeleteModal(false);
-      router.push('/');
+      router.push("/");
     }
   };
 
@@ -126,16 +126,16 @@ export default function ProductPage() {
 
       <main className="_site-grid min-h-[90vh] relative mb-64">
         <div className=" _grid-3">
-          <div className="my-24 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="my-24 grid grid-cols-1 md:grid-cols-2 gap-24">
             {/* Left column - Images */}
             <div className="space-y-4">
-              <div className="border border-gray-100 bg-gray-50">
+              <div className="w-full overflow-hidden object-cover border border-gray-100 bg-gray-50">
                 <Image
                   src={itemData.s3url || "/placeholder.svg"}
                   alt={itemData.description || "Item image"}
                   width={500}
                   height={500}
-                  className="w-full object-contain"
+                  className="w-full object-cover h-full"
                 />
               </div>
             </div>
@@ -162,19 +162,42 @@ export default function ProductPage() {
 
               {/* Description */}
               <p className="mb-6">
-                <span className="font-semibold">Description:</span> {itemData.description || 'No description available'}
+                <span className="font-semibold">Description:</span>{" "}
+                {itemData.description || "No description available"}
               </p>
 
               <hr className="my-4" />
 
               {/* Details */}
               <div className="space-y-2 mb-6">
-                <p><span className="font-semibold">Category:</span> {itemData.category || 'Not specified'}</p>
-                <p><span className="font-semibold">Size:</span> {itemData.size || 'Not specified'}</p>
-                <p><span className="font-semibold">Brand:</span> {itemData.brand || 'Not specified'}</p>
-                <p><span className="font-semibold">Color:</span> {itemData.color || 'Not specified'}</p>
-                <p className="italic">Last Worn: {itemData.last_worn ? new Date(itemData.last_worn).toLocaleDateString() : 'Not recorded'}</p>
-                <p className="italic">Date Archived: {itemData.archived_date ? new Date(itemData.archived_date).toLocaleDateString() : 'Not recorded'}</p>
+                <p>
+                  <span className="font-semibold">Category:</span>{" "}
+                  {itemData.category || "Not specified"}
+                </p>
+                <p>
+                  <span className="font-semibold">Size:</span>{" "}
+                  {itemData.size || "Not specified"}
+                </p>
+                <p>
+                  <span className="font-semibold">Brand:</span>{" "}
+                  {itemData.brand || "Not specified"}
+                </p>
+                <p>
+                  <span className="font-semibold">Color:</span>{" "}
+                  {itemData.color || "Not specified"}
+                </p>
+                <p className="italic">
+                  Last Worn:{" "}
+                  {itemData.last_worn
+                    ? new Date(itemData.last_worn).toLocaleDateString()
+                    : "Not recorded"}
+                </p>
+                <p className="italic">
+                  Date Archived:{" "}
+                  {itemData.archived_date
+                    ? new Date(itemData.archived_date).toLocaleDateString()
+                    : "Not recorded"}
+                </p>
               </div>
 
               <hr className="my-4" />
@@ -187,12 +210,12 @@ export default function ProductPage() {
                 />
               </div>
 
-              <div className="mt-12 p-6 border-heart-red border-2 rounded-xl">
-                <Button 
+              <div className="mt-6 p-6 border-heart-red border-2 rounded-xl">
+                <Button
                   onClick={handleDelete}
-                  className="w-full border-heart-red border-[1px] hover:bg-heart-red"
+                  className="w-full border-heart-red border-2 py-8 hover:bg-heart-red"
                 >
-                  <p className="text-heart-red text-lg hover:text-white">
+                  <p className="text-heart-red hover:text-white">
                     Delete Item
                   </p>
                 </Button>
@@ -211,12 +234,16 @@ export default function ProductPage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4">
             <div className="text-center mb-6">
-              <p className="text-lg font-medium">Are you sure you want to delete this item?</p>
-              <p className="text-gray-500 mt-2">This action cannot be undone.</p>
+              <p className="text-lg font-medium">
+                Are you sure you want to delete this item?
+              </p>
+              <p className="text-gray-500 mt-2">
+                This action cannot be undone.
+              </p>
             </div>
             <div className="flex justify-center gap-4">
-              <Button 
-                variant="default" 
+              <Button
+                variant="default"
                 onClick={handleCancel}
                 className="border-heart-red border-[1px] hover:bg-heart-red"
                 disabled={isDeleting}
@@ -225,9 +252,9 @@ export default function ProductPage() {
                   Cancel
                 </p>
               </Button>
-              <Button 
-                variant="default" 
-                onClick={confirmDelete} 
+              <Button
+                variant="default"
+                onClick={confirmDelete}
                 className="border-heart-red border-[1px] hover:bg-heart-red"
                 disabled={isDeleting}
               >
