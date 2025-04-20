@@ -85,15 +85,22 @@ def search(request: SearchRequest, authorization: str = Header(...), db: Session
 
     # Parse the results from ChromaDB
     matching_items = []
+    matching_ids = set()
     for result in range(len(results['ids'][0])):
         if results['distances'][0][result] < 20:
             item_id = results['ids'][0][result]
         # Fetch the clothing item from the database using the ID
-            clothing_item = db.query(ClothingItem).where(ClothingItem.user_id == current_user.id).filter(ClothingItem.id == item_id).first()
-            if clothing_item:
-                matching_items.append(clothing_item)
-            
+            item = db.query(ClothingItem).where(ClothingItem.user_id == current_user.id).filter(ClothingItem.id == item_id).first()
+            if item and item_id not in matching_ids:
+                matching_ids.add(item.id)
+                matching_items.append(item)
 
+    for item in db.query(ClothingItem).where(ClothingItem.user_id == current_user.id).where(ClothingItem.id not in matching_ids).all():
+        if request.query.lower() in item.description.lower() and (item.id not in matching_ids):
+            matching_ids.add(item.id)
+            matching_items.append(item)
+
+    matching_items = list(matching_items)
     print("____________________________")
     print("Matching items from ChromaDB:")
     print(matching_items)
