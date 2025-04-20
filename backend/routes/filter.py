@@ -60,11 +60,7 @@ def get_unique_values_by_field(field: str, authorization: str = Header(...), db:
         raise ValueError(f"Field {field} does not exist on the model.")
 
     items = db.exec(query).all()
-    ret = []
-    for item in items:
-        if item.brand is not None and item.brand != "":
-            ret.append(getattr(item, field, None))
-    return ret
+    return [getattr(item, field) for item in items if getattr(item, field) is not None and getattr(item, field) != ""]
 
 class SearchRequest(BaseModel):
     query: str  # The search query text
@@ -105,4 +101,9 @@ def search(request: SearchRequest, authorization: str = Header(...), db: Session
             matching_items.append(item)
 
     matching_items = list(matching_items)
+    print("____________________________")
+    print("Matching items from ChromaDB:")
+    print(matching_items)
+    print("____________________________")
+
     return matching_items
