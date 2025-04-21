@@ -38,10 +38,11 @@ export default function EditItemPage() {
   const [photos, setPhotos] = useState(["/placeholder.svg"]);
   const [isLoading, setIsLoading] = useState(true);
   const [userEmail, setUserEmail] = useState("");
+  const [userId, setUserId] = useState<number | null>(null);
 
-  // Fetch user email when component mounts
+  // Fetch user email and ID when component mounts
   useEffect(() => {
-    const fetchUserEmail = async () => {
+    const fetchUserData = async () => {
       try {
         const response = await fetch('/api/me');
         if (!response.ok) {
@@ -49,12 +50,13 @@ export default function EditItemPage() {
         }
         const data = await response.json();
         setUserEmail(data.email);
+        setUserId(data.id);
       } catch (error) {
-        console.error('Error fetching user email:', error);
+        console.error('Error fetching user data:', error);
       }
     };
 
-    fetchUserEmail();
+    fetchUserData();
   }, []);
 
   // Fetch item details when component mounts
@@ -155,6 +157,38 @@ export default function EditItemPage() {
             console.error('Facebook API Error:', errorText);
             throw new Error(`Failed to post to Facebook: ${errorText}`);
           }
+
+          // Create resale listing in our database
+          if (!userId) {
+            throw new Error('User ID not found');
+          }
+
+          const resaleListingData = {
+            user_id: userId,
+            clothing_item_id: parseInt(id as string),
+            platform: 'facebook',
+            price: formData.price,
+            url: "https://facebook.com/business/shops", // This should be updated with the actual listing URL
+            status: 'active'
+          };
+
+          const resaleListingResponse = await fetch('/api/resale_listings', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+            },
+            body: JSON.stringify(resaleListingData),
+          });
+
+          if (!resaleListingResponse.ok) {
+            const errorData = await resaleListingResponse.json();
+            console.error('Resale Listing API Error:', errorData);
+            throw new Error(`Failed to create resale listing: ${errorData.details || errorData.error || 'Unknown error'}`);
+          }
+
+          const responseData = await resaleListingResponse.json();
+          console.log('Resale listing created successfully:', responseData);
         }
         // Add similar logic for eBay when ready
       }
