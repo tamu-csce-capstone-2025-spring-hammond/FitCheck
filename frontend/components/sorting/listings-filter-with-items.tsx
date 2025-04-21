@@ -165,7 +165,7 @@ export default function FilterWithItems() {
               </div>
             ) : listings.length === 0 ? (
               <div className="flex flex-col justify-center items-center h-64 space-y-4">
-                <p className="text-xl font-semibold text-gray-600">You haven't listed any items yet</p>
+                <p className="text-xl font-semibold text-gray-600">You haven&apos;t listed any items yet</p>
                 <p className="text-gray-500">Start by adding your first item to your listings</p>
               </div>
             ) : (
