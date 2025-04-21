@@ -1,76 +1,65 @@
-// pages/api/virtual-try-on.js
-export default async function handler(req, res) {
+// pages/api/virtual-try-on.ts
+
+import type { NextApiRequest, NextApiResponse } from 'next';
+
+type ResponseData = { resultUrl?: string; error?: string };
+
+// ← this must be the hf.space URL for your *duplicated* Space
+const PREDICT_URL =
+  "https://anishfish-kolors-virtual-try-on.hf.space/api/predict/tryon";
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<ResponseData>
+) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  const { personImageUrl, clothingImageUrl } = req.body as {
+    personImageUrl:  string;
+    clothingImageUrl: string;
+  };
+
   try {
-    const { personImageUrl, clothingImageUrl } = req.body;
-
-    // Prepare payload for the Hugging Face space API
-    const payload = {
-      data: [{ path: personImageUrl }, { path: clothingImageUrl }, 0, true],
-    };
-
-    // Call the Kolors Virtual Try-On API
-    const response = await fetch('https://kwai-kolors-kolors-virtual-try-on.hf.space/call/tryon', {
+    // 1) Call the Space on hf.space
+    const spaceRes = await fetch(PREDICT_URL, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        data: [
+          { path: personImageUrl },
+          { path: clothingImageUrl },
+          0,
+          true
+        ],
+      }),
     });
 
-    if (!response.ok) {
-      throw new Error(`Error: ${response.status}`);
+    if (!spaceRes.ok) {
+      const txt = await spaceRes.text();
+      throw new Error(`Space predict failed: ${spaceRes.status} ${txt}`);
     }
 
-    const data = await response.json();
-    const eventId = data.event_id;
+    // 2) Parse the JSON
+    const json = await spaceRes.json();
+    const first = json.data?.[0];
+    let resultUrl: string;
 
-    // Get the result using event ID
-    const resultResponse = await fetch(
-      `https://kwai-kolors-kolors-virtual-try-on.hf.space/call/tryon/${eventId}`
-    );
-
-    // Process the streaming response
-    const reader = resultResponse.body.getReader();
-    const decoder = new TextDecoder('utf-8');
-    let buffer = '';
-    let resultUrl = null;
-
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-
-      buffer += decoder.decode(value, { stream: true });
-      const lines = buffer.split('\n');
-
-      for (let i = 0; i < lines.length - 1; i++) {
-        if (lines[i].startsWith('event:')) {
-          const event = lines[i].split('event: ')[1];
-          const eventData = JSON.parse(lines[i + 1].split('data: ')[1]);
-
-          if (event === 'complete' && eventData && eventData[0]) {
-            resultUrl = eventData[0].url;
-            break;
-          } else if (event === 'error') {
-            throw new Error('Virtual try-on process failed');
-          }
-        }
-      }
-
-      if (resultUrl) break;
-      buffer = lines[lines.length - 1];
+    if (typeof first === 'string') {
+      // sometimes it's directly a data‑URI
+      resultUrl = first;
+    } else if (first && typeof first === 'object' && 'url' in first) {
+      // often it's { url: "https://..." }
+      resultUrl = (first as any).url;
+    } else {
+      throw new Error("Unexpected response shape");
     }
 
-    if (!resultUrl) {
-      throw new Error('No result URL found in the response');
-    }
-
+    // 3) Return to your React component
     return res.status(200).json({ resultUrl });
-  } catch (error) {
-    console.error('Error in virtual try-on process:', error);
-    return res.status(500).json({ error: error.message });
+  } catch (err: any) {
+    console.error("virtual-try-on error:", err);
+    return res.status(500).json({ error: err.message });
   }
 }
