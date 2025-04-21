@@ -22,6 +22,19 @@ interface Listing {
   image_url?: string;
 }
 
+interface ResaleListing {
+  id: string;
+  name: string;
+  clothing_item_id: string;
+}
+
+interface ClothingItem {
+  id: string;
+  name: string;
+  category: string;
+  resale_listings?: ResaleListing[];
+}
+
 export default function FilterWithItems() {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [userEmail, setUserEmail] = useState("");
@@ -74,6 +87,7 @@ export default function FilterWithItems() {
         const listingsWithImages = await Promise.all(
           data.products.map(async (listing: Listing) => {
             try {
+              console.log('Processing listing:', listing);
               // Fetch image URL
               const imageResponse = await fetch(`/api/facebook/image/${listing.name}`);
               if (!imageResponse.ok) {
@@ -89,16 +103,35 @@ export default function FilterWithItems() {
                 return { ...listing, s3url: imageData.image_url };
               }
               const priceData = await priceResponse.json();
-              console.log('Price response for', listing.name, ':', {
-                rawResponse: priceResponse,
-                priceData: priceData
+              
+              // Get user's clothing items to find the matching item
+              const userResponse = await fetch('/api/user/clothing-items');
+              const userClothingItems = await userResponse.json();
+              console.log('User clothing items response:', userClothingItems);
+              
+              // Ensure we're working with an array
+              const itemsArray = Array.isArray(userClothingItems) ? userClothingItems : [];
+              
+              // Get the listing name
+              const listingName = (listing as Listing).name;
+              console.log('Current listing name:', listingName);
+              
+              // Find the matching clothing item by name
+              const matchingClothingItem = itemsArray.find((item: ClothingItem) => {
+                console.log('Comparing names:', {
+                  listingName,
+                  itemName: item.name
+                });
+                return item.name === listingName;
               });
+              
+              console.log('Matching clothing item:', matchingClothingItem);
               
               return {
                 ...listing,
                 s3url: imageData.image_url,
-                category: listing.category || "Clothing",
-                price: priceData // Pass the string price directly
+                price: priceData,
+                category: matchingClothingItem?.category || 'Unknown'
               };
             } catch (error) {
               console.error(`Error fetching data for ${listing.name}:`, error);

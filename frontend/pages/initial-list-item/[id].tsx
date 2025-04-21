@@ -118,6 +118,21 @@ export default function EditItemPage() {
     setIsPosting(true);
     
     try {
+      // First, update the clothing item's name in the database
+      const updateResponse = await fetch(`/api/clothing_items/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name
+        }),
+      });
+
+      if (!updateResponse.ok) {
+        throw new Error('Failed to update item name');
+      }
+
       // Generate retailer_id using email and item name
       const timestamp = Date.now();
       const retailer_id = `${userEmail}-${formData.name}`;
