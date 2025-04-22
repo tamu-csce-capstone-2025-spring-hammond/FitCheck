@@ -12,6 +12,7 @@ import { Button } from "@/components/imported-ui/button";
 import { Loader2 } from "lucide-react";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import OutfitLogModal from "@/components/outfit-log-modal";
 
 interface ItemData {
   id: number;
@@ -53,6 +54,7 @@ export default function ProductPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showLogModal, setShowLogModal] = useState(false);
 
   useEffect(() => {
     let canceled = false;
@@ -139,6 +141,27 @@ export default function ProductPage() {
     setShowDeleteModal(false);
   };
 
+  const handleLogOutfit = async (date: string) => {
+    try {
+      const response = await fetch(`/api/outfits/${id}/log`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ date }),
+      });
+
+      if (response.ok) {
+        console.log("Outfit logged successfully");
+        router.push("/ootd-calendar");
+      } else {
+        console.error("Failed to log outfit");
+      }
+    } catch (error) {
+      console.error("Error logging outfit:", error);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="FitCheck">
@@ -204,7 +227,12 @@ export default function ProductPage() {
                 </div>
                 <div className="grid grid-cols-1 gap-4 mt-4">
                   <DarkButton text="Edit Outfit" href={`/edit-outfit/${id}`} />
-                  <DarkButton text="Log Outfit" href={`/ootd-calendar`} />
+                  <Button
+                    onClick={() => setShowLogModal(true)}
+                    className="w-full border-2 border-black py-4 bg-black text-white rounded-lg hover:text-black hover:bg-accent text-center"
+                  >
+                    Log Outfit
+                  </Button>
                 </div>
               </div>
 
@@ -309,6 +337,13 @@ export default function ProductPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Log Outfit Modal */}
+      {showLogModal && (
+        <OutfitLogModal
+          onClose={() => setShowLogModal(false)}
+        />
       )}
     </div>
   );
