@@ -25,7 +25,6 @@ from models import ClothingItem
 @router.get("/clothing_items/{item_id}", response_model=ClothingItemPublicFull)
 def get_clothing_item(item_id: int, db: Session = Depends(get_db)):
     item = db.exec(select(ClothingItem).where(ClothingItem.id == item_id).options(
-        selectinload(ClothingItem.wear_history),
         selectinload(ClothingItem.outfits),
         selectinload(ClothingItem.resale_listing)
         )).first()

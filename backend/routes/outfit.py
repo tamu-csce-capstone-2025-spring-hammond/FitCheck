@@ -16,7 +16,8 @@ from models import OutfitBase, OutfitItem, OutfitPublic, OutfitPublicFull, Outfi
 @router.get("/outfits/{outfit_id}", response_model=OutfitPublicFull)
 def get_outfit(outfit_id: int, db: Session = Depends(get_db)):
     outfit = db.exec(select(Outfit).where(Outfit.id == outfit_id).options(
-        selectinload(Outfit.items)
+        selectinload(Outfit.items),
+        selectinload(Outfit.outfit_wear_history)
     )).first()
     if not outfit:
         raise HTTPException(status_code=404, detail="Outfit not found")

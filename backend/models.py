@@ -105,6 +105,7 @@ class OutfitPublic(OutfitBase):
 class OutfitPublicFull(OutfitPublic):
     """Detailed public model for Outfit, including related clothing items."""
     items: List["OutfitItem"] = []
+    outfit_wear_history: List["OutfitWearHistory"] = []
 
 class OutfitUpdate(OutfitBase):
     """Model for updating an existing outfit."""
@@ -125,7 +126,7 @@ class Outfit(OutfitBase, table=True):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     user: Optional["User"] = Relationship(back_populates="outfits")
     items: List["OutfitItem"] = Relationship(back_populates="outfit")
-
+    outfit_wear_history: List["OutfitWearHistory"] = Relationship(back_populates="outfit")
 
 # The relationship table for connecting outfits to clothing items
 class OutfitItem(SQLModel, table=True):
@@ -182,33 +183,57 @@ class ResaleListing(ResaleListingBase, table=True):
 
 
 ##### WearHistory #####
+## THIS IS DEPRECATED
 
 class WearHistoryBase(SQLModel):
     """Base model for WearHistory, used for creating and updating wear records."""
+    ## THIS IS DEPRECATED
     clothing_item_id: int
     date: datetime
 
 class WearHistoryPublic(WearHistoryBase):
     """Public model for WearHistory, including ID and created timestamp."""
+    ## THIS IS DEPRECATED
     id: Optional[int] = None
     created_at: datetime
 
 class WearHistoryPublicFull(WearHistoryPublic):
     """Detailed public model for WearHistory, including related clothing item."""
+    ## THIS IS DEPRECATED
     clothing_item: Optional["ClothingItem"] = None
 
 class WearHistoryUpdate(WearHistoryBase):
     """Model for updating an existing wear history record."""
+    ## THIS IS DEPRECATED
     date: Optional[datetime] = None
 
 
 class WearHistory(WearHistoryBase, table=True):
+    ## THIS IS DEPRECATED
     id: Optional[int] = Field(default_factory=make_id, primary_key=True)
     clothing_item_id: int = Field(foreign_key="clothingitem.id")
     date: datetime
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
     clothing_item: Optional[ClothingItem] = Relationship(back_populates="wear_history")
+
+##### OutfitWearHistory #####
+
+class OutfitWearHistoryBase(SQLModel):
+    """Base model for OutfitWearHistory, used for creating and updating wear records."""
+    outfit_id: int
+
+class OutfitWearHistoryPublic(OutfitWearHistoryBase):
+    """Detailed public model for OutfitWearHistory, including related outfit."""
+    outfit: Optional["Outfit"] = None
+    date: datetime
+
+class OutfitWearHistory(OutfitWearHistoryBase, table=True):
+    id: Optional[int] = Field(default_factory=make_id, primary_key=True)
+    outfit_id: int = Field(foreign_key="outfit.id")
+    date: datetime = Field(default_factory=datetime.utcnow)
+
+    outfit: Optional[Outfit] = Relationship(back_populates="outfit_wear_history")
 
 
 # Drop all tables and recreate them
@@ -226,5 +251,6 @@ if __name__ == "__main__":
     engine = create_engine(os.environ.get("DATABASE_URL"), echo=True)
     SQLModel.metadata.drop_all(engine)
     SQLModel.metadata.create_all(engine)
+
 
 
