@@ -48,7 +48,7 @@ export default function ProductPage() {
         const processedData = {
           ...data,
           tags: Array.isArray(data.tags) ? data.tags : [],
-          style: data.style || undefined
+          style: data.style || undefined,
         };
         setItemData(processedData);
       } catch (error) {
@@ -134,10 +134,24 @@ export default function ProductPage() {
             <div className="space-y-4">
               <div className="flex items-center gap-4 mb-4">
                 <Button
-                  onClick={() => router.push('/')}
-                  className="title flex justify-center  items-center px-2 lg:px-16 py-4 rounded-lg hover:text-black hover:bg-accent text-center"
+                  onClick={() => router.push("/")}
+                  className="title flex justify-center mb-4 items-center shadow-none hover:bg-white"
                 >
-                  Back
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="2"
+                    stroke="currentColor"
+                    className="mr-1"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
+                    />
+                  </svg>
+                  <p className="bold text-lg">Back</p>
                 </Button>
               </div>
               <div className="border border-gray-100 bg-gray-50">
@@ -161,9 +175,9 @@ export default function ProductPage() {
               {/* Tags */}
               <div className="flex flex-wrap gap-2 mb-6">
                 {itemData.style ? (
-                  itemData.style.split(',').map((tag, index) => (
-                    <Tag key={index} text={tag.trim()} />
-                  ))
+                  itemData.style
+                    .split(",")
+                    .map((tag, index) => <Tag key={index} text={tag.trim()} />)
                 ) : (
                   <p className="text-gray-500">No tags attached.</p>
                 )}
@@ -226,9 +240,7 @@ export default function ProductPage() {
                   onClick={handleDelete}
                   className="w-full border-heart-red border-2 py-8 hover:bg-heart-red"
                 >
-                  <p className="text-heart-red hover:text-white">
-                    Delete Item
-                  </p>
+                  <p className="text-heart-red hover:text-white">Delete Item</p>
                 </Button>
               </div>
             </div>

@@ -272,10 +272,10 @@ export default function ProductPage() {
                   </div>
               </div>
 
-              <hr className="mt-10 mb-4" />
+              <hr className="my-24 mb-4" />
 
 
-              <div className="mt-6 p-6 border-heart-red border-2 rounded-xl">
+              <div className="">
                 <Button
                   onClick={handleDelete}
                   className="w-full border-heart-red border-2 py-8 hover:bg-heart-red"

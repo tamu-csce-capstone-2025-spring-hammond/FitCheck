@@ -29,9 +29,9 @@ export default function Header() {
               <Image
                 src="/images/logo.svg"
                 alt="FitCheck"
-                width={200}
+                width={100}
                 height={25}
-                className="h-16 w-auto"
+                className="h-14 w-auto"
               />
             </Link>
           </h1>
