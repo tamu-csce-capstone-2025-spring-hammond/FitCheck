@@ -135,7 +135,7 @@ export default function ProductPage() {
               <div className="flex items-center gap-4 mb-4">
                 <Button
                   onClick={() => router.push('/')}
-                  className="title flex justify-center border-2 border-black items-center px-2 lg:px-16 py-4 bg-black text-white rounded-lg hover:text-black hover:bg-accent text-center"
+                  className="title flex justify-center  items-center px-2 lg:px-16 py-4 rounded-lg hover:text-black hover:bg-accent text-center"
                 >
                   Back
                 </Button>

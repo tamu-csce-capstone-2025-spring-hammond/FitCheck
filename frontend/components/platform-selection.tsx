@@ -84,13 +84,13 @@ export default function PlatformSelection({ itemId, onBack, onContinue }: Platfo
         <button
           onClick={() => onContinue(selectedPlatforms)}
           disabled={selectedPlatforms.length === 0}
-          className={`title flex justify-center border-4 border-black items-center px-2 lg:px-16 py-4 ${
+          className={`title flex justify-center border-2 border-black items-center px-2 lg:px-16 py-2 ${
             selectedPlatforms.length === 0 
-              ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
-              : 'bg-black text-white hover:text-black hover:bg-accent'
+              ? 'bold bg-gray-300 text-gray-500 cursor-not-allowed' 
+              : 'bold bg-black text-white hover:text-black hover:bg-accent'
           } rounded-lg text-center`}
         >
-          Continue
+        Continue
         </button>
       </div>
     </div>

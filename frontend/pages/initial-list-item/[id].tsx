@@ -10,10 +10,13 @@ import { Plus } from "lucide-react";
 import Tag from "@/components/tags-and-buttons/tag";
 import PlatformSelection from "@/components/platform-selection";
 
+// initial-list-item/[id].tsx
 export default function EditItemPage() {
   const router = useRouter();
   const { id } = router.query;
-  const [currentScreen, setCurrentScreen] = useState<'form' | 'platforms'>('form');
+  const [currentScreen, setCurrentScreen] = useState<"form" | "platforms">(
+    "form"
+  );
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const [showSuccess, setShowSuccess] = useState(false);
   const [isPosting, setIsPosting] = useState(false);
@@ -43,14 +46,14 @@ export default function EditItemPage() {
   useEffect(() => {
     const fetchUserEmail = async () => {
       try {
-        const response = await fetch('/api/me');
+        const response = await fetch("/api/me");
         if (!response.ok) {
-          throw new Error('Failed to fetch user data');
+          throw new Error("Failed to fetch user data");
         }
         const data = await response.json();
         setUserEmail(data.email);
       } catch (error) {
-        console.error('Error fetching user email:', error);
+        console.error("Error fetching user email:", error);
       }
     };
 
@@ -61,23 +64,23 @@ export default function EditItemPage() {
   useEffect(() => {
     const fetchItemDetails = async () => {
       if (!id) return;
-      
+
       try {
         const response = await fetch(`/api/clothing_items/${id}`);
         if (!response.ok) {
-          throw new Error('Failed to fetch item details');
+          throw new Error("Failed to fetch item details");
         }
         const data = await response.json();
-        
+
         // Generate name from color, brand, and category
         const nameParts = [];
         if (data.color) nameParts.push(data.color);
         if (data.brand) nameParts.push(data.brand);
         if (data.category) nameParts.push(data.category);
-        const generatedName = nameParts.join(' ');
-        
+        const generatedName = nameParts.join(" ");
+
         // Update form data with fetched values
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
           name: generatedName,
           category: data.category || "",
@@ -85,8 +88,12 @@ export default function EditItemPage() {
           brand: data.brand || "",
           color: data.color || "",
           description: data.description || "",
-          lastWorn: data.last_worn ? new Date(data.last_worn).toISOString().split('T')[0] : "",
-          archivedDate: data.archived_date ? new Date(data.archived_date).toISOString().split('T')[0] : "",
+          lastWorn: data.last_worn
+            ? new Date(data.last_worn).toISOString().split("T")[0]
+            : "",
+          archivedDate: data.archived_date
+            ? new Date(data.archived_date).toISOString().split("T")[0]
+            : "",
           tags: data.tags || [],
         }));
 
@@ -95,7 +102,7 @@ export default function EditItemPage() {
           setPhotos([data.s3url]);
         }
       } catch (error) {
-        console.error('Error fetching item details:', error);
+        console.error("Error fetching item details:", error);
       } finally {
         setIsLoading(false);
       }
@@ -107,25 +114,25 @@ export default function EditItemPage() {
   // Handle form submission
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setCurrentScreen('platforms');
+    setCurrentScreen("platforms");
   };
 
   // Handle platform selection
   const handlePlatformContinue = async (platforms: string[]) => {
     setSelectedPlatforms(platforms);
     setIsPosting(true);
-    
+
     try {
       // Generate retailer_id using email and item name
       const timestamp = Date.now();
       const retailer_id = `${userEmail}-${formData.name}`;
-      
+
       // Post to selected platforms
       for (const platform of platforms) {
-        if (platform === 'facebook') {
-          const apiUrl = '/api/facebook/catalog';
+        if (platform === "facebook") {
+          const apiUrl = "/api/facebook/catalog";
           console.log("Price before sending to backend:", formData.price);
-          
+
           // Prepare the data exactly as expected by the backend
           const postData = {
             name: formData.name,
@@ -136,23 +143,23 @@ export default function EditItemPage() {
             quantity: formData.quantity,
             retailer_id: retailer_id,
             description: formData.description,
-            website_link: "https://facebook.com/business/shops"
+            website_link: "https://facebook.com/business/shops",
           };
-          
-          console.log('Posting to Facebook with data:', postData);
+
+          console.log("Posting to Facebook with data:", postData);
 
           const facebookResponse = await fetch(apiUrl, {
-            method: 'POST',
+            method: "POST",
             headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json',
+              "Content-Type": "application/json",
+              Accept: "application/json",
             },
             body: JSON.stringify(postData),
           });
 
           if (!facebookResponse.ok) {
             const errorText = await facebookResponse.text();
-            console.error('Facebook API Error:', errorText);
+            console.error("Facebook API Error:", errorText);
             throw new Error(`Failed to post to Facebook: ${errorText}`);
           }
         }
@@ -162,15 +169,15 @@ export default function EditItemPage() {
       setIsPosting(false);
       // Show success message
       setShowSuccess(true);
-      
+
       // Wait for 3 seconds to show the success message
       setTimeout(() => {
         // Redirect to listings page
-        router.push('/listings');
+        router.push("/listings");
       }, 3000);
     } catch (error) {
       setIsPosting(false);
-      console.error('Error posting to platforms:', error);
+      console.error("Error posting to platforms:", error);
       throw error;
     }
   };
@@ -191,21 +198,24 @@ export default function EditItemPage() {
 
   // Handle input changes
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
-    const value = e.target.type === 'number' ? Number(e.target.value) : e.target.value;
+    const value =
+      e.target.type === "number" ? Number(e.target.value) : e.target.value;
     const newFormData = { ...formData, [e.target.name]: value };
-    
+
     // If color, brand, or category changes, update the name
-    if (['color', 'brand', 'category'].includes(e.target.name)) {
+    if (["color", "brand", "category"].includes(e.target.name)) {
       const nameParts = [];
       if (newFormData.color) nameParts.push(newFormData.color);
       if (newFormData.brand) nameParts.push(newFormData.brand);
       if (newFormData.category) nameParts.push(newFormData.category);
-      
-      newFormData.name = nameParts.join(' ');
+
+      newFormData.name = nameParts.join(" ");
     }
-    
+
     setFormData(newFormData);
   };
 
@@ -227,16 +237,25 @@ export default function EditItemPage() {
             </div>
           ) : showSuccess ? (
             <div className="flex flex-col items-center justify-center gap-6">
-              <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+              <div
+                className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative"
+                role="alert"
+              >
                 <strong className="font-bold text-2xl">Success!</strong>
-                <span className="block sm:inline text-lg"> Your item has been listed successfully.</span>
+                <span className="block sm:inline text-lg">
+                  {" "}
+                  Your item has been listed successfully.
+                </span>
                 <p className="mt-2">Redirecting to your listings...</p>
               </div>
             </div>
-          ) : currentScreen === 'form' ? (
+          ) : currentScreen === "form" ? (
             <>
               <h1 className="bold mb-12">List Your Item (ID: {id})</h1>
-              <form onSubmit={handleFormSubmit} className="flex flex-col gap-12">
+              <form
+                onSubmit={handleFormSubmit}
+                className="flex flex-col gap-12"
+              >
                 {/* Photos */}
                 <div className="flex flex-col gap-4">
                   <p className="title">Photos</p>
@@ -332,7 +351,7 @@ export default function EditItemPage() {
                     <input
                       type="number"
                       name="price"
-                      value={formData.price || ''}
+                      value={formData.price || ""}
                       onChange={handleChange}
                       placeholder="Enter price"
                       className="border-black w-full border-2 px-3 py-2"
@@ -347,7 +366,7 @@ export default function EditItemPage() {
                   <input
                     type="number"
                     name="quantity"
-                    value={formData.quantity || ''}
+                    value={formData.quantity || ""}
                     onChange={handleChange}
                     min="1"
                     className="border-black w-full border-2 px-3 py-2"
@@ -355,7 +374,7 @@ export default function EditItemPage() {
                 </div>
 
                 {/* Custom Tags */}
-                <div className="flex flex-col gap-4">
+                {/* <div className="flex flex-col gap-4">
                   <p className="title">Custom Tags</p>
                   <input
                     type="text"
@@ -369,10 +388,10 @@ export default function EditItemPage() {
                       <Tag key={index} text={tag} />
                     ))}
                   </div>
-                </div>
+                </div> */}
 
                 {/* Last Worn */}
-                <div className="flex flex-col gap-4">
+                {/* <div className="flex flex-col gap-4">
                   <p className="title">Last Worn</p>
                   <input
                     type="date"
@@ -381,10 +400,10 @@ export default function EditItemPage() {
                     onChange={handleChange}
                     className="border-black w-full border-2 px-3 py-2"
                   />
-                </div>
+                </div> */}
 
                 {/* Archived Date */}
-                <div className="flex flex-col gap-4">
+                {/* <div className="flex flex-col gap-4">
                   <p className="title">Date Archived</p>
                   <input
                     type="date"
@@ -393,7 +412,7 @@ export default function EditItemPage() {
                     onChange={handleChange}
                     className="border-black w-full border-2 px-3 py-2"
                   />
-                </div>
+                </div> */}
 
                 {/* Description */}
                 <div className="flex flex-col gap-4">
@@ -412,9 +431,11 @@ export default function EditItemPage() {
                   <LightButton text="Cancel" href={`/item/${id}`} />
                   <button
                     type="submit"
-                    className="title flex justify-center border-4 border-black items-center px-2 lg:px-16 py-4 bg-black text-white rounded-lg hover:text-black hover:bg-accent text-center"
+                    className="title flex justify-center border-2 border-black items-center px-2 lg:px-16 py-2 bg-black rounded-lg  hover:bg-accent text-center"
                   >
-                    List Item
+                    <p className="bold  text-white hover:text-black">
+                      List Item
+                    </p>
                   </button>
                 </div>
               </form>
@@ -422,7 +443,7 @@ export default function EditItemPage() {
           ) : (
             <PlatformSelection
               itemId={id as string}
-              onBack={() => setCurrentScreen('form')}
+              onBack={() => setCurrentScreen("form")}
               onContinue={handlePlatformContinue}
             />
           )}
