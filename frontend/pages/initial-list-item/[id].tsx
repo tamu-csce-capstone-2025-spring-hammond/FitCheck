@@ -55,7 +55,7 @@ export default function EditItemPage() {
         setUserEmail(data.email);
         setUserId(data.id);
       } catch (error) {
-        console.error('Error fetching user data:', error);
+        console.error("Error fetching user data:", error);
       }
     };
 
@@ -127,17 +127,17 @@ export default function EditItemPage() {
     try {
       // First, update the clothing item's name in the database
       const updateResponse = await fetch(`/api/clothing_items/${id}`, {
-        method: 'PATCH',
+        method: "PATCH",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name: formData.name
+          name: formData.name,
         }),
       });
 
       if (!updateResponse.ok) {
-        throw new Error('Failed to update item name');
+        throw new Error("Failed to update item name");
       }
 
       // Generate retailer_id using email and item name
@@ -182,35 +182,39 @@ export default function EditItemPage() {
 
           // Create resale listing in our database
           if (!userId) {
-            throw new Error('User ID not found');
+            throw new Error("User ID not found");
           }
 
           const resaleListingData = {
             user_id: userId,
             clothing_item_id: parseInt(id as string),
-            platform: 'facebook',
+            platform: "facebook",
             price: formData.price,
             url: "https://facebook.com/business/shops", // This should be updated with the actual listing URL
-            status: 'active'
+            status: "active",
           };
 
-          const resaleListingResponse = await fetch('/api/resale_listings', {
-            method: 'POST',
+          const resaleListingResponse = await fetch("/api/resale_listings", {
+            method: "POST",
             headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json',
+              "Content-Type": "application/json",
+              Accept: "application/json",
             },
             body: JSON.stringify(resaleListingData),
           });
 
           if (!resaleListingResponse.ok) {
             const errorData = await resaleListingResponse.json();
-            console.error('Resale Listing API Error:', errorData);
-            throw new Error(`Failed to create resale listing: ${errorData.details || errorData.error || 'Unknown error'}`);
+            console.error("Resale Listing API Error:", errorData);
+            throw new Error(
+              `Failed to create resale listing: ${
+                errorData.details || errorData.error || "Unknown error"
+              }`
+            );
           }
 
           const responseData = await resaleListingResponse.json();
-          console.log('Resale listing created successfully:', responseData);
+          console.log("Resale listing created successfully:", responseData);
         }
         // Add similar logic for eBay when ready
       }
@@ -278,7 +282,28 @@ export default function EditItemPage() {
       <Header />
 
       <main className="_site-grid min-h-[90vh] relative mb-64">
-        <div className="my-24 _grid-3">
+        <div className="my-24 _grid-3 relative">
+          <Image
+            src="/images/index-decor-1.svg"
+            width={150}
+            height={150}
+            alt="Closet"
+            className="absolute opacity-5 top-[50px] left-[60%] -z-1 -rotate-[20deg]"
+          />
+          <Image
+            src="/images/shirt.svg"
+            width={150}
+            height={150}
+            alt="Closet"
+            className="absolute opacity-5 top-[200px] left-[40%] -z-1 rotate-[10deg]"
+          />
+          <Image
+            src="/images/smile.svg"
+            width={150}
+            height={150}
+            alt="Closet"
+            className="absolute opacity-5 top-[100px] left-[20%] -z-1 rotate-[20deg]"
+          />
           {isPosting ? (
             <div className="flex flex-col items-center justify-center gap-6">
               <h1 className="bold text-2xl">Posting your listing...</h1>
@@ -300,190 +325,137 @@ export default function EditItemPage() {
             </div>
           ) : currentScreen === "form" ? (
             <>
-              <h1 className="bold mb-12">List Your Item (ID: {id})</h1>
+              <h1 className="bold mb-4">List Your Item (ID: {id})</h1>
               <form
                 onSubmit={handleFormSubmit}
                 className="flex flex-col gap-12"
               >
+                <p className="text-accent-2 bold">Step 1 of 2 — Item Details</p>
                 {/* Photos */}
                 <div className="flex flex-col gap-4">
-                  <p className="title">Photos</p>
-                  <div className="flex gap-2">
+                  <h2 className="text-xl font-semibold">Photos</h2>
+                  <div className="flex gap-4 flex-wrap">
                     {photos.map((photo, index) => (
                       <div
                         key={index}
-                        className="w-[130px] h-[130px] border border-gray-300 overflow-hidden bg-white"
+                        className="w-32 h-32 border rounded overflow-hidden bg-white"
                       >
                         <Image
                           src={photo}
-                          alt={`Product photo ${index + 1}`}
+                          alt={`Photo ${index + 1}`}
                           width={130}
                           height={130}
                           className="object-cover w-full h-full"
                         />
                       </div>
                     ))}
-                    {/* <div
-                      onClick={handleAddPhoto}
-                      className="w-[130px] h-[130px] border border-dashed border-gray-300 flex items-center justify-center cursor-pointer bg-white"
-                    >
-                      <Plus className="text-gray-400" />
-                    </div> */}
+                    {/* <button
+                  type="button"
+                  onClick={handleAddPhoto}
+                  className="w-32 h-32 border-2 border-dashed flex items-center justify-center text-gray-400 hover:border-black transition"
+                >
+                  <Plus />
+                </button> */}
                   </div>
                 </div>
 
-                {/* Name */}
-                <div className="flex flex-col gap-4">
-                  <p className="title">Item Name</p>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    className="border-black w-full border-2 px-3 py-2"
-                  />
+                {/* Name, Category, Color, Brand */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {["name", "category", "color", "brand"].map((field) => (
+                    <div key={field} className="flex flex-col gap-2">
+                      <label htmlFor={field} className="font-medium capitalize">
+                        {field}
+                      </label>
+                      <input
+                        type="text"
+                        name={field}
+                        id={field}
+                        value={(formData as any)[field]}
+                        onChange={handleChange}
+                        className="border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-black"
+                        placeholder={`Enter ${field}`}
+                      />
+                    </div>
+                  ))}
                 </div>
 
-                {/* Category */}
-                <div className="flex flex-col gap-4">
-                  <p className="title">Category</p>
-                  <input
-                    type="text"
-                    name="category"
-                    value={formData.category}
-                    onChange={handleChange}
-                    className="border-black w-full border-2 px-3 py-2"
-                  />
-                </div>
-
-                {/* Color */}
-                <div className="flex flex-col gap-4">
-                  <p className="title">Color</p>
-                  <input
-                    type="text"
-                    name="color"
-                    value={formData.color}
-                    onChange={handleChange}
-                    className="border-black w-full border-2 px-3 py-2"
-                  />
-                </div>
-
-                {/* Brand */}
-                <div className="flex flex-col gap-4">
-                  <p className="title">Brand</p>
-                  <input
-                    type="text"
-                    name="brand"
-                    value={formData.brand}
-                    onChange={handleChange}
-                    placeholder="Enter brand name"
-                    className="border-black w-full border-2 px-3 py-2"
-                  />
-                </div>
-
-                {/* Size */}
-                <div className="flex flex-col gap-4">
-                  <p className="title">Size</p>
-                  <input
-                    type="text"
-                    name="size"
-                    value={formData.size}
-                    onChange={handleChange}
-                    className="border-black w-full border-2 px-3 py-2"
-                  />
-                </div>
-
-                {/* Price */}
-                <div className="flex flex-col gap-4">
-                  <p className="title">Price (USD)</p>
-                  <div className="flex gap-4">
+                {/* Size, Price, Quantity */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="flex flex-col gap-2">
+                    <label className="font-medium">Size</label>
+                    <input
+                      type="text"
+                      name="size"
+                      value={formData.size}
+                      onChange={handleChange}
+                      className="border border-gray-300 rounded px-3 py-2"
+                      placeholder="e.g. M"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label className="font-medium">Price (USD)</label>
                     <input
                       type="number"
                       name="price"
                       value={formData.price || ""}
                       onChange={handleChange}
-                      placeholder="Enter price"
-                      className="border-black w-full border-2 px-3 py-2"
+                      className="border border-gray-300 rounded px-3 py-2"
+                      placeholder="0.00"
                     />
-                    <input type="hidden" name="currency" value="USD" />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label className="font-medium">Quantity</label>
+                    <input
+                      type="number"
+                      name="quantity"
+                      value={formData.quantity}
+                      onChange={handleChange}
+                      min="1"
+                      className="border border-gray-300 rounded px-3 py-2"
+                    />
                   </div>
                 </div>
-
-                {/* Quantity */}
-                <div className="flex flex-col gap-4">
-                  <p className="title">Quantity</p>
-                  <input
-                    type="number"
-                    name="quantity"
-                    value={formData.quantity || ""}
-                    onChange={handleChange}
-                    min="1"
-                    className="border-black w-full border-2 px-3 py-2"
-                  />
-                </div>
-
-                {/* Custom Tags */}
-                {/* <div className="flex flex-col gap-4">
-                  <p className="title">Custom Tags</p>
-                  <input
-                    type="text"
-                    name="tags"
-                    onChange={handleChange}
-                    placeholder="Add custom tags (comma separated)"
-                    className="border-black w-full border-2 px-3 py-2"
-                  />
-                  <div className="flex flex-wrap gap-2">
-                    {formData.tags.map((tag, index) => (
-                      <Tag key={index} text={tag} />
-                    ))}
-                  </div>
-                </div> */}
-
-                {/* Last Worn */}
-                {/* <div className="flex flex-col gap-4">
-                  <p className="title">Last Worn</p>
-                  <input
-                    type="date"
-                    name="lastWorn"
-                    value={formData.lastWorn}
-                    onChange={handleChange}
-                    className="border-black w-full border-2 px-3 py-2"
-                  />
-                </div> */}
-
-                {/* Archived Date */}
-                {/* <div className="flex flex-col gap-4">
-                  <p className="title">Date Archived</p>
-                  <input
-                    type="date"
-                    name="archivedDate"
-                    value={formData.archivedDate}
-                    onChange={handleChange}
-                    className="border-black w-full border-2 px-3 py-2"
-                  />
-                </div> */}
 
                 {/* Description */}
-                <div className="flex flex-col gap-4">
-                  <p className="title">Description</p>
+                <div className="flex flex-col gap-2">
+                  <label className="font-medium">Description</label>
                   <textarea
                     name="description"
                     value={formData.description}
                     onChange={handleChange}
                     rows={3}
-                    className="border-black w-full border-2 px-3 py-2"
+                    className="border border-gray-300 rounded px-3 py-2"
+                    placeholder="Describe your item..."
                   />
                 </div>
 
-                {/* Buttons */}
-                <div className="flex gap-4 mt-6 items-center justify-center">
+                {/* Last Worn & Archived Date */}
+                {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {["lastWorn", "archivedDate"].map((field) => (
+                <div key={field} className="flex flex-col gap-2">
+                  <label className="font-medium">
+                    {field === "lastWorn" ? "Last Worn" : "Archived Date"}
+                  </label>
+                  <input
+                    type="date"
+                    name={field}
+                    value={(formData as any)[field]}
+                    onChange={handleChange}
+                    className="border border-gray-300 rounded px-3 py-2"
+                  />
+                </div>
+              ))}
+            </div> */}
+
+                {/* submit */}
+                <div className="flex justify-end gap-4 mt-6 items-center">
                   <LightButton text="Cancel" href={`/item/${id}`} />
                   <button
                     type="submit"
                     className="title flex justify-center border-2 border-black items-center px-2 lg:px-16 py-2 bg-black rounded-lg  hover:bg-accent text-center"
                   >
                     <p className="bold  text-white hover:text-black">
-                      List Item
+                      Continue to Platforms
                     </p>
                   </button>
                 </div>

@@ -169,11 +169,11 @@ export default function DateWeatherWidget() {
           <Separator />
           {/* Weather Section */}
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-8">
               {renderWeatherIcon()}
               <div>
-                <h3 className="font-medium">{weather.location}</h3>
-                <p className="text-muted-foreground">
+                <h3 className="text-lg">{weather.location}</h3>
+                <p className="text-lg text-muted-foreground">
                   {weather.condition.charAt(0).toUpperCase() +
                     weather.condition.slice(1)}
                 </p>

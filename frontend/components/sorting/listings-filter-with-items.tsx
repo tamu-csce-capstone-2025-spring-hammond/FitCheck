@@ -202,7 +202,7 @@ export default function FilterWithItems() {
                 <p className="text-gray-500">Start by adding your first item to your listings</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 grid-cols-2 lg:grid-cols-3 gap-6">
                 {listings.map((listing) => {
                   console.log('Rendering listing card:', {
                     name: listing.name,

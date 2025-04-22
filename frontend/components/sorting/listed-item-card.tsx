@@ -47,6 +47,7 @@ const ListedItemCard: React.FC<Props> = ({ itemName, category, href, price, imag
           <p className="title">{itemName}</p>
           <p className="">{category}</p>
           <p className="">{price}</p>
+          <p className="text-gray-500">Listed on: {new Date().toLocaleDateString()}</p>
         </div>
       </div>
     </Link>
