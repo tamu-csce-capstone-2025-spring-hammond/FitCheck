@@ -14,8 +14,8 @@ export default function CameraModal({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadResult, setUploadResult] = useState<string | null>(null);
+  const [uploadType, setUploadType] = useState<"item" | "outfit">("item");
 
-  // Start / stop camera
   useEffect(() => {
     if (isVisible && navigator.mediaDevices?.getUserMedia) {
       navigator.mediaDevices
@@ -31,7 +31,6 @@ export default function CameraModal({
     };
   }, [isVisible]);
 
-  // Capture a File from the live video
   const capturePhoto = (): Promise<File> =>
     new Promise((resolve, reject) => {
       if (!videoRef.current || !canvasRef.current) {
@@ -50,11 +49,10 @@ export default function CameraModal({
           if (!blob) return reject(new Error("Blob conversion failed"));
           resolve(new File([blob], "photo.jpg", { type: "image/jpeg" }));
         },
-        "image/jpeg",
+        "image/jpeg"
       );
     });
 
-  // Generic upload helper
   const uploadToBackend = async (file: File, endpoint: string) => {
     setUploading(true);
     setUploadResult(null);
@@ -62,10 +60,7 @@ export default function CameraModal({
     formData.append("file", file);
 
     try {
-      const res = await fetch(endpoint, {
-        method: "POST",
-        body: formData,
-      });
+      const res = await fetch(endpoint, { method: "POST", body: formData });
       const data = await res.json();
       setUploadResult(data.s3_url || data.file_name || data.message);
     } catch (err) {
@@ -76,20 +71,14 @@ export default function CameraModal({
     }
   };
 
-  // Two button handlers
-  const handleUploadItem = async () => {
+  const handleUpload = async () => {
     try {
       const file = await capturePhoto();
-      await uploadToBackend(file, "/api/upload-new-image");
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const handleUploadOutfit = async () => {
-    try {
-      const file = await capturePhoto();
-      await uploadToBackend(file, "/api/upload-new-outfit");
+      const endpoint =
+        uploadType === "item"
+          ? "/api/upload-new-image"
+          : "/api/upload-new-outfit";
+      await uploadToBackend(file, endpoint);
     } catch (err) {
       console.error(err);
     }
@@ -103,25 +92,22 @@ export default function CameraModal({
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-6 right-6 text-black font-bold text-xl"
+          className="absolute top-6 p-4 right-6 bg-black rounded-xl"
         >
-          <div className=" bg-black rounded-xl">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="2"
-              stroke="white"
-              className="size-12"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M6 18 18 6M6 6l12 12"
-
-              />
-            </svg>
-          </div>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth="2"
+            stroke="white"
+            className="size-12"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
         </button>
 
         <video
@@ -131,51 +117,42 @@ export default function CameraModal({
         />
         <canvas ref={canvasRef} style={{ display: "none" }} />
 
-        {/* Two-button row */}
-        <div className="flex justify-center gap-6 my-8">
-          {/* Upload single item */}
-          <div className="flex flex-col items-center">
-            <button
-              onClick={handleUploadItem}
-              disabled={uploading}
-              className="bg-black p-4 rounded-lg"
-            >
-              <Image
-                src="/images/icons/camera-button.svg"
-                alt="Upload Item"
-                width={72}
-                height={72}
-              />
-            </button>
-          </div>
+        <div className="flex flex-col items-center mt-6 gap-4">
+          <select
+            value={uploadType}
+            onChange={(e) => setUploadType(e.target.value as "item" | "outfit")}
+            className="text-white bg-black px-4 py-2"
+          >
+            <option value="item">Upload Item Photo</option>
+            <option value="outfit">Upload Outfit Photo</option>
+          </select>
 
-          {/* Upload outfit */}
-          <div className="flex flex-col items-center">
-            <button
-              onClick={handleUploadOutfit}
-              disabled={uploading}
-              className="bg-black p-4 rounded-lg"
-            >
-              <Image
-                src="/images/icons/camera-button.svg"
-                alt="Upload Outfit"
-                width={72}
-                height={72}
-              />
-            </button>
-            
-          </div>
-          <p className="mt-2 text-white text-sm">
-              {uploading ? "Uploading…" : "Upload Outfit"}
-            </p>
+          <button
+            onClick={handleUpload}
+            disabled={uploading}
+            className={`bg-black p-4  ${
+              uploading ? "opacity-50 cursor-not-allowed" : " hover:bg-gray-800"
+            }`}
+          >
+            <Image
+              src="/images/icons/camera-button.svg"
+              alt="Take Photo"
+              width={72}
+              height={72}
+            />
+          </button>
+
+          <p className="text-white text-sm">
+            {uploading ? "Uploading…" : ``}
+          </p>
+
+          {/* Upload result */}
+          {uploadResult && (
+            <div className="mt-2 text-center text-sm text-gray-300 break-all max-w-xs">
+              ✅ {uploadResult}
+            </div>
+          )}
         </div>
-
-        {/* Show result */}
-        {uploadResult && (
-          <div className="mt-4 text-center text-sm text-gray-300 break-all">
-            ✅ {uploadResult}
-          </div>
-        )}
       </div>
     </div>
   );
