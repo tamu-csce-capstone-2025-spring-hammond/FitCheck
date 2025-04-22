@@ -111,6 +111,12 @@ class OutfitUpdate(OutfitBase):
     name: Optional[str] = None
     description: Optional[str] = None
     s3url: Optional[str] = None
+    created_at: Optional[datetime] = None
+    user_id: Optional[int] = None
+
+    # Special field! Not part of the model, but used for creating an outfit
+    # List of clothing item IDs to be added to the outfit
+    # clothing_item_ids: Optional[List[int]] = None  
 
 class Outfit(OutfitBase, table=True):
     id: Optional[int] = Field(default_factory=make_id, primary_key=True)

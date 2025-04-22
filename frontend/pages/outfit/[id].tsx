@@ -37,6 +37,7 @@ interface OutfitItemData {
 
 interface OutfitData {
   id: number;
+  name: string;
   user_id: number;
   description: string;
   s3url: string;
@@ -197,9 +198,16 @@ export default function ProductPage() {
             {/* Right column - Product details */}
             <div className="flex flex-col">
               <div className="flex justify-between items-center mb-4">
+                <div className="grid grid-cols-1 gap-4 mt-4">
+                <h1 className="bold mb-4">{outfitData.name || "Unnamed Outfit"}</h1>
                 <p className="bold">Outfit ID: {id}</p>
-                <DarkButton text="Edit Outfit" href={`/edit-outfit/${id}`} />
+                </div>
+                <div className="grid grid-cols-1 gap-4 mt-4">
+                  <DarkButton text="Edit Outfit" href={`/edit-outfit/${id}`} />
+                  <DarkButton text="Log Outfit" href={`/ootd-calendar`} />
+                </div>
               </div>
+
 
 
               <hr className="my-4" />
