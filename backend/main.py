@@ -26,14 +26,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-from routes import login, user, clothing_item, outfit, resale_listing, wear_history, images, filter, facebookAPI, ebayAPI
+from routes import login, user, clothing_item, outfit, resale_listing, wear_history, images, filter, facebookAPI, ebayAPI, outfit_wear_history
 # Include routes
 app.include_router(login.router)
 app.include_router(user.router)
 app.include_router(clothing_item.router)
 app.include_router(outfit.router)
 app.include_router(resale_listing.router)
-app.include_router(wear_history.router)
+# app.include_router(wear_history.router)
+app.include_router(outfit_wear_history.router)
 app.include_router(images.router)
 app.include_router(filter.router)
 app.include_router(facebookAPI.router)
