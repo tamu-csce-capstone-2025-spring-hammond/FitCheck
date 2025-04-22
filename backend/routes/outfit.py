@@ -10,7 +10,7 @@ router = APIRouter()
 
 from sqlalchemy.orm import Session
 from database import get_db
-from models import OutfitBase, OutfitPublic, OutfitPublicFull, OutfitUpdate, Outfit
+from models import OutfitBase, OutfitItem, OutfitPublic, OutfitPublicFull, OutfitUpdate, Outfit
 
 
 @router.get("/outfits/{outfit_id}", response_model=OutfitPublicFull)
@@ -36,6 +36,11 @@ def update_outfit(outfit_id: int, outfit_update: OutfitUpdate, db: Session = Dep
     if not outfit:
         raise HTTPException(status_code=404, detail="Outfit not found")
     outfit_data = outfit_update.model_dump(exclude_unset=True)
+    # if "clothing_item_ids" in outfit_data:
+    #     clothing_item_ids = outfit_data.pop("clothing_item_ids")
+    #     for item_id in clothing_item_ids:
+    #         outfit_item = OutfitItem(outfit_id=outfit.id, clothing_item_id=item_id)
+    #         db.add(outfit_item)
     outfit.sqlmodel_update(outfit_data)
     db.add(outfit)
     db.commit()

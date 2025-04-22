@@ -107,7 +107,7 @@ def get_user_products(email):
 
     if not filtered_products:
         print("No products found for the given email.")
-        raise HTTPException(status_code=404, detail="No products found for the given email.")
+        return []
     
     return {"products": filtered_products}  # Return the filtered products as a JSON object
 
@@ -147,7 +147,7 @@ def get_price(name):
         else:
             data = response.json()
             print("Product price:", data)
-            return name + " is priced at " + data.get("price", "No price info")
+            return data.get("price", "No price info")
 
 
 @router.get("/facebook/availability/{name}")
@@ -228,6 +228,44 @@ def get_product_description(name):
         print("Product description:", data)
         return "Description for " + name + " is: " + data.get("description", "No description given")
 
+@router.get("/facebook/image/{name}")
+def get_product_image(name):
+    '''given a product name, will return the product image URL'''
+    
+    # getting the product id for the given name
+    product_id = 0
+    url = f"https://graph.facebook.com/v22.0/{FACEBOOK_CATALOG_ID}/products"
+    headers = {"Authorization": f"Bearer {FACEBOOK_ACCESS_TOKEN}"}
+    response = requests.get(url,headers=headers)
+    
+    if response.status_code != 200:
+        print("Error fetching products:", response.status_code)
+        return None
+    
+    data = response.json()
+    for product in data.get("data", []):
+        if product.get("name") == name:
+            print("Product found:", product)
+            product_id = product.get("id")
+    if product_id == 0:
+        print("Product not found, error:", response.status_code)
+        raise HTTPException(status_code=500, detail=data)
+    
+    # getting the product image URL
+    url = f"https://graph.facebook.com/v22.0/{product_id}"
+    headers = {"Authorization": f"Bearer {FACEBOOK_ACCESS_TOKEN}"}
+    params = {
+        "fields": "image_url",
+    }
+    response = requests.get(url,headers=headers, params=params)
+    
+    if response.status_code != 200:
+        print("Error fetching product image:", response.status_code)
+        return None
+    else:
+        data = response.json()
+        print("Product image URL:", data)
+        return {"name": name, "image_url": data.get("image_url", "No image URL available")}
 
 @router.get("/facebook/size/{name}")
 def get_size(name: str):

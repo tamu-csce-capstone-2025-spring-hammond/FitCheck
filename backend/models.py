@@ -92,13 +92,15 @@ class ClothingItem(ClothingItemBase, table=True):
 # Outfit and OutfitItem Models
 class OutfitBase(SQLModel):
     """Base model for Outfit, used for creating and updating outfits."""
-    name: str
+    name: Optional[str] = None
+    description: Optional[str] = None
+    s3url: Optional[str] = None
+    created_at: datetime
     user_id: int
 
 class OutfitPublic(OutfitBase):
     """Public model for Outfit, including ID and created timestamp."""
     id: Optional[int] = None
-    created_at: datetime
 
 class OutfitPublicFull(OutfitPublic):
     """Detailed public model for Outfit, including related clothing items."""
@@ -107,15 +109,20 @@ class OutfitPublicFull(OutfitPublic):
 class OutfitUpdate(OutfitBase):
     """Model for updating an existing outfit."""
     name: Optional[str] = None
+    description: Optional[str] = None
+    s3url: Optional[str] = None
+    created_at: Optional[datetime] = None
     user_id: Optional[int] = None
+
+    # Special field! Not part of the model, but used for creating an outfit
+    # List of clothing item IDs to be added to the outfit
+    # clothing_item_ids: Optional[List[int]] = None  
 
 class Outfit(OutfitBase, table=True):
     id: Optional[int] = Field(default_factory=make_id, primary_key=True)
     user_id: int = Field(foreign_key="user.id")
     name: Optional[str] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
-    description: Optional[str] = None
-    s3url: Optional[str] = None
     user: Optional["User"] = Relationship(back_populates="outfits")
     items: List["OutfitItem"] = Relationship(back_populates="outfit")
 
