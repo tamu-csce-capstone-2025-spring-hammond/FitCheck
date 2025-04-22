@@ -1,36 +1,595 @@
 import requests
-from fastapi import APIRouter, HTTPException, Depends
-from pydantic import BaseModel
+import json
+import uuid
 import os
+from typing import List, Optional, Dict, Any
+from fastapi import APIRouter, HTTPException, Depends, Header
+from pydantic import BaseModel, Field
 from dotenv import load_dotenv
-import base64
 
 load_dotenv()
 
 # FastAPI router
 router = APIRouter()
 
-
-# Replace these with your actual values
+# eBay API credentials and endpoints
 CLIENT_ID = os.getenv("EBAY_CLIENT_ID")
 CLIENT_SECRET = os.getenv("EBAY_CLIENT_SECRET")
-REDIRECT_URI = "https://developer.ebay.com/tools/oauth-token-generator"
-AUTH_CODE = "v%5E1.1%23i%5E1%23f%5E0%23p%5E3%23r%5E1%23I%5E3%23t%5EUl41XzExOjg3QTZGNjZGRjE0ODYzOUNDM0FENTZCQjc2QjZGODkzXzFfMSNFXjEyODQ%3D"
-ACCESS_TOKEN = "v^1.1#i^1#f^0#p^3#I^3#r^0#t^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"
+SANDBOX_BASE_URL = "https://api.sandbox.ebay.com"
+PRODUCTION_BASE_URL = "https://api.ebay.com"
 
+# Use sandbox for development, switch to production for live environment
+BASE_URL = SANDBOX_BASE_URL
 
-def getInventoryItem(name):
-    url = "https://api.sandbox.ebay.com/sell/inventory/v1/inventory_item/"
-    url += name
-    headers = {"Authorization": f"Bearer {ACCESS_TOKEN}"}
-    response = requests.get(url,headers=headers)
-    return response.json()
+# Simple in-memory token storage
+user_tokens: Dict[str, str] = {}
 
+def get_access_token(auth_code: str) -> str:
+    """Exchange auth code for access token"""
+    url = f"{BASE_URL}/identity/v1/oauth2/token"
+    headers = {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Authorization": f"Basic {os.getenv('EBAY_AUTH_HEADER')}"
+    }
+    data = {
+        "grant_type": "authorization_code",
+        "code": auth_code,
+        "redirect_uri": os.getenv("EBAY_REDIRECT_URI")
+    }
     
-def main():
-    # Example usage
-    item_sku = "test-sku-001"
-    print(getInventoryItem(item_sku))
+    response = requests.post(url, headers=headers, data=data)
+    if response.status_code != 200:
+        raise HTTPException(status_code=401, detail="Failed to get access token")
     
-if __name__ == "__main__":
-    main()
+    return response.json()["access_token"]
+
+def get_headers(user_id: str) -> dict:
+    """Get headers with current access token for a specific user"""
+    access_token = user_tokens.get(user_id)
+    if not access_token:
+        raise HTTPException(status_code=401, detail="No valid token found for user")
+    
+    return {
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+    }
+
+# Pydantic models for request validation
+class Location(BaseModel):
+    country: str
+    postal_code: str
+    city: Optional[str] = None
+    state_or_province: Optional[str] = None
+
+class ShippingOption(BaseModel):
+    shipping_service_code: str
+    shipping_cost: float
+    additional_shipping_cost: Optional[float] = 0.0
+    shipping_carrier_code: Optional[str] = None
+    shipping_type: str = "FLAT_RATE"
+
+class InventoryItem(BaseModel):
+    sku: str = Field(..., description="Unique identifier for your inventory item")
+    title: str
+    description: str
+    condition: str = "NEW"
+    category_id: str
+    image_urls: List[str]
+    quantity: int = 1
+    location: Location
+    price: float
+    currency: str = "USD"
+
+class OfferRequest(BaseModel):
+    sku: str
+    marketplace_id: str = "EBAY_US"
+    format: str = "FIXED_PRICE"
+    available_quantity: int
+    category_id: str
+    price: float
+    currency: str = "USD"
+    listing_description: str
+    shipping_options: List[ShippingOption]
+    fulfillment_policy_id: str
+    payment_policy_id: str
+    return_policy_id: str
+    listing_duration: str = "GTC"  # Good Till Cancelled
+
+class ListingRequest(BaseModel):
+    title: str
+    description: str
+    price: float
+    currency: str = "USD"
+    condition: str = "NEW"
+    category_id: str
+    image_urls: List[str]
+    quantity: int = 1
+    location: Location
+    shipping_options: List[ShippingOption]
+    fulfillment_policy_id: Optional[str] = None
+    payment_policy_id: Optional[str] = None
+    return_policy_id: Optional[str] = None
+    listing_duration: str = "GTC"  # Good Till Cancelled
+
+class UpdateItemRequest(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    price: Optional[float] = None
+    quantity: Optional[int] = None
+    condition: Optional[str] = None
+    image_urls: Optional[List[str]] = None
+
+class AuthRequest(BaseModel):
+    user_id: str
+    auth_code: str
+
+# Helper functions
+def generate_sku(title: str) -> str:
+    """Generate a unique SKU for an item"""
+    base = f"fitcheck-{title.lower().replace(' ', '-')}"
+    unique_id = str(uuid.uuid4())[:8]
+    return f"{base}-{unique_id}"
+
+# API Endpoints
+@router.post("/ebay/auth", summary="Authenticate user with eBay")
+def authenticate_user(request: AuthRequest):
+    """
+    Authenticate a new user with eBay using OAuth flow.
+    This should be called after the user has authorized your app on eBay.
+    """
+    try:
+        access_token = get_access_token(request.auth_code)
+        user_tokens[request.user_id] = access_token
+        return {"message": "User authenticated successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=401, detail=f"Failed to authenticate with eBay: {str(e)}")
+
+@router.get("/ebay/auth/url", summary="Get eBay authorization URL")
+def get_auth_url():
+    """
+    Get the URL where users should be redirected to authorize the application.
+    After authorization, they will be redirected back with an auth code.
+    """
+    # This would typically be configured in your eBay application settings
+    redirect_uri = os.getenv("EBAY_REDIRECT_URI", "https://yourapp.com/callback")
+    
+    auth_url = (
+        f"https://auth.sandbox.ebay.com/oauth2/authorize?"
+        f"client_id={CLIENT_ID}&"
+        f"response_type=code&"
+        f"redirect_uri={redirect_uri}&"
+        f"scope=https://api.ebay.com/oauth/api_scope "
+        f"https://api.ebay.com/oauth/api_scope/sell.inventory "
+        f"https://api.ebay.com/oauth/api_scope/sell.marketing "
+        f"https://api.ebay.com/oauth/api_scope/sell.account"
+    )
+    
+    return {"auth_url": auth_url}
+
+@router.post("/ebay/inventory/create", summary="Create inventory item")
+def create_inventory_item(item: InventoryItem, user_id: str):
+    """
+    Create a new inventory item on eBay.
+    This is the first step in the two-step listing process.
+    """
+    try:
+        url = f"{BASE_URL}/sell/inventory/v1/inventory_item/{item.sku}"
+        headers = get_headers(user_id)
+        
+        payload = {
+            "availability": {
+                "shipToLocationAvailability": {
+                    "quantity": item.quantity
+                }
+            },
+            "condition": item.condition,
+            "product": {
+                "title": item.title,
+                "description": item.description,
+                "imageUrls": item.image_urls,
+                "aspects": {},  # Required aspects depend on the category
+            },
+            "packageWeightAndSize": {
+                "packageType": "PACKAGE_SMALL",
+            }
+        }
+        
+        response = requests.put(url, headers=headers, json=payload)
+        
+        if response.status_code in [200, 201, 204]:
+            return {"message": "Inventory item created successfully", "sku": item.sku}
+        else:
+            raise HTTPException(
+                status_code=response.status_code,
+                detail=f"Failed to create inventory item: {response.text}"
+            )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error creating inventory item: {str(e)}")
+
+@router.post("/ebay/offer/create", summary="Create offer from inventory item")
+def create_offer(offer: OfferRequest, user_id: str):
+    """
+    Create an offer for an existing inventory item.
+    This is the second step in the two-step listing process.
+    """
+    try:
+        url = f"{BASE_URL}/sell/inventory/v1/offer"
+        headers = get_headers(user_id)
+        
+        payload = {
+            "sku": offer.sku,
+            "marketplaceId": offer.marketplace_id,
+            "format": offer.format,
+            "availableQuantity": offer.available_quantity,
+            "categoryId": offer.category_id,
+            "listingDescription": offer.listing_description,
+            "listingPolicies": {
+                "fulfillmentPolicyId": offer.fulfillment_policy_id,
+                "paymentPolicyId": offer.payment_policy_id,
+                "returnPolicyId": offer.return_policy_id
+            },
+            "pricingSummary": {
+                "price": {
+                    "value": str(offer.price),
+                    "currency": offer.currency
+                }
+            },
+            "listingDuration": offer.listing_duration,
+            "merchantLocationKey": "default"  # You should create and use an actual location key
+        }
+        
+        # Add shipping options if provided
+        if offer.shipping_options:
+            payload["listingPolicies"]["shippingPolicyId"] = offer.fulfillment_policy_id
+        
+        response = requests.post(url, headers=headers, json=payload)
+        
+        if response.status_code == 201:
+            return response.json()
+        else:
+            raise HTTPException(
+                status_code=response.status_code,
+                detail=f"Failed to create offer: {response.text}"
+            )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error creating offer: {str(e)}")
+
+@router.post("/ebay/offer/publish/{offer_id}", summary="Publish an offer")
+def publish_offer(offer_id: str, user_id: str):
+    """
+    Publish an offer to make it live on eBay.
+    """
+    try:
+        url = f"{BASE_URL}/sell/inventory/v1/offer/{offer_id}/publish"
+        headers = get_headers(user_id)
+        
+        response = requests.post(url, headers=headers)
+        
+        if response.status_code == 200:
+            return response.json()
+        else:
+            raise HTTPException(
+                status_code=response.status_code,
+                detail=f"Failed to publish offer: {response.text}"
+            )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error publishing offer: {str(e)}")
+
+@router.post("/ebay/listing", summary="Create a complete listing (one-step)")
+def create_listing(request: ListingRequest, user_id: str):
+    """
+    Create a complete eBay listing in one step.
+    This combines inventory item creation and offer creation/publishing.
+    """
+    try:
+        # Step 1: Generate a unique SKU
+        sku = generate_sku(request.title)
+        
+        # Step 2: Create inventory item
+        inventory_item = InventoryItem(
+            sku=sku,
+            title=request.title,
+            description=request.description,
+            condition=request.condition,
+            category_id=request.category_id,
+            image_urls=request.image_urls,
+            quantity=request.quantity,
+            location=request.location,
+            price=request.price,
+            currency=request.currency
+        )
+        
+        inventory_result = create_inventory_item(inventory_item, user_id)
+        
+        # Step 3: Create an offer
+        # You should have these policy IDs from your eBay Seller Account setup
+        fulfillment_policy_id = request.fulfillment_policy_id or "default_fulfillment_policy_id"
+        payment_policy_id = request.payment_policy_id or "default_payment_policy_id"
+        return_policy_id = request.return_policy_id or "default_return_policy_id"
+        
+        offer = OfferRequest(
+            sku=sku,
+            available_quantity=request.quantity,
+            category_id=request.category_id,
+            price=request.price,
+            currency=request.currency,
+            listing_description=request.description,
+            shipping_options=request.shipping_options,
+            fulfillment_policy_id=fulfillment_policy_id,
+            payment_policy_id=payment_policy_id,
+            return_policy_id=return_policy_id
+        )
+        
+        offer_result = create_offer(offer, user_id)
+        
+        # Step 4: Publish the offer
+        offer_id = offer_result.get("offerId")
+        publish_result = publish_offer(offer_id, user_id)
+        
+        return {
+            "message": "Listing created and published successfully",
+            "sku": sku,
+            "offer_id": offer_id,
+            "listing_id": publish_result.get("listingId")
+        }
+    
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error creating listing: {str(e)}")
+
+@router.get("/ebay/inventory/items", summary="Get all inventory items")
+def get_inventory_items(user_id: str, limit: int = 10, offset: str = None):
+    """
+    Get all inventory items for the authenticated user.
+    """
+    try:
+        url = f"{BASE_URL}/sell/inventory/v1/inventory_item"
+        headers = get_headers(user_id)
+        
+        params = {"limit": limit}
+        if offset:
+            params["offset"] = offset
+        
+        response = requests.get(url, headers=headers, params=params)
+        
+        if response.status_code == 200:
+            return response.json()
+        else:
+            raise HTTPException(
+                status_code=response.status_code,
+                detail=f"Failed to retrieve inventory items: {response.text}"
+            )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error retrieving inventory items: {str(e)}")
+
+@router.get("/ebay/inventory/item/{sku}", summary="Get inventory item by SKU")
+def get_inventory_item(sku: str, user_id: str):
+    """
+    Get details for a specific inventory item by SKU.
+    """
+    try:
+        url = f"{BASE_URL}/sell/inventory/v1/inventory_item/{sku}"
+        headers = get_headers(user_id)
+        
+        response = requests.get(url, headers=headers)
+        
+        if response.status_code == 200:
+            return response.json()
+        else:
+            raise HTTPException(
+                status_code=response.status_code,
+                detail=f"Failed to retrieve inventory item: {response.text}"
+            )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error retrieving inventory item: {str(e)}")
+
+@router.get("/ebay/offers", summary="Get all offers")
+def get_offers(user_id: str, sku: Optional[str] = None, limit: int = 10, offset: str = None):
+    """
+    Get all offers (or offers for a specific SKU).
+    """
+    try:
+        url = f"{BASE_URL}/sell/inventory/v1/offer"
+        headers = get_headers(user_id)
+        
+        params = {"limit": limit}
+        if sku:
+            params["sku"] = sku
+        if offset:
+            params["offset"] = offset
+        
+        response = requests.get(url, headers=headers, params=params)
+        
+        if response.status_code == 200:
+            return response.json()
+        else:
+            raise HTTPException(
+                status_code=response.status_code,
+                detail=f"Failed to retrieve offers: {response.text}"
+            )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error retrieving offers: {str(e)}")
+
+@router.get("/ebay/offer/{offer_id}", summary="Get offer by ID")
+def get_offer(offer_id: str, user_id: str):
+    """
+    Get details for a specific offer by ID.
+    """
+    try:
+        url = f"{BASE_URL}/sell/inventory/v1/offer/{offer_id}"
+        headers = get_headers(user_id)
+        
+        response = requests.get(url, headers=headers)
+        
+        if response.status_code == 200:
+            return response.json()
+        else:
+            raise HTTPException(
+                status_code=response.status_code,
+                detail=f"Failed to retrieve offer: {response.text}"
+            )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error retrieving offer: {str(e)}")
+
+@router.patch("/ebay/inventory/update/{sku}", summary="Update inventory item")
+def update_inventory_item(sku: str, request: UpdateItemRequest, user_id: str):
+    """
+    Update an existing inventory item.
+    """
+    try:
+        url = f"{BASE_URL}/sell/inventory/v1/inventory_item/{sku}"
+        headers = get_headers(user_id)
+        
+        # Get current inventory item
+        current_item = get_inventory_item(sku, user_id)
+        
+        # Update the fields that are provided
+        payload = {}
+        
+        if "product" not in payload:
+            payload["product"] = {}
+            
+        if request.title:
+            payload["product"]["title"] = request.title
+            
+        if request.description:
+            payload["product"]["description"] = request.description
+            
+        if request.image_urls:
+            payload["product"]["imageUrls"] = request.image_urls
+            
+        if request.condition:
+            payload["condition"] = request.condition
+            
+        if request.quantity:
+            if "availability" not in payload:
+                payload["availability"] = {"shipToLocationAvailability": {}}
+            payload["availability"]["shipToLocationAvailability"]["quantity"] = request.quantity
+        
+        # Only send update if there are changes
+        if payload:
+            response = requests.put(url, headers=headers, json=payload)
+            
+            if response.status_code in [200, 201, 204]:
+                return {"message": "Inventory item updated successfully"}
+            else:
+                raise HTTPException(
+                    status_code=response.status_code,
+                    detail=f"Failed to update inventory item: {response.text}"
+                )
+        else:
+            return {"message": "No updates specified"}
+        
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error updating inventory item: {str(e)}")
+
+@router.delete("/ebay/inventory/delete/{sku}", summary="Delete inventory item")
+def delete_inventory_item(sku: str, user_id: str):
+    """
+    Delete an inventory item. This also deletes all associated offers.
+    """
+    try:
+        url = f"{BASE_URL}/sell/inventory/v1/inventory_item/{sku}"
+        headers = get_headers(user_id)
+        
+        response = requests.delete(url, headers=headers)
+        
+        if response.status_code == 204:
+            return {"message": "Inventory item deleted successfully"}
+        else:
+            raise HTTPException(
+                status_code=response.status_code,
+                detail=f"Failed to delete inventory item: {response.text}"
+            )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error deleting inventory item: {str(e)}")
+
+@router.post("/ebay/logout", summary="Logout user")
+def logout_user(user_id: str):
+    """
+    Logout a user and remove their token.
+    """
+    if user_id in user_tokens:
+        del user_tokens[user_id]
+        return {"message": "User logged out successfully"}
+    raise HTTPException(status_code=404, detail="User not found")
+
+@router.get("/ebay/account/policies", summary="Get user's selling policies")
+def get_policies(user_id: str, policy_type: str = "all"):
+    """
+    Get the user's selling policies (return, payment, and fulfillment).
+    """
+    valid_types = ["all", "return", "payment", "fulfillment"]
+    if policy_type not in valid_types:
+        raise HTTPException(status_code=400, detail=f"Policy type must be one of {valid_types}")
+    
+    headers = get_headers(user_id)
+    results = {}
+    
+    try:
+        if policy_type in ["all", "return"]:
+            url = f"{BASE_URL}/sell/account/v1/return_policy"
+            response = requests.get(url, headers=headers)
+            if response.status_code == 200:
+                results["return_policies"] = response.json()
+        
+        if policy_type in ["all", "payment"]:
+            url = f"{BASE_URL}/sell/account/v1/payment_policy"
+            response = requests.get(url, headers=headers)
+            if response.status_code == 200:
+                results["payment_policies"] = response.json()
+        
+        if policy_type in ["all", "fulfillment"]:
+            url = f"{BASE_URL}/sell/account/v1/fulfillment_policy"
+            response = requests.get(url, headers=headers)
+            if response.status_code == 200:
+                results["fulfillment_policies"] = response.json()
+        
+        return results
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error retrieving policies: {str(e)}")
+
+@router.get("/ebay/callback")
+async def ebay_callback(code: str, state: Optional[str] = None):
+    """
+    Handle the callback from eBay OAuth flow.
+    This endpoint receives the authorization code and exchanges it for an access token.
+    """
+    try:
+        # Exchange the authorization code for an access token
+        url = f"{BASE_URL}/identity/v1/oauth2/token"
+        headers = {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Authorization": f"Basic {os.getenv('EBAY_AUTH_HEADER')}"
+        }
+        data = {
+            "grant_type": "authorization_code",
+            "code": code,
+            "redirect_uri": os.getenv("EBAY_REDIRECT_URI")
+        }
+        
+        response = requests.post(url, headers=headers, data=data)
+        if response.status_code != 200:
+            raise HTTPException(status_code=401, detail="Failed to get access token")
+        
+        token_data = response.json()
+        access_token = token_data["access_token"]
+        
+        # Here you would typically:
+        # 1. Get the user's eBay ID or other identifying information
+        # 2. Store the token in your database or session
+        # 3. Create or update the user's account in your system
+        
+        # For now, we'll just return a success message
+        return {
+            "message": "Successfully authenticated with eBay",
+            "access_token": access_token
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error during callback: {str(e)}")

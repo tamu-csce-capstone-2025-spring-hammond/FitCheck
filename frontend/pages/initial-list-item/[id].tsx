@@ -215,8 +215,82 @@ export default function EditItemPage() {
 
           const responseData = await resaleListingResponse.json();
           console.log("Resale listing created successfully:", responseData);
+        } else if (platform === "ebay") {
+          // Prepare eBay listing data
+          const ebayData = {
+            title: formData.name,
+            description: formData.description,
+            price: formData.price,
+            currency: formData.currency,
+            condition: "NEW", // You might want to make this configurable
+            category_id: "9355", // Default category for clothing, you might want to make this configurable
+            image_urls: photos,
+            quantity: formData.quantity,
+            location: {
+              country: "US", // You might want to make this configurable
+              postal_code: "00000", // You might want to make this configurable
+            },
+            shipping_options: [
+              {
+                shipping_service_code: "USPSPriority",
+                shipping_cost: 0.00, // You might want to make this configurable
+                shipping_type: "FLAT_RATE"
+              }
+            ]
+          };
+
+          // Post to eBay
+          const ebayResponse = await fetch("/api/ebay/listing", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+            body: JSON.stringify(ebayData),
+          });
+
+          if (!ebayResponse.ok) {
+            const errorText = await ebayResponse.text();
+            console.error("eBay API Error:", errorText);
+            throw new Error(`Failed to post to eBay: ${errorText}`);
+          }
+
+          // Create resale listing in our database
+          if (!userId) {
+            throw new Error("User ID not found");
+          }
+
+          const resaleListingData = {
+            user_id: userId,
+            clothing_item_id: parseInt(id as string),
+            platform: "ebay",
+            price: formData.price,
+            url: "https://www.ebay.com", // This should be updated with the actual listing URL
+            status: "active",
+          };
+
+          const resaleListingResponse = await fetch("/api/resale_listings", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+            body: JSON.stringify(resaleListingData),
+          });
+
+          if (!resaleListingResponse.ok) {
+            const errorData = await resaleListingResponse.json();
+            console.error("Resale Listing API Error:", errorData);
+            throw new Error(
+              `Failed to create resale listing: ${
+                errorData.details || errorData.error || "Unknown error"
+              }`
+            );
+          }
+
+          const responseData = await resaleListingResponse.json();
+          console.log("eBay listing created successfully:", responseData);
         }
-        // Add similar logic for eBay when ready
       }
 
       setIsPosting(false);
@@ -395,12 +469,22 @@ export default function EditItemPage() {
                   <div className="flex flex-col gap-2">
                     <label className="font-medium">Price (USD)</label>
                     <input
-                      type="number"
+                      type="text"
                       name="price"
                       value={formData.price || ""}
-                      onChange={handleChange}
+                      onChange={(e) => {
+                        // Only allow numbers
+                        const value = e.target.value.replace(/[^0-9]/g, '');
+                        handleChange({
+                          target: {
+                            name: 'price',
+                            value: value,
+                            type: 'text'
+                          }
+                        } as React.ChangeEvent<HTMLInputElement>);
+                      }}
                       className="border border-gray-300 rounded px-3 py-2"
-                      placeholder="0.00"
+                      placeholder="0"
                     />
                   </div>
                   <div className="flex flex-col gap-2">
