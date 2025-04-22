@@ -155,21 +155,21 @@ export default function FilterWithItems() {
   return (
     <div className="container bg-white">
       <div className="flex flex-col space-y-6">
-        <div>
+        {/* <div>
           <h2 className="bold">Organize</h2>
-        </div>
+        </div> */}
 
         <div className="flex flex-col lg:flex-row gap-8 bg-white">
           {/* Filters - Desktop */}
-          <div className="hidden lg:block w-64 flex-shrink-0">
+          {/* <div className="hidden lg:block w-64 flex-shrink-0">
             <div className="sticky top-6">
               <h2 className="text-xl font-semibold mb-6">Filters</h2>
               <ProductFilters />
             </div>
-          </div>
+          </div> */}
 
           {/* Filters - Mobile */}
-          <div className="lg:hidden flex justify-between items-center mb-4">
+          {/* <div className="lg:hidden flex justify-between items-center mb-4">
             <Sheet open={filtersOpen} onOpenChange={setFiltersOpen}>
               <SheetTrigger asChild>
                 <Button className="flex items-center gap-2">
@@ -188,7 +188,7 @@ export default function FilterWithItems() {
             <Button size="icon">
               <Grid3X3 className="h-4 w-4" />
             </Button>
-          </div>
+          </div> */}
 
           {/* Listings */}
           <div className="flex-1">
