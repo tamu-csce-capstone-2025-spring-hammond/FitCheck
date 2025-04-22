@@ -29,75 +29,62 @@ export default function PlatformSelection({
       <h2 className="bold text-center">Select Selling Platforms</h2>
       <p className="text-accent-2 bold">Step 2 of 2 — Platform Selection</p>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-32 max-w-3xl mx-auto">
         {/* Facebook Option */}
         <div
-          className={`p-6 border-2 rounded-lg cursor-pointer transition-all ${
+          className={`p-8 border-2 rounded-lg cursor-pointer transition-all flex items-center justify-center ${
             selectedPlatforms.includes("facebook")
               ? "border-black bg-accent"
               : "border-gray-200 hover:border-gray-300"
           }`}
           onClick={() => togglePlatform("facebook")}
         >
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-12 h-12 relative mr-4">
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-64 h-32 relative">
               <Image
-                src="/facebook-logo.png"
+                src="/images/icons/facebook-shop.svg"
                 alt="Facebook"
-                width={48}
-                height={48}
+                fill
                 className="object-contain"
               />
             </div>
-            <div>
-              <h3 className=" font-bold">Facebook Marketplace</h3>
-              <p className="text-lg text-gray-600">
-                List your item on Facebook Marketplace to reach local buyers.
-              </p>
-            </div>
+            <h3 className="font-bold">Facebook Shop</h3>
           </div>
         </div>
 
         {/* eBay Option */}
         <div
-          className={`p-6 border-2 rounded-lg cursor-pointer transition-all ${
+          className={`p-8 border-2 rounded-lg cursor-pointer transition-all flex items-center justify-center ${
             selectedPlatforms.includes("ebay")
               ? "border-black bg-accent"
               : "border-gray-200 hover:border-gray-300"
           }`}
           onClick={() => togglePlatform("ebay")}
         >
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-12 h-12 relative">
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-48 h-32 relative">
               <Image
-                src="/ebay-logo.png"
+                src="/images/icons/ebay.svg"
                 alt="eBay"
-                width={48}
-                height={48}
+                fill
                 className="object-contain"
               />
             </div>
-            <div>
-              <h3 className="font-bold">eBay</h3>
-              <p className="text-lg text-gray-600">
-                List your item on eBay to reach a global audience of buyers.
-              </p>
-            </div>
+            <h3 className="font-bold">eBay</h3>
           </div>
         </div>
       </div>
 
-      {/* Navigation Buttons */}
-      <div className="flex gap-4 mt-6 items-center justify-center">
+      <div className="flex justify-end gap-4 mt-6">
         <LightButton text="Back" onClick={onBack} />
         <button
-          onClick={() => onContinue(selectedPlatforms)}
-          disabled={selectedPlatforms.length === 0}
           className={`title flex justify-center border-2 border-black items-center px-2 lg:px-16 py-2 ${
             selectedPlatforms.length === 0
               ? "bold bg-gray-300 text-gray-500 cursor-not-allowed"
               : "bold bg-black text-white hover:text-black hover:bg-accent"
           } rounded-lg text-center`}
+          onClick={() => onContinue(selectedPlatforms)}
+          disabled={selectedPlatforms.length === 0}
         >
           Continue
         </button>
