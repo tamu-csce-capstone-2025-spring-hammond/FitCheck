@@ -280,7 +280,7 @@ export default function EditItemPage() {
 
             {/* Buttons */}
             <div className="flex gap-4 mt-6 items-center justify-center">
-              <LightButton text="Cancel" href={`/item/${id}`} />
+              <LightButton text="Cancel" href={`/outfit/${id}`} />
               <button
                 type="submit"
                 className="title flex justify-center border-2 border-black items-center px-2 lg:px-16 py-4 bg-black text-white rounded-lg hover:text-black hover:bg-accent text-center"
