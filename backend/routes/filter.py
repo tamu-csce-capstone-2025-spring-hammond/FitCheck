@@ -174,3 +174,13 @@ def search(request: SearchRequest, authorization: str = Header(...), db: Session
 
     matching_items = list(matching_items)
     return matching_items
+
+
+@router.get("/clothing-items")
+def get_clothing_items(authorization: str = Header(...), db: Session = Depends(get_db)):
+    current_user = enforce_logged_in(authorization)
+    
+    query = select(ClothingItem).where(ClothingItem.user_id == current_user.id)
+    items = db.exec(query).all()
+
+    return items

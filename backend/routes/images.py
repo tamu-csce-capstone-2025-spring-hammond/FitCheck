@@ -124,17 +124,29 @@ async def upload_outfit(file: UploadFile = File(...), authorization: str = Heade
     client = chromadb.HttpClient(host=environment.get('CHROMA_DB_ADDRESS'), port=8000)
     collection = client.get_or_create_collection(name="clothing_items")
 
+    add_items = []
+
     for item in parsed_items:
-        # Query ChromaDB to find the matching clothing item
         results = collection.query(
             query_texts=[item["cloth_description"]],
-            n_results=1,
+            n_results=3,
         )
-        saved_items.append({
-            "id": str(results['ids'][0][0]),
-        })
+        for result in results['ids'][0]:
+            clothing_item = database.get_clothing_item_by_id(result)
+            if clothing_item is None or clothing_item.user_id != current_user.id:
+                continue
+            else:
+                add_items.append(result)
+                break
 
+        for add in add_items:
+            saved_items.append({
+                "id": str(add),
+            })
+
+        add_items = []
     
+    print(saved_items)
     outfit = database.add_outfit(
         user_id=current_user.id,
         description=description,

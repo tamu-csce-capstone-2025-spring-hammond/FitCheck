@@ -71,7 +71,9 @@ def parse_outfit(url : str):
             {
                 "role": "user",
                 "content": [
-                    {"type": "text", "text": '''Describe this outfit in a fun illustrative, and straight to the point way. Describe the clothing in detail to best reflect all pieces of clothing the person is wearing. Do not use terms like 'unknown' or 'not specified' to describe the objects.
+                    {"type": "text", "text": '''What clothes are in this image? Return only a json object describing each clothing item with the cloth type, cloth size, clothing color, and clothing description.
+                        Example:[{"cloth_type": "shirt","cloth_size": "medium","cloth_color": "blue","cloth_description": "a blue shirt with a white logo"}, {"cloth_type": "pants","cloth_size": "large","cloth_color": "black","cloth_description": "black pants with a white stripe"}]
+                        Return nothing except the json object on one line with no quotation marks or text outside of the object. Do not use terms like 'unknown' or 'not specified' to describe the objects. For the descriptions, be as descriptive as possible.
                     '''},
                     {
                         "type": "image_url",

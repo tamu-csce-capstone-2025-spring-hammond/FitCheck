@@ -133,3 +133,8 @@ def mark_clothing_item_worn(clothing_item_id: str):
         session.commit()
         return clothing_item
 
+def get_clothing_item_by_id(clothing_item_id: str):
+    from models import ClothingItem
+    with get_session() as session:
+        clothing_item = session.exec(select(ClothingItem).where(ClothingItem.id == clothing_item_id)).first()
+        return clothing_item
