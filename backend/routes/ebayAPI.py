@@ -151,21 +151,38 @@ def get_auth_url():
     Get the URL where users should be redirected to authorize the application.
     After authorization, they will be redirected back with an auth code.
     """
-    # This would typically be configured in your eBay application settings
-    redirect_uri = os.getenv("EBAY_REDIRECT_URI")
-    
-    auth_url = (
-        f"https://auth.sandbox.ebay.com/oauth2/authorize?"
-        f"client_id={CLIENT_ID}&"
-        f"response_type=code&"
-        f"redirect_uri={redirect_uri}&"
-        f"scope=https://api.ebay.com/oauth/api_scope "
-        f"https://api.ebay.com/oauth/api_scope/sell.inventory "
-        f"https://api.ebay.com/oauth/api_scope/sell.marketing "
-        f"https://api.ebay.com/oauth/api_scope/sell.account"
-    )
-    
-    return {"auth_url": auth_url}
+    try:
+        # This would typically be configured in your eBay application settings
+        redirect_uri = os.getenv("EBAY_REDIRECT_URI")
+        if not redirect_uri:
+            raise HTTPException(status_code=500, detail="EBAY_REDIRECT_URI not set")
+        
+        if not CLIENT_ID:
+            raise HTTPException(status_code=500, detail="EBAY_CLIENT_ID not set")
+        
+        # URL encode the redirect URI
+        encoded_redirect_uri = requests.utils.quote(redirect_uri)
+        
+        auth_url = (
+            f"https://auth.sandbox.ebay.com/oauth2/authorize?"
+            f"client_id={CLIENT_ID}&"
+            f"response_type=code&"
+            f"redirect_uri={encoded_redirect_uri}&"
+            f"scope=https://api.ebay.com/oauth/api_scope "
+            f"https://api.ebay.com/oauth/api_scope/sell.inventory "
+            f"https://api.ebay.com/oauth/api_scope/sell.marketing "
+            f"https://api.ebay.com/oauth/api_scope/sell.account"
+        )
+        
+        # For debugging
+        print(f"Generated auth URL: {auth_url}")
+        print(f"Client ID: {CLIENT_ID[:4]}...")
+        print(f"Redirect URI: {redirect_uri}")
+        
+        return {"auth_url": auth_url}
+    except Exception as e:
+        print(f"Error generating auth URL: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error generating auth URL: {str(e)}")
 
 @router.post("/ebay/inventory/create", summary="Create inventory item")
 def create_inventory_item(item: InventoryItem, user_id: str):

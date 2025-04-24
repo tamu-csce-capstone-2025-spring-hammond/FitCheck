@@ -76,12 +76,23 @@ export default function EBayAuth() {
     try {
       const response = await fetch("/api/ebay/auth/url");
       if (!response.ok) {
-        throw new Error("Failed to get eBay authorization URL");
+        const errorData = await response.json();
+        console.error("Error getting auth URL:", errorData);
+        throw new Error(errorData.detail || "Failed to get eBay authorization URL");
       }
 
       const data = await response.json();
+      console.log("Auth URL:", data.auth_url);
+      
+      // Verify the URL looks correct
+      if (!data.auth_url.includes("auth.sandbox.ebay.com")) {
+        console.error("Invalid auth URL format");
+        throw new Error("Invalid authorization URL format");
+      }
+
       window.location.href = data.auth_url;
     } catch (err) {
+      console.error("Error in connectToEBay:", err);
       setError(err instanceof Error ? err.message : "An error occurred");
       setIsLoading(false);
     }
