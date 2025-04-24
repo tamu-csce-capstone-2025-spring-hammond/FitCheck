@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import DarkButton from "./tags-and-buttons/dark-button";
 import LightButton from "./tags-and-buttons/light-button";
+import { useRouter } from "next/router";
 
 interface PlatformSelectionProps {
   itemId: string;
@@ -14,9 +15,36 @@ export default function PlatformSelection({
   onBack,
   onContinue,
 }: PlatformSelectionProps) {
+  const router = useRouter();
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
+  const [isEBayAuthenticated, setIsEBayAuthenticated] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    // Check eBay authentication status
+    const checkEBayAuth = async () => {
+      try {
+        const response = await fetch("/api/ebay/auth/status");
+        const data = await response.json();
+        setIsEBayAuthenticated(data.authenticated);
+      } catch (error) {
+        console.error("Error checking eBay authentication:", error);
+        setIsEBayAuthenticated(false);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkEBayAuth();
+  }, []);
 
   const togglePlatform = (platform: string) => {
+    if (platform === "ebay" && !isEBayAuthenticated) {
+      // Redirect to eBay authentication page
+      router.push("/ebay-auth");
+      return;
+    }
+    
     setSelectedPlatforms((prev) =>
       prev.includes(platform)
         ? prev.filter((p) => p !== platform)
@@ -71,6 +99,9 @@ export default function PlatformSelection({
               />
             </div>
             <h3 className="font-bold">eBay</h3>
+            {!isEBayAuthenticated && !isLoading && (
+              <p className="text-sm text-red-500">Connect your eBay account first</p>
+            )}
           </div>
         </div>
       </div>

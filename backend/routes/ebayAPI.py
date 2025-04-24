@@ -151,21 +151,38 @@ def get_auth_url():
     Get the URL where users should be redirected to authorize the application.
     After authorization, they will be redirected back with an auth code.
     """
-    # This would typically be configured in your eBay application settings
-    redirect_uri = os.getenv("EBAY_REDIRECT_URI", "https://yourapp.com/callback")
-    
-    auth_url = (
-        f"https://auth.sandbox.ebay.com/oauth2/authorize?"
-        f"client_id={CLIENT_ID}&"
-        f"response_type=code&"
-        f"redirect_uri={redirect_uri}&"
-        f"scope=https://api.ebay.com/oauth/api_scope "
-        f"https://api.ebay.com/oauth/api_scope/sell.inventory "
-        f"https://api.ebay.com/oauth/api_scope/sell.marketing "
-        f"https://api.ebay.com/oauth/api_scope/sell.account"
-    )
-    
-    return {"auth_url": auth_url}
+    try:
+        # This would typically be configured in your eBay application settings
+        redirect_uri = os.getenv("EBAY_REDIRECT_URI")
+        if not redirect_uri:
+            raise HTTPException(status_code=500, detail="EBAY_REDIRECT_URI not set")
+        
+        if not CLIENT_ID:
+            raise HTTPException(status_code=500, detail="EBAY_CLIENT_ID not set")
+        
+        # URL encode the redirect URI
+        encoded_redirect_uri = requests.utils.quote(redirect_uri)
+        
+        auth_url = (
+            f"https://auth.sandbox.ebay.com/oauth2/authorize?"
+            f"client_id={CLIENT_ID}&"
+            f"response_type=code&"
+            f"redirect_uri={encoded_redirect_uri}&"
+            f"scope=https://api.ebay.com/oauth/api_scope "
+            f"https://api.ebay.com/oauth/api_scope/sell.inventory "
+            f"https://api.ebay.com/oauth/api_scope/sell.marketing "
+            f"https://api.ebay.com/oauth/api_scope/sell.account"
+        )
+        
+        # For debugging
+        print(f"Generated auth URL: {auth_url}")
+        print(f"Client ID: {CLIENT_ID[:4]}...")
+        print(f"Redirect URI: {redirect_uri}")
+        
+        return {"auth_url": auth_url}
+    except Exception as e:
+        print(f"Error generating auth URL: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error generating auth URL: {str(e)}")
 
 @router.post("/ebay/inventory/create", summary="Create inventory item")
 def create_inventory_item(item: InventoryItem, user_id: str):
@@ -580,12 +597,12 @@ async def ebay_callback(code: str, state: Optional[str] = None):
         token_data = response.json()
         access_token = token_data["access_token"]
         
-        # Here you would typically:
-        # 1. Get the user's eBay ID or other identifying information
-        # 2. Store the token in your database or session
-        # 3. Create or update the user's account in your system
+        # Store the token in the user_tokens dictionary
+        # For now, we'll use a default user_id since we don't have user context
+        # In a production environment, you'd want to get the actual user_id from the session
+        user_id = "default_user"  # This should be replaced with actual user ID
+        user_tokens[user_id] = access_token
         
-        # For now, we'll just return a success message
         return {
             "message": "Successfully authenticated with eBay",
             "access_token": access_token
@@ -593,3 +610,104 @@ async def ebay_callback(code: str, state: Optional[str] = None):
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error during callback: {str(e)}")
+
+@router.get("/ebay/auth/status", summary="Check eBay authentication status")
+def check_auth_status(user_id: str):
+    """
+    Check if the user is authenticated with eBay.
+    """
+    try:
+        # Check if user has a valid token
+        access_token = user_tokens.get(user_id)
+        if not access_token:
+            return {"authenticated": False}
+        
+        # Verify token is still valid by making a simple API call
+        url = f"{BASE_URL}/sell/account/v1/privilege"
+        headers = {
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+        }
+        
+        response = requests.get(url, headers=headers)
+        return {"authenticated": response.status_code == 200}
+    except Exception as e:
+        return {"authenticated": False}
+
+@router.get("/ebay/config/check")
+def check_config():
+    """
+    Check if the eBay API configuration is properly set up.
+    """
+    required_vars = {
+        "EBAY_CLIENT_ID": os.getenv("EBAY_CLIENT_ID"),
+        "EBAY_CLIENT_SECRET": os.getenv("EBAY_CLIENT_SECRET"),
+        "EBAY_REDIRECT_URI": os.getenv("EBAY_REDIRECT_URI"),
+        "EBAY_AUTH_HEADER": os.getenv("EBAY_AUTH_HEADER"),
+    }
+    
+    missing_vars = [var for var, value in required_vars.items() if not value]
+    
+    if missing_vars:
+        return {
+            "status": "error",
+            "message": "Missing required environment variables",
+            "missing_variables": missing_vars
+        }
+    
+    return {
+        "status": "success",
+        "message": "All required environment variables are set",
+        "config": {
+            "base_url": BASE_URL,
+            "redirect_uri": required_vars["EBAY_REDIRECT_URI"],
+            "client_id": required_vars["EBAY_CLIENT_ID"][:4] + "..." if required_vars["EBAY_CLIENT_ID"] else None
+        }
+    }
+
+@router.get("/ebay/debug")
+def debug_config():
+    """
+    Debug endpoint to check eBay configuration and test auth URL generation.
+    """
+    try:
+        # Check environment variables
+        config = {
+            "client_id": CLIENT_ID,
+            "client_secret": CLIENT_SECRET,
+            "redirect_uri": os.getenv("EBAY_REDIRECT_URI"),
+            "auth_header": os.getenv("EBAY_AUTH_HEADER"),
+            "base_url": BASE_URL
+        }
+
+        # Generate auth URL to verify it's correct
+        redirect_uri = os.getenv("EBAY_REDIRECT_URI")
+        auth_url = (
+            f"https://auth.sandbox.ebay.com/oauth2/authorize?"
+            f"client_id={CLIENT_ID}&"
+            f"response_type=code&"
+            f"redirect_uri={redirect_uri}&"
+            f"scope=https://api.ebay.com/oauth/api_scope "
+            f"https://api.ebay.com/oauth/api_scope/sell.inventory "
+            f"https://api.ebay.com/oauth/api_scope/sell.marketing "
+            f"https://api.ebay.com/oauth/api_scope/sell.account"
+        )
+
+        return {
+            "status": "success",
+            "config": {
+                **config,
+                "client_id": config["client_id"][:4] + "..." if config["client_id"] else None,
+                "client_secret": "***" if config["client_secret"] else None,
+                "auth_header": "***" if config["auth_header"] else None
+            },
+            "generated_auth_url": auth_url,
+            "message": "Configuration check complete. Check the generated auth URL to ensure it matches what you expect."
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "error": str(e),
+            "message": "Error checking configuration"
+        }
