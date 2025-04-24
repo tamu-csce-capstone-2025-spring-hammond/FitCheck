@@ -153,6 +153,7 @@ export default function AddItem() {
     console.log('got here 1')
     console.log('selected selfie', selectedSelfie)
     console.log('uploaded selfie', uploadedSelfie)
+    console.log(process.env.NEXT_PUBLIC_FASHN_KEY)
     const res = await fetch("https://api.fashn.ai/v1/run", {
       method: "POST",
       headers: {
