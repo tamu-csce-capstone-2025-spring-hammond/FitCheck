@@ -228,7 +228,7 @@ export default function EditItemPage() {
             quantity: formData.quantity,
             location: {
               country: "US", // You might want to make this configurable
-              postal_code: "00000", // You might want to make this configurable
+              postal_code: "77840", // You might want to make this configurable
             },
             shipping_options: [
               {
