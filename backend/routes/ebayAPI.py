@@ -178,8 +178,17 @@ def get_auth_url():
         print(f"Base URL: {BASE_URL}")
         
         # URL encode the redirect URI
-        encoded_redirect_uri = requests.utils.quote(redirect_uri)
+        encoded_redirect_uri = requests.utils.quote(redirect_uri, safe='')
         print(f"Encoded Redirect URI: {encoded_redirect_uri}")
+        
+        # Define scopes and join them with URL-encoded spaces
+        scopes = [
+            "https://api.ebay.com/oauth/api_scope",
+            "https://api.ebay.com/oauth/api_scope/sell.inventory",
+            "https://api.ebay.com/oauth/api_scope/sell.marketing",
+            "https://api.ebay.com/oauth/api_scope/sell.account"
+        ]
+        encoded_scopes = requests.utils.quote(" ".join(scopes), safe='')
         
         # Construct the auth URL
         auth_url = (
@@ -187,10 +196,7 @@ def get_auth_url():
             f"client_id={client_id}&"
             f"response_type=code&"
             f"redirect_uri={encoded_redirect_uri}&"
-            f"scope=https://api.ebay.com/oauth/api_scope "
-            f"https://api.ebay.com/oauth/api_scope/sell.inventory "
-            f"https://api.ebay.com/oauth/api_scope/sell.marketing "
-            f"https://api.ebay.com/oauth/api_scope/sell.account"
+            f"scope={encoded_scopes}"
         )
         
         print(f"\nGenerated Auth URL: {auth_url}")
