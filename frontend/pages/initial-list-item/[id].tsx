@@ -117,6 +117,7 @@ export default function EditItemPage() {
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setCurrentScreen("platforms");
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   // Handle platform selection
