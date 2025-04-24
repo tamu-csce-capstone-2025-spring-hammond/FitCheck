@@ -5,16 +5,22 @@ import os
 from typing import List, Optional, Dict, Any
 from fastapi import APIRouter, HTTPException, Depends, Header
 from pydantic import BaseModel, Field
+import environment
 from dotenv import load_dotenv
 
-load_dotenv()
 
 # FastAPI router
 router = APIRouter()
 
 # eBay API credentials and endpoints
-CLIENT_ID = os.getenv("EBAY_CLIENT_ID")
-CLIENT_SECRET = os.getenv("EBAY_CLIENT_SECRET")
+# load_dotenv()
+# CLIENT_ID = os.getenv("EBAY_CLIENT_ID")
+# CLIENT_SECRET = os.getenv("EBAY_CLIENT_SECRET")
+# SANDBOX_BASE_URL = "https://api.sandbox.ebay.com"
+# PRODUCTION_BASE_URL = "https://api.ebay.com"
+
+CLIENT_ID = environment.get("EBAY_CLIENT_ID")
+CLIENT_SECRET = environment.get("EBAY_CLIENT_SECRET")
 SANDBOX_BASE_URL = "https://api.sandbox.ebay.com"
 PRODUCTION_BASE_URL = "https://api.ebay.com"
 
@@ -152,20 +158,29 @@ def get_auth_url():
     After authorization, they will be redirected back with an auth code.
     """
     try:
-        # This would typically be configured in your eBay application settings
+        # Get and validate environment variables
         redirect_uri = os.getenv("EBAY_REDIRECT_URI")
+        client_id = os.getenv("EBAY_CLIENT_ID")
+        
         if not redirect_uri:
             raise HTTPException(status_code=500, detail="EBAY_REDIRECT_URI not set")
-        
-        if not CLIENT_ID:
+        if not client_id:
             raise HTTPException(status_code=500, detail="EBAY_CLIENT_ID not set")
+        
+        # Print debug information
+        print("\n=== eBay Auth Debug Information ===")
+        print(f"Client ID: {client_id}")
+        print(f"Redirect URI: {redirect_uri}")
+        print(f"Base URL: {BASE_URL}")
         
         # URL encode the redirect URI
         encoded_redirect_uri = requests.utils.quote(redirect_uri)
+        print(f"Encoded Redirect URI: {encoded_redirect_uri}")
         
+        # Construct the auth URL
         auth_url = (
             f"https://auth.sandbox.ebay.com/oauth2/authorize?"
-            f"client_id={CLIENT_ID}&"
+            f"client_id={client_id}&"
             f"response_type=code&"
             f"redirect_uri={encoded_redirect_uri}&"
             f"scope=https://api.ebay.com/oauth/api_scope "
@@ -174,14 +189,12 @@ def get_auth_url():
             f"https://api.ebay.com/oauth/api_scope/sell.account"
         )
         
-        # For debugging
-        print(f"Generated auth URL: {auth_url}")
-        print(f"Client ID: {CLIENT_ID[:4]}...")
-        print(f"Redirect URI: {redirect_uri}")
+        print(f"\nGenerated Auth URL: {auth_url}")
+        print("=== End Debug Information ===\n")
         
         return {"auth_url": auth_url}
     except Exception as e:
-        print(f"Error generating auth URL: {str(e)}")
+        print(f"\nError generating auth URL: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error generating auth URL: {str(e)}")
 
 @router.post("/ebay/inventory/create", summary="Create inventory item")
