@@ -21,6 +21,8 @@ router = APIRouter()
 
 CLIENT_ID = environment.get("EBAY_CLIENT_ID")
 CLIENT_SECRET = environment.get("EBAY_CLIENT_SECRET")
+EBAY_REDIRECT_URI = environment.get("EBAY_REDIRECT_URI")
+EBAY_AUTH_HEADER = environment.get("EBAY_AUTH_HEADER")
 SANDBOX_BASE_URL = "https://api.sandbox.ebay.com"
 PRODUCTION_BASE_URL = "https://api.ebay.com"
 
@@ -35,12 +37,12 @@ def get_access_token(auth_code: str) -> str:
     url = f"{BASE_URL}/identity/v1/oauth2/token"
     headers = {
         "Content-Type": "application/x-www-form-urlencoded",
-        "Authorization": f"Basic {os.getenv('EBAY_AUTH_HEADER')}"
+        "Authorization": f"Basic {EBAY_AUTH_HEADER}"
     }
     data = {
         "grant_type": "authorization_code",
         "code": auth_code,
-        "redirect_uri": os.getenv("EBAY_REDIRECT_URI")
+        "redirect_uri": EBAY_REDIRECT_URI
     }
     
     response = requests.post(url, headers=headers, data=data)
@@ -159,8 +161,8 @@ def get_auth_url():
     """
     try:
         # Get and validate environment variables
-        redirect_uri = os.getenv("EBAY_REDIRECT_URI")
-        client_id = os.getenv("EBAY_CLIENT_ID")
+        redirect_uri = EBAY_REDIRECT_URI
+        client_id = CLIENT_ID
         
         if not redirect_uri:
             raise HTTPException(status_code=500, detail="EBAY_REDIRECT_URI not set")
@@ -595,12 +597,12 @@ async def ebay_callback(code: str, state: Optional[str] = None):
         url = f"{BASE_URL}/identity/v1/oauth2/token"
         headers = {
             "Content-Type": "application/x-www-form-urlencoded",
-            "Authorization": f"Basic {os.getenv('EBAY_AUTH_HEADER')}"
+            "Authorization": f"Basic {EBAY_AUTH_HEADER}"
         }
         data = {
             "grant_type": "authorization_code",
             "code": code,
-            "redirect_uri": os.getenv("EBAY_REDIRECT_URI")
+            "redirect_uri": EBAY_REDIRECT_URI
         }
         
         response = requests.post(url, headers=headers, data=data)
@@ -654,10 +656,10 @@ def check_config():
     Check if the eBay API configuration is properly set up.
     """
     required_vars = {
-        "EBAY_CLIENT_ID": os.getenv("EBAY_CLIENT_ID"),
-        "EBAY_CLIENT_SECRET": os.getenv("EBAY_CLIENT_SECRET"),
-        "EBAY_REDIRECT_URI": os.getenv("EBAY_REDIRECT_URI"),
-        "EBAY_AUTH_HEADER": os.getenv("EBAY_AUTH_HEADER"),
+        "EBAY_CLIENT_ID": environment.get("EBAY_CLIENT_ID"),
+        "EBAY_CLIENT_SECRET": environment.get("EBAY_CLIENT_SECRET"),
+        "EBAY_REDIRECT_URI": environment.get("EBAY_REDIRECT_URI"),
+        "EBAY_AUTH_HEADER": environment.get("EBAY_AUTH_HEADER"),
     }
     
     missing_vars = [var for var, value in required_vars.items() if not value]
@@ -689,13 +691,13 @@ def debug_config():
         config = {
             "client_id": CLIENT_ID,
             "client_secret": CLIENT_SECRET,
-            "redirect_uri": os.getenv("EBAY_REDIRECT_URI"),
-            "auth_header": os.getenv("EBAY_AUTH_HEADER"),
+            "redirect_uri": environment.get("EBAY_REDIRECT_URI"),
+            "auth_header": environment.get("EBAY_AUTH_HEADER"),
             "base_url": BASE_URL
         }
 
         # Generate auth URL to verify it's correct
-        redirect_uri = os.getenv("EBAY_REDIRECT_URI")
+        redirect_uri = environment.get("EBAY_REDIRECT_URI")
         auth_url = (
             f"https://auth.sandbox.ebay.com/oauth2/authorize?"
             f"client_id={CLIENT_ID}&"
