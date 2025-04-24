@@ -146,10 +146,12 @@ def add_user_selfie(user_id: int, image_url: str, description: str) -> models.Us
         image_url=image_url,
         description=description,
     )
-
     with get_session() as session:
-        session.add(user_selfie)
-        session.commit()
-        session.refresh(user_selfie)
-    
-    return user_selfie
+        try:
+            session.add(user_selfie)
+            session.commit()
+            session.refresh(user_selfie)
+            return user_selfie
+        except Exception as e:
+            session.rollback()
+            raise

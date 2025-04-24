@@ -260,6 +260,6 @@ class UserSelfieBase(SQLModel):
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 class UserSelfie(UserSelfieBase, table=True):
-    id: Optional[int] = Field(default_factory=make_id, primary_key=True)
+    id: Optional[int] = Field(default=None, primary_key=True)
     user_id: int = Field(foreign_key="user.id")
     user: Optional["User"] = Relationship(back_populates="user_selfies")

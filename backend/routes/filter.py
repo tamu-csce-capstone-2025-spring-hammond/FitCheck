@@ -5,7 +5,7 @@ from pydantic import BaseModel
 import json
 from sqlmodel import SQLModel, Field, Session, create_engine, select
 from database import get_db
-from models import ClothingItem, Outfit, OutfitItem
+from models import ClothingItem, Outfit, OutfitItem, UserSelfie
 from route_utils import enforce_logged_in
 from typing import List, Optional
 import chromadb
@@ -184,3 +184,12 @@ def get_clothing_items(authorization: str = Header(...), db: Session = Depends(g
     items = db.exec(query).all()
 
     return items
+
+@router.get("/user-selfies")
+def get_user_selfies(authorization: str = Header(...), db: Session = Depends(get_db)):
+    current_user = enforce_logged_in(authorization)
+    
+    query = select(UserSelfie).where(UserSelfie.user_id == current_user.id)
+    selfies = db.exec(query).all()
+
+    return selfies
