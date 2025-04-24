@@ -74,23 +74,27 @@ export default function EBayAuth() {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch("/api/ebay/auth/url");
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error("Error getting auth URL:", errorData);
-        throw new Error(errorData.detail || "Failed to get eBay authorization URL");
-      }
-
-      const data = await response.json();
-      console.log("Auth URL:", data.auth_url);
+      // Instead of making the actual API call, just show a message
+      setSuccess("eBay integration coming soon!");
+      setIsLoading(false);
       
-      // Verify the URL looks correct
-      if (!data.auth_url.includes("auth.sandbox.ebay.com")) {
-        console.error("Invalid auth URL format");
-        throw new Error("Invalid authorization URL format");
-      }
+      // Remove the actual redirect
+      // const response = await fetch("/api/ebay/auth/url");
+      // if (!response.ok) {
+      //   const errorData = await response.json();
+      //   console.error("Error getting auth URL:", errorData);
+      //   throw new Error(errorData.detail || "Failed to get eBay authorization URL");
+      // }
 
-      window.location.href = data.auth_url;
+      // const data = await response.json();
+      // console.log("Auth URL:", data.auth_url);
+      
+      // if (!data.auth_url.includes("auth.sandbox.ebay.com")) {
+      //   console.error("Invalid auth URL format");
+      //   throw new Error("Invalid authorization URL format");
+      // }
+
+      // window.location.href = data.auth_url;
     } catch (err) {
       console.error("Error in connectToEBay:", err);
       setError(err instanceof Error ? err.message : "An error occurred");
