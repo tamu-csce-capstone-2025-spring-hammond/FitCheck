@@ -1,65 +1,65 @@
 // pages/api/virtual-try-on.ts
-
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-type ResponseData = { resultUrl?: string; error?: string };
+// We want to stream the raw multipart body through
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
 
-// ← this must be the hf.space URL for your *duplicated* Space
-const PREDICT_URL =
-  "https://anishfish-kolors-virtual-try-on.hf.space/api/predict/tryon";
-
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<ResponseData>
-) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    res.setHeader('Allow', ['POST']);
+    return res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 
-  const { personImageUrl, clothingImageUrl } = req.body as {
-    personImageUrl:  string;
-    clothingImageUrl: string;
-  };
+  const BACKEND_URL = process.env.BACKEND_URL;
+  if (!BACKEND_URL) {
+    return res.status(500).json({ error: 'Backend URL not configured' });
+  }
+
+  const url = `${BACKEND_URL.replace(/\/$/, '')}/upload-user-selfie`;
+
+  // Build headers: forward auth *and* content-type
+  const headers: Record<string, string> = {};
+
+  // Get the login token from the cookie
+  const loginToken = req.cookies.login_token;
+  if (loginToken) {
+      headers['Authorization'] = `Bearer ${loginToken}`;
+  }
+
+  // Copy relevant headers from the incoming request
+  if (req.headers.authorization)
+  {
+      headers['Authorization'] = req.headers.authorization;
+  }
+  
+  // **CRITICAL** forward the multipart boundary
+  if (req.headers['content-type']) {
+    headers['Content-Type'] = req.headers['content-type'] as string;
+  }
 
   try {
-    // 1) Call the Space on hf.space
-    const spaceRes = await fetch(PREDICT_URL, {
+    const backendRes = await fetch(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        data: [
-          { path: personImageUrl },
-          { path: clothingImageUrl },
-          0,
-          true
-        ],
-      }),
+      headers,
+      // Proxy the raw request stream
+      body: req as any,
+      duplex: 'half', // needed for streaming bodies in Next.js
     });
 
-    if (!spaceRes.ok) {
-      const txt = await spaceRes.text();
-      throw new Error(`Space predict failed: ${spaceRes.status} ${txt}`);
-    }
+    // Mirror status and headers
+    res.status(backendRes.status);
+    const contentType = backendRes.headers.get('Content-Type');
+    if (contentType) res.setHeader('Content-Type', contentType);
 
-    // 2) Parse the JSON
-    const json = await spaceRes.json();
-    const first = json.data?.[0];
-    let resultUrl: string;
-
-    if (typeof first === 'string') {
-      // sometimes it's directly a data‑URI
-      resultUrl = first;
-    } else if (first && typeof first === 'object' && 'url' in first) {
-      // often it's { url: "https://..." }
-      resultUrl = (first as any).url;
-    } else {
-      throw new Error("Unexpected response shape");
-    }
-
-    // 3) Return to your React component
-    return res.status(200).json({ resultUrl });
+    // Stream the response body back
+    const buffer = await backendRes.arrayBuffer();
+    return res.send(Buffer.from(buffer));
   } catch (err: any) {
-    console.error("virtual-try-on error:", err);
+    console.error('Error proxying to upload-user-selfie:', err);
     return res.status(500).json({ error: err.message });
   }
 }

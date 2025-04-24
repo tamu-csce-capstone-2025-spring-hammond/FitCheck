@@ -43,6 +43,7 @@ class User(UserBase, table=True):
     clothing_items: List["ClothingItem"] = Relationship(back_populates="user")
     outfits: List["Outfit"] = Relationship(back_populates="user")
     resale_listings: List["ResaleListing"] = Relationship(back_populates="user")
+    user_selfies: List["UserSelfie"] = Relationship(back_populates="user")  # <-- Establish relationship with UserSelfie
 
 
 ##### ClothingItem #####
@@ -252,5 +253,13 @@ if __name__ == "__main__":
     SQLModel.metadata.drop_all(engine)
     SQLModel.metadata.create_all(engine)
 
+##### UserSelfie #####
+class UserSelfieBase(SQLModel):
+    image_url: str
+    description: Optional[str] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
 
-
+class UserSelfie(UserSelfieBase, table=True):
+    id: Optional[int] = Field(default_factory=make_id, primary_key=True)
+    user_id: int = Field(foreign_key="user.id")
+    user: Optional["User"] = Relationship(back_populates="user_selfies")

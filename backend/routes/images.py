@@ -236,3 +236,37 @@ if __name__ == '__main__':
     )
 
     print(results)
+
+@router.post("/upload-user-selfie")
+async def upload_user_selfie(file: UploadFile = File(...), authorization: str = Header(...)):
+    current_user = enforce_logged_in(authorization)
+
+    aws_access_key = environment.get("AWS_ACCESS_KEY_ID")
+    aws_secret_key = environment.get("AWS_SECRET_ACCESS_KEY")
+    aws_region = environment.get("AWS_DEFAULT_REGION")
+    bucket_name = "hack-fitcheck" 
+    s3_client = boto3.client(
+        "s3",
+        aws_access_key_id=aws_access_key,
+        aws_secret_access_key=aws_secret_key,
+        region_name=aws_region,
+    )
+
+    file_name = f"{uuid.uuid4()}_{file.filename}"
+
+    try:
+        s3_client.upload_fileobj(file.file, bucket_name, file_name)
+        s3_url = f"https://{bucket_name}.s3.amazonaws.com/{file_name}"
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"S3 upload failed: {e}")
+
+    description = f"Selfie uploaded by user {current_user.id}" 
+    try:
+        user_selfie = database.add_user_selfie(current_user.id, s3_url, description)
+        return {
+            "message": "Selfie uploaded successfully",
+            "s3_url": s3_url,
+            "user_selfie_id": user_selfie.id,
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Database insertion failed: {e}")
