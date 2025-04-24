@@ -16,6 +16,8 @@ router = APIRouter()
 # load_dotenv()
 # CLIENT_ID = os.getenv("EBAY_CLIENT_ID")
 # CLIENT_SECRET = os.getenv("EBAY_CLIENT_SECRET")
+# EBAY_REDIRECT_URI = os.getenv("EBAY_REDIRECT_URI")
+# EBAY_AUTH_HEADER = os.getenv("EBAY_AUTH_HEADER")
 # SANDBOX_BASE_URL = "https://api.sandbox.ebay.com"
 # PRODUCTION_BASE_URL = "https://api.ebay.com"
 
