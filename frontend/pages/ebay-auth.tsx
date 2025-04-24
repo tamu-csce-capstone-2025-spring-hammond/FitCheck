@@ -40,7 +40,7 @@ export default function EBayAuth() {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch("/api/ebay/callback", {
+      const response = await fetch(`/api/ebay/callback?code=${code}&user_id=${userId}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

@@ -140,7 +140,7 @@ def generate_sku(title: str) -> str:
     return f"{base}-{unique_id}"
 
 # API Endpoints
-@router.post("/ebay/auth", summary="Authenticate user with eBay")
+@router.post("/api/ebay/auth", summary="Authenticate user with eBay")
 def authenticate_user(request: AuthRequest):
     """
     Authenticate a new user with eBay using OAuth flow.
@@ -153,7 +153,7 @@ def authenticate_user(request: AuthRequest):
     except Exception as e:
         raise HTTPException(status_code=401, detail=f"Failed to authenticate with eBay: {str(e)}")
 
-@router.get("/ebay/auth/url", summary="Get eBay authorization URL")
+@router.get("/api/ebay/auth/url", summary="Get eBay authorization URL")
 def get_auth_url():
     """
     Get the URL where users should be redirected to authorize the application.
@@ -586,7 +586,7 @@ def get_policies(user_id: str, policy_type: str = "all"):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error retrieving policies: {str(e)}")
 
-@router.get("/ebay/callback")
+@router.get("/api/ebay/callback")
 async def ebay_callback(code: str, state: Optional[str] = None):
     """
     Handle the callback from eBay OAuth flow.
@@ -626,7 +626,7 @@ async def ebay_callback(code: str, state: Optional[str] = None):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error during callback: {str(e)}")
 
-@router.get("/ebay/auth/status", summary="Check eBay authentication status")
+@router.get("/api/ebay/auth/status", summary="Check eBay authentication status")
 def check_auth_status(user_id: str):
     """
     Check if the user is authenticated with eBay.
@@ -650,7 +650,7 @@ def check_auth_status(user_id: str):
     except Exception as e:
         return {"authenticated": False}
 
-@router.get("/ebay/config/check")
+@router.get("/api/ebay/config/check")
 def check_config():
     """
     Check if the eBay API configuration is properly set up.
@@ -681,7 +681,7 @@ def check_config():
         }
     }
 
-@router.get("/ebay/debug")
+@router.get("/api/ebay/debug")
 def debug_config():
     """
     Debug endpoint to check eBay configuration and test auth URL generation.
