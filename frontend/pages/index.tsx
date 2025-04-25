@@ -69,6 +69,21 @@ export default function Home() {
               </h1>
               {error && <p className="text-red-500">{error}</p>}
 
+              {/* <div className="flex gap-4 mt-4">
+                <button 
+                  className="px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
+                  onClick={() => router.push('/inspiration')}
+                >
+                  Get Inspired
+                </button>
+                <button 
+                  className="px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
+                  onClick={() => setShowCamera(true)}
+                >
+                  Upload OOTD
+                </button>
+              </div> */}
+
               <Image
                 src="/images/index-decor-1.svg"
                 width={250}

@@ -14,7 +14,7 @@ const nextConfig = {
   	ignoreBuildErrors: true,
   },
   images: {
-    domains: ['hack-fitcheck.s3.amazonaws.com'],
+    domains: ['hack-fitcheck.s3.amazonaws.com', 'cdn.fashn.ai'],
   },
 };
 

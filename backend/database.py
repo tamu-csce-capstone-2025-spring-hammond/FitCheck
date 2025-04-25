@@ -133,3 +133,25 @@ def mark_clothing_item_worn(clothing_item_id: str):
         session.commit()
         return clothing_item
 
+def get_clothing_item_by_id(clothing_item_id: str):
+    from models import ClothingItem
+    with get_session() as session:
+        clothing_item = session.exec(select(ClothingItem).where(ClothingItem.id == clothing_item_id)).first()
+        return clothing_item
+    
+def add_user_selfie(user_id: int, image_url: str, description: str) -> models.UserSelfie:
+    """Adds a new selfie record to the database."""
+    user_selfie = models.UserSelfie(
+        user_id=user_id,
+        image_url=image_url,
+        description=description,
+    )
+    with get_session() as session:
+        try:
+            session.add(user_selfie)
+            session.commit()
+            session.refresh(user_selfie)
+            return user_selfie
+        except Exception as e:
+            session.rollback()
+            raise
