@@ -16,7 +16,9 @@ export default async function handler(
   }
 
   try {
-    const backendUrl = process.env.BACKEND_URL || 'http://localhost:8000';
+    let backendUrl = process.env.BACKEND_URL || 'http://localhost:8000';
+    // Remove trailing slash if it exists
+    backendUrl = backendUrl.replace(/\/$/, '');
     
     // First verify if the outfit exists
     console.log('Verifying outfit exists:', id);
@@ -29,10 +31,14 @@ export default async function handler(
       return res.status(404).json({ error: 'Outfit not found' });
     }
 
+    // Format the date to include time at noon UTC
+    const formattedDate = new Date(date);
+    formattedDate.setUTCHours(12, 0, 0, 0);
+
     // If outfit exists, proceed with logging
     const requestBody = {
       outfit_id: Number(id),
-      date: date
+      date: formattedDate.toISOString()
     };
 
     console.log('Attempting to log outfit:', {

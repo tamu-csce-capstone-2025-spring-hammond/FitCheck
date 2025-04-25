@@ -1,16 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import OOTDModal from "@/components/ootd-modal";
 import Image from "next/image";
 
-type Outfit = {
+interface Outfit {
   date: string;
-  thumbnailUrl?: string;
-};
-
-const mockOutfits: Outfit[] = [
-  { date: "2025-04-03", thumbnailUrl: "/mock-outfit.jpg" },
-  { date: "2025-04-07", thumbnailUrl: "/mock-outfit-2.jpg" },
-];
+  outfit_id: number;
+  outfit?: {
+    s3url?: string;
+    name?: string;
+  };
+}
 
 const dayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -19,6 +18,29 @@ export default function OOTDCalendar() {
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
   const [currentMonth, setCurrentMonth] = useState(today.getMonth()); // 0-indexed
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [outfits, setOutfits] = useState<Outfit[]>([]);
+
+  useEffect(() => {
+    const fetchWearHistory = async () => {
+      try {
+        const response = await fetch('/api/outfit_wear_history');
+        if (!response.ok) {
+          throw new Error('Failed to fetch wear history');
+        }
+        const data = await response.json();
+        console.log('Wear history data:', data);
+        setOutfits(data.map((item: any) => ({
+          date: new Date(item.date).toISOString().split('T')[0],
+          outfit_id: item.outfit_id,
+          outfit: item.outfit
+        })));
+      } catch (error) {
+        console.error('Error fetching wear history:', error);
+      }
+    };
+
+    fetchWearHistory();
+  }, []);
 
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
   const startDay = new Date(currentYear, currentMonth, 1).getDay();
@@ -29,7 +51,7 @@ export default function OOTDCalendar() {
   });
 
   const getOutfitForDate = (dateStr: string) =>
-    mockOutfits.find((o) => o.date === dateStr);
+    outfits.find((o) => o.date === dateStr);
 
   const handleMonthChange = (direction: "prev" | "next") => {
     const newDate = new Date(currentYear, currentMonth + (direction === "next" ? 1 : -1));
@@ -72,27 +94,31 @@ export default function OOTDCalendar() {
         {gridDays.map((date, idx) => {
           const dateStr = date?.toISOString().split("T")[0];
           const outfit = date ? getOutfitForDate(dateStr!) : null;
+          const isToday = dateStr === today.toISOString().split("T")[0];
 
           return (
             <div
               key={idx}
-              className="aspect-square border border-gray-200 rounded-lg bg-white hover:bg-gray-100 cursor-pointer flex flex-col items-center justify-center text-lg relative"
+              className={`aspect-square border border-gray-200 rounded-lg bg-white hover:bg-gray-100 cursor-pointer flex flex-col items-center justify-center text-lg relative ${
+                isToday ? "border-blue-500" : ""
+              }`}
               onClick={() => date && setSelectedDate(dateStr!)}
             >
               {date && (
                 <>
-                  <span className="mb-1 absolute top-4 right-6">
+                  {outfit?.outfit?.s3url && (
+                    <div className="absolute inset-0">
+                      <Image
+                        src={outfit.outfit.s3url}
+                        alt={outfit.outfit.name || "Outfit"}
+                        fill
+                        className="rounded object-cover"
+                      />
+                    </div>
+                  )}
+                  <span className="mb-1 absolute top-4 right-6 z-10 text-black font-bold drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]">
                     {date.getDate()}
                   </span>
-                  {outfit?.thumbnailUrl && (
-                    <Image
-                      src={outfit.thumbnailUrl}
-                      alt="Outfit"
-                      width={40}
-                      height={40}
-                      className="rounded object-cover"
-                    />
-                  )}
                 </>
               )}
             </div>
@@ -103,6 +129,8 @@ export default function OOTDCalendar() {
           <OOTDModal
             date={selectedDate}
             onClose={() => setSelectedDate(null)}
+            outfit={getOutfitForDate(selectedDate)?.outfit}
+            outfitId={getOutfitForDate(selectedDate)?.outfit_id}
           />
         )}
       </div>

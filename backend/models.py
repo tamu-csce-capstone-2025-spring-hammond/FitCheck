@@ -223,17 +223,15 @@ class WearHistory(WearHistoryBase, table=True):
 class OutfitWearHistoryBase(SQLModel):
     """Base model for OutfitWearHistory, used for creating and updating wear records."""
     outfit_id: int
+    date: datetime
 
 class OutfitWearHistoryPublic(OutfitWearHistoryBase):
     """Detailed public model for OutfitWearHistory, including related outfit."""
     outfit: Optional["Outfit"] = None
-    date: datetime
 
 class OutfitWearHistory(OutfitWearHistoryBase, table=True):
     id: Optional[int] = Field(default_factory=make_id, primary_key=True)
     outfit_id: int = Field(foreign_key="outfit.id")
-    date: datetime = Field(default_factory=datetime.utcnow)
-
     outfit: Optional[Outfit] = Relationship(back_populates="outfit_wear_history")
 
 

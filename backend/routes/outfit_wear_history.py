@@ -1,15 +1,21 @@
 """Routes for wear history management."""
 
 from fastapi import APIRouter, HTTPException, Depends
-
-
 from sqlmodel import select
 from sqlalchemy.orm import Session, selectinload
 from database import get_db
 from models import OutfitWearHistory, OutfitWearHistoryBase, OutfitWearHistoryPublic
+from typing import List
 
 # FastAPI router
 router = APIRouter()
+
+@router.get("/outfit_wear_history/", response_model=List[OutfitWearHistoryPublic])
+def get_all_wear_history(db: Session = Depends(get_db)):
+    histories = db.exec(select(OutfitWearHistory).options(
+        selectinload(OutfitWearHistory.outfit)
+    )).all()
+    return histories
 
 @router.get("/outfit_wear_history/{history_id}", response_model=OutfitWearHistoryPublic)
 def get_wear_history(history_id: int, db: Session = Depends(get_db)):
