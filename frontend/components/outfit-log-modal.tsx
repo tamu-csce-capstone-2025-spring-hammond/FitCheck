@@ -1,12 +1,48 @@
 import { useState } from "react";
 import { Button } from "@/components/imported-ui/button";
+import { useRouter } from "next/router";
 
 type Props = {
   onClose: () => void;
 };
 
 export default function OutfitLogModal({ onClose }: Props) {
+  const router = useRouter();
+  const { id } = router.query;
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
+  const [isLogging, setIsLogging] = useState(false);
+
+  const handleLogOutfit = async () => {
+    if (!id) {
+      console.error('No outfit ID found');
+      return;
+    }
+
+    try {
+      setIsLogging(true);
+      console.log('Logging outfit with ID:', id, 'and date:', selectedDate);
+      
+      const response = await fetch(`/api/outfits/${id}/log`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ date: selectedDate }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to log outfit');
+      }
+
+      console.log('Outfit logged successfully');
+      onClose();
+      router.push('/ootd-calendar');
+    } catch (error) {
+      console.error('Error logging outfit:', error);
+    } finally {
+      setIsLogging(false);
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -25,7 +61,7 @@ export default function OutfitLogModal({ onClose }: Props) {
         </div>
         <div className="flex justify-center gap-4">
           <Button
-            variant="outline"
+            variant="default"
             onClick={onClose}
             className="border-heart-red border-[1px] hover:bg-heart-red"
           >
@@ -35,12 +71,17 @@ export default function OutfitLogModal({ onClose }: Props) {
           </Button>
           <Button
             variant="default"
-            onClick={onClose}
+            onClick={handleLogOutfit}
             className="border-heart-red border-[1px] hover:bg-heart-red"
+            disabled={isLogging}
           >
-            <p className="text-heart-red text-lg hover:text-white">
-              Log Outfit
-            </p>
+            {isLogging ? (
+              <p className="text-heart-red text-lg">Logging...</p>
+            ) : (
+              <p className="text-heart-red text-lg hover:text-white">
+                Log Outfit
+              </p>
+            )}
           </Button>
         </div>
       </div>
