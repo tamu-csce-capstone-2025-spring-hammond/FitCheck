@@ -71,10 +71,10 @@ export default function Home() {
 
               <Image
                 src="/images/index-decor-1.svg"
-                width={400}
-                height={200}
+                width={250}
+                height={250}
                 alt="Closet"
-                className="absolute opacity-5 -top-16 left-48 -z-1 -rotate-[20deg]"
+                className="absolute opacity-5 top-72 left-0 sm:left-36 md:top-48 md:left-64 -z-1 -rotate-[20deg]"
               />
               <Image
                 src="/images/smile.svg"
