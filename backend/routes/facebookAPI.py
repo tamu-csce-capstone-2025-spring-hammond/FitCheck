@@ -111,6 +111,21 @@ def get_user_products(email):
     
     return {"products": filtered_products}  # Return the filtered products as a JSON object
 
+@router.get("/facebook/name/{id}")
+def get_name(id):
+    '''given an email, get all products with that in the retailer id'''
+    url = f"https://graph.facebook.com/v22.0/{id}"
+    headers = {"Authorization": f"Bearer {FACEBOOK_ACCESS_TOKEN}"}
+    response = requests.get(url,headers=headers)
+    
+    if response.status_code != 200:
+        print("Error fetching products:", response.status_code)
+        return None
+    
+    data = response.json()
+    name = data.get("name", "")
+    return {"name": name} 
+
 
 @router.get("/facebook/price/{name}")
 def get_price(name):

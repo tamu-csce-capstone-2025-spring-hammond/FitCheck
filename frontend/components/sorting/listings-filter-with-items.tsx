@@ -20,6 +20,7 @@ interface Listing {
   category?: string;
   s3url?: string;
   image_url?: string;
+  created_at?: string;
 }
 
 interface ResaleListing {
@@ -127,11 +128,30 @@ export default function FilterWithItems() {
               
               console.log('Matching clothing item:', matchingClothingItem);
               
+              // Fetch resale listing data if we have a matching clothing item
+              let created_at = undefined;
+              if (matchingClothingItem?.id) {
+                console.log('Looking for resale listing with clothing_item_id:', matchingClothingItem.id);
+                try {
+                  const resaleResponse = await fetch(`/api/created_at/${matchingClothingItem.id}`);
+                  if (resaleResponse.ok) {
+                    const resaleData = await resaleResponse.json();
+                    console.log('Found resale listing:', resaleData);
+                    created_at = resaleData.created_at;
+                  } else {
+                    console.log('No resale listing found for this clothing item');
+                  }
+                } catch (error) {
+                  console.error('Error fetching resale listing:', error);
+                }
+              }
+              
               return {
                 ...listing,
                 s3url: imageData.image_url,
                 price: priceData,
-                category: matchingClothingItem?.category || 'Unknown'
+                category: matchingClothingItem?.category || 'Unknown',
+                created_at
               };
             } catch (error) {
               console.error(`Error fetching data for ${listing.name}:`, error);
@@ -216,6 +236,7 @@ export default function FilterWithItems() {
                       price={listing.price}
                       href={`/listed-item/${listing.id}`}
                       imageUrl={listing.s3url}
+                      createdAt={listing.created_at}
                     />
                   );
                 })}

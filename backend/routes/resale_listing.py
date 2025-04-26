@@ -20,6 +20,15 @@ def get_resale_listing(listing_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Resale listing not found")
     return listing
 
+@router.get("/created_at/{listing_id}", response_model=ResaleListingPublicFull)
+def get_resale_listing(listing_id: int, db: Session = Depends(get_db)):
+    listing = db.exec(select(ResaleListing).where(ResaleListing.clothing_item_id == listing_id).options(
+        selectinload(ResaleListing.clothing_item)
+    )).first()
+    if not listing:
+        raise HTTPException(status_code=404, detail="Resale listing not found")
+    return listing
+
 @router.post("/resale_listings/", response_model=ResaleListingPublic)
 def create_resale_listing(listing: ResaleListingBase, db: Session = Depends(get_db)):
     db_listing = ResaleListing.model_validate(listing)

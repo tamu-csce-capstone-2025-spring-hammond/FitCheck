@@ -8,9 +8,10 @@ interface Props {
   price: string;
   href: string;
   imageUrl?: string;
+  createdAt?: string;
 }
 
-const ListedItemCard: React.FC<Props> = ({ itemName, category, href, price, imageUrl }) => {
+const ListedItemCard: React.FC<Props> = ({ itemName, category, href, price, imageUrl, createdAt }) => {
   console.log('ListedItemCard props:', { itemName, imageUrl, price });
   
   const isValidImageUrl = imageUrl && imageUrl.trim() !== "" && imageUrl.startsWith('http');
@@ -47,7 +48,7 @@ const ListedItemCard: React.FC<Props> = ({ itemName, category, href, price, imag
           <p className="title">{itemName}</p>
           <p className="">{category}</p>
           <p className="">{price}</p>
-          <p className="text-gray-500">Listed on: {new Date().toLocaleDateString()}</p>
+          <p className="text-gray-500">Listed on: {createdAt ? new Date(createdAt).toLocaleDateString() : 'N/A'}</p>
         </div>
       </div>
     </Link>
