@@ -298,7 +298,7 @@ export default function EditListingPage() {
             <>
               <h1 className="bold mb-4">Edit Listing (ID: {id})</h1>
               <form onSubmit={handleFormSubmit} className="flex flex-col gap-12">
-                <p className="text-accent-2 bold">Step 1 of 2 — Item Details</p>
+                <p className="text-accent-2 bold">Update Item Details</p>
                 
                 {/* Photos */}
                 <div className="flex flex-col gap-4">
