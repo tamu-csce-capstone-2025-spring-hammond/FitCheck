@@ -334,8 +334,11 @@ export default function EditListingPage() {
                         id={field}
                         value={(formData as any)[field]}
                         onChange={handleChange}
-                        className="border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-black"
+                        className={`border border-gray-300 rounded px-3 py-2 ${
+                          field === "name" ? "text-gray-500 bg-gray-100 cursor-not-allowed" : "focus:ring-2 focus:ring-black"
+                        }`}
                         placeholder={`Enter ${field}`}
+                        readOnly={field === "name"}
                       />
                     </div>
                   ))}
