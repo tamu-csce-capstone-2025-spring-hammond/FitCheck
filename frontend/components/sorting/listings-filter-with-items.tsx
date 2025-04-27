@@ -11,6 +11,7 @@ import {
 import ProductFilters from "./listings-product-filters";
 import Link from "next/link";
 import ListedItemCard from "./listed-item-card";
+import { useRouter } from "next/navigation";
 
 interface Listing {
   id: string;
@@ -36,7 +37,12 @@ interface ClothingItem {
   resale_listings?: ResaleListing[];
 }
 
-export default function FilterWithItems() {
+interface Props {
+  onSelectListing?: (listingId: number) => void;
+}
+
+export default function FilterWithItems({ onSelectListing }: Props) {
+  const router = useRouter();
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [userEmail, setUserEmail] = useState("");
   const [listings, setListings] = useState<Listing[]>([]);
@@ -237,6 +243,7 @@ export default function FilterWithItems() {
                       href={`/listed-item/${listing.id}`}
                       imageUrl={listing.s3url}
                       createdAt={listing.created_at}
+                      onClick={() => router.push(`/listed-item/${listing.id}`)}
                     />
                   );
                 })}

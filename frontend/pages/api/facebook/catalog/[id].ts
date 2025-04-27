@@ -10,7 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     // Remove trailing slash from BACKEND_URL if it exists
     const baseUrl = process.env.BACKEND_URL?.replace(/\/$/, '');
-    const response = await fetch(`${baseUrl}/resale_listings/${id}`, {
+    const response = await fetch(`${baseUrl}/facebook/update/${id}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -44,7 +44,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     }
   } catch (error) {
-    console.error('Error updating resale listing:', error);
+    console.error('Error updating Facebook catalog listing:', error);
     return res.status(500).json({ 
       error: 'Internal server error',
       details: error instanceof Error ? error.message : 'Unknown error'

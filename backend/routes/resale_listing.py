@@ -37,12 +37,20 @@ def create_resale_listing(listing: ResaleListingBase, db: Session = Depends(get_
     db.refresh(db_listing)
     return db_listing
 
-@router.patch("/resale_listings/{listing_id}", response_model=ResaleListingPublicFull)
-def update_resale_listing(listing_id: int, listing_update: ResaleListingUpdate, db: Session = Depends(get_db)):
-    listing = db.get(ResaleListing, listing_id)
+@router.patch("/resale_listings/{clothing_item_id}", response_model=ResaleListingPublicFull)
+def update_resale_listing(clothing_item_id: int, listing_update: ResaleListingUpdate, db: Session = Depends(get_db)):
+    print(f"Received update request for clothing_item_id: {clothing_item_id}")
+    print(f"Update data: {listing_update}")
+    
+    listing = db.exec(select(ResaleListing).where(ResaleListing.clothing_item_id == clothing_item_id)).first()
+    print(f"Found listing: {listing}")
+    
     if not listing:
         raise HTTPException(status_code=404, detail="Resale listing not found")
+    
     listing_data = listing_update.model_dump(exclude_unset=True)
+    print(f"Update data after model_dump: {listing_data}")
+    
     listing.sqlmodel_update(listing_data)
     db.add(listing)
     db.commit()

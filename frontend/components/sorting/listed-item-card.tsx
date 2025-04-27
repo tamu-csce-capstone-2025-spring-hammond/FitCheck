@@ -9,9 +9,10 @@ interface Props {
   href: string;
   imageUrl?: string;
   createdAt?: string;
+  onClick?: () => void;
 }
 
-const ListedItemCard: React.FC<Props> = ({ itemName, category, href, price, imageUrl, createdAt }) => {
+const ListedItemCard: React.FC<Props> = ({ itemName, category, href, price, imageUrl, createdAt, onClick }) => {
   console.log('ListedItemCard props:', { itemName, imageUrl, price });
   
   const isValidImageUrl = imageUrl && imageUrl.trim() !== "" && imageUrl.startsWith('http');
@@ -20,9 +21,16 @@ const ListedItemCard: React.FC<Props> = ({ itemName, category, href, price, imag
     console.warn('Invalid image URL:', imageUrl);
   }
 
+  const handleClick = (e: React.MouseEvent) => {
+    if (onClick) {
+      e.preventDefault();
+      onClick();
+    }
+  };
+
   return (
     <Link href={href}>
-      <div className="border rounded-lg overflow-hidden">
+      <div className="border rounded-lg overflow-hidden" onClick={handleClick}>
         <div className="relative aspect-square bg-muted">
           {isValidImageUrl ? (
             <div className="absolute inset-0">

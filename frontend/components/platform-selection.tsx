@@ -7,7 +7,7 @@ import { useRouter } from "next/router";
 interface PlatformSelectionProps {
   itemId: string;
   onBack: () => void;
-  onContinue: (selectedPlatforms: string[]) => void;
+  onContinue?: (selectedPlatforms: string[]) => void;
 }
 
 export default function PlatformSelection({
@@ -54,6 +54,8 @@ export default function PlatformSelection({
 
   // Add this function to handle the platform selection before continuing
   const handleContinue = () => {
+    if (!onContinue) return;
+    
     // If only eBay is visually selected, use Facebook as the platform
     const platformsToUse = ebaySelected && selectedPlatforms.length === 0 
       ? ["facebook"] 

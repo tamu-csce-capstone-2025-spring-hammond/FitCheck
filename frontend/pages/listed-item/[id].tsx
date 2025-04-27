@@ -107,7 +107,7 @@ export default function ProductPage() {
                 <h2 className="mb-6">Item Details</h2>
                 <DarkButton
                   text="Edit Listing Info"
-                  href={`/edit-item/${id}`}
+                  href={`/edit-listing/${id}`}
                 />
               </div>
 
