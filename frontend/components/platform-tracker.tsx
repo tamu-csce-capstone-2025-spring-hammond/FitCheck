@@ -91,9 +91,6 @@ function PlatformCard({
         >
           View on Platform <ExternalLink size={14} />
         </a>
-        <Button             
-        className="border-2 border-heart-red text-heart-red items-center active:bg-heart-red active:text-white hover:bg-heart-red hover:text-white"
-        >Remove Listing</Button>
       </div>
     </div>
   );

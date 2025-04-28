@@ -9,6 +9,8 @@ import { useRouter } from "next/router";
 import Navbar from "@/components/navbar";
 import PlatformTracker from "@/components/platform-tracker";
 import { useState, useEffect } from "react";
+import { Button } from "@/components/imported-ui/button";
+import { Loader2 } from "lucide-react";
 
 // Sample data (to be fetched dynamically later)
 const platformStatuses = [
@@ -36,6 +38,57 @@ export default function ProductPage() {
   const [productName, setProductName] = useState<string>("");
   const [productImage, setProductImage] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDeleteListing = async () => {
+    setIsDeleting(true);
+    try {
+      // First get the clothing item ID
+      const clothingItemResponse = await fetch(`/api/clothing-items?name=${encodeURIComponent(productName)}`);
+      if (!clothingItemResponse.ok) {
+        throw new Error('Failed to fetch clothing item details');
+      }
+      const clothingItems = await clothingItemResponse.json();
+      
+      // Find the matching clothing item by name
+      const matchingItem = clothingItems.find((item: any) => item.name === productName);
+      if (!matchingItem) {
+        throw new Error('No matching clothing item found');
+      }
+
+      // Delete from Facebook
+      const facebookResponse = await fetch(`/api/facebook/delete`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name: productName }),
+      });
+
+      if (!facebookResponse.ok) {
+        throw new Error('Failed to delete Facebook listing');
+      }
+
+      // Delete from our database
+      const resaleListingResponse = await fetch(`/api/resale_listings/${matchingItem.id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!resaleListingResponse.ok) {
+        throw new Error('Failed to delete resale listing');
+      }
+
+      // Redirect to listings page after successful deletion
+      router.push('/listings');
+    } catch (error) {
+      console.error('Error deleting listing:', error);
+      setIsDeleting(false);
+      // You might want to show an error message to the user here
+    }
+  };
 
   useEffect(() => {
     const fetchProductData = async () => {
@@ -95,6 +148,20 @@ export default function ProductPage() {
             <div className="flex flex-col md:col-span-2">
               <div className="flex justify-between items-center mb-4">
                 <h1 className="bold">Listed Product: {productName || 'Loading...'}</h1>
+                <Button 
+                  onClick={handleDeleteListing}
+                  disabled={isDeleting}
+                  className="border-2 border-heart-red text-heart-red items-center active:bg-heart-red active:text-white hover:bg-heart-red hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isDeleting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Removing...
+                    </>
+                  ) : (
+                    'Remove Listing'
+                  )}
+                </Button>
               </div>
 
               <div>

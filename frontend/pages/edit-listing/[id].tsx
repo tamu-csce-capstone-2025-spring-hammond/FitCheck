@@ -163,6 +163,7 @@ export default function EditListingPage() {
   // Handle form submission
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     setIsUpdating(true);
 
     try {
@@ -405,7 +406,7 @@ export default function EditListingPage() {
 
                 {/* Submit */}
                 <div className="flex justify-end gap-4 mt-6 items-center">
-                  <LightButton text="Cancel" href={`/listings`} />
+                  <LightButton text="Cancel" href={`/listed-item/${id}`} />
                   <button
                     type="submit"
                     className="title flex justify-center border-2 border-black items-center px-2 lg:px-16 py-2 bg-black rounded-lg hover:bg-accent text-center"

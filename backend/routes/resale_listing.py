@@ -57,9 +57,9 @@ def update_resale_listing(clothing_item_id: int, listing_update: ResaleListingUp
     db.refresh(listing)
     return listing
 
-@router.delete("/resale_listings/{listing_id}", status_code=204)
-def delete_resale_listing(listing_id: int, db: Session = Depends(get_db)):
-    listing = db.get(ResaleListing, listing_id)
+@router.delete("/resale_listings/{clothing_item_id}", status_code=204)
+def delete_resale_listing(clothing_item_id: int, db: Session = Depends(get_db)):
+    listing = db.exec(select(ResaleListing).where(ResaleListing.clothing_item_id == clothing_item_id)).first()
     if not listing:
         raise HTTPException(status_code=404, detail="Resale listing not found")
     db.delete(listing)
