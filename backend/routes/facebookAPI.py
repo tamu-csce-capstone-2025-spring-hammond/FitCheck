@@ -148,7 +148,7 @@ def get_price(name):
         print("Product not found, error:", response.status_code)
         raise HTTPException(status_code=500, detail=data)
     else:
-        # getting the product availability
+        # getting the product price
         url = f"https://graph.facebook.com/v22.0/{product_id}"
         headers = {"Authorization": f"Bearer {FACEBOOK_ACCESS_TOKEN}"}
         params = {
@@ -182,7 +182,6 @@ def get_product_availability(name):
     data = response.json()
     for product in data.get("data", []):
         if product.get("name") == name:
-            print("Product found:", product)
             product_id = product.get("id")
     if product_id == 0:
         print("Product not found, error:", response.status_code)
@@ -202,7 +201,7 @@ def get_product_availability(name):
     else:
         data = response.json()
         print("Product availability:", data)
-        return name + "is" + data.get("availability", "No availability info")
+        return data.get("availability", "No availability info")
 
 @router.get("/facebook/description/{name}")
 def get_product_description(name):

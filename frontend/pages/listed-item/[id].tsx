@@ -12,26 +12,6 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/imported-ui/button";
 import { Loader2 } from "lucide-react";
 
-// Sample data (to be fetched dynamically later)
-const platformStatuses = [
-  {
-    platform: "Depop",
-    status: "listed",
-    analytics: { likes: 28, watchlistAdds: 3 },
-    platformUrl: "https://depop.com/item/xyz",
-  },
-  {
-    platform: "eBay",
-    status: "offer_received",
-    offerDetails: {
-      price: 40,
-      buyer: "vintageFan88",
-    },
-    analytics: { likes: 12, watchlistAdds: 1 },
-    platformUrl: "https://ebay.com/item/abc",
-  },
-];
-
 export default function ProductPage() {
   const router = useRouter();
   const { id } = router.query;
@@ -39,6 +19,7 @@ export default function ProductPage() {
   const [productImage, setProductImage] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [facebookStatus, setFacebookStatus] = useState<string>("");
 
   const handleDeleteListing = async () => {
     setIsDeleting(true);
@@ -110,6 +91,20 @@ export default function ProductPage() {
         }
         const imageData = await imageResponse.json();
         setProductImage(imageData.image_url);
+
+        // Fetch Facebook availability
+        const availabilityResponse = await fetch(`/api/facebook/availability/${nameData.name}`);
+        if (!availabilityResponse.ok) {
+          throw new Error('Failed to fetch Facebook availability');
+        }
+        const availabilityData = await availabilityResponse.json();
+        console.log("Facebook availability:", availabilityData);
+        if (availabilityData.availability === "in stock") {
+          setFacebookStatus("Status: Listed");
+        }
+        else {
+          setFacebookStatus("Status: Sold");
+        }
       } catch (error) {
         console.error('Error fetching product data:', error);
       } finally {
@@ -165,7 +160,18 @@ export default function ProductPage() {
               </div>
 
               <div>
-                <PlatformTracker platforms={platformStatuses} />
+                <PlatformTracker platforms={[
+                  {
+                    platform: "Facebook",
+                    status: facebookStatus,
+                    platformUrl: "https://www.facebook.com/marketplace"
+                  },
+                  {
+                    platform: "eBay",
+                    status: facebookStatus,
+                    platformUrl: "https://www.ebay.com"
+                  }
+                ]} />
               </div>
 
               <hr className="my-4" />

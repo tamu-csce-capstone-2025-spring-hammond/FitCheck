@@ -45,12 +45,18 @@ function PlatformCard({
 
   return (
     <div className="border p-4 rounded-xl shadow-sm bg-gray-50">
-      <div className="flex justify-between items-center mb-2">
+      <div className="flex justify-between items-center mb-4">
         <h3 className="">{platform}</h3>
-        <span className="px-4 py-1 bg-accent text-white rounded">
+        <span className="px-4 py-1 bg-accent text-white rounded font-bold">
           {status.replace("_", " ").toUpperCase()}
         </span>
       </div>
+
+      {status.includes("Listed") && (
+        <div className="text-gray-600">
+          <p className="text-black-500 font-bold">No offers yet</p>
+        </div>
+      )}
 
       {status === "offer_received" && (
         <div className="text-gray-700 mb-2">
